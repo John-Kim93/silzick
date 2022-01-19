@@ -1,20 +1,33 @@
 <template>
   <div>
+    <div id="nav">
+      <router-link to="/Board/Notice">공지사항</router-link> |
+      <router-link to="/Board/Request">건의사항</router-link>
+    </div>
+    <router-view/>
     <div>
       <p>공지사항</p>
     </div>
-    <table class="table table-dark table-hover">
-      <thead>
-        <tr>
-          <td>번호 : {{ admin_post.id }}</td>
-          <td>제목 : {{ admin_post.title }}</td>
-          <td>작성일자 : {{ admin_post.created_at }}</td>
-        </tr>
-      </thead>
-      <tbody>
-
-      </tbody>
-    </table>
+    <div>
+      <table class="table table-dark table-hover">
+        <thead>
+          <tr>
+            <td>번호</td>
+            <td>작성자</td>
+            <td>제목</td>
+            <td>작성일자</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="post in admin_post" :key="post.id">
+            <td>{{ post.id }}</td>
+            <td>{{ post.author }}</td>
+            <td>{{ post.title }}</td>
+            <td>{{ post.created_at }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 

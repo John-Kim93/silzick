@@ -1,5 +1,7 @@
 <template>
-  
+  <div>
+    <p>NoticeCreate</p>
+  </div>
 </template>
 
 <script>

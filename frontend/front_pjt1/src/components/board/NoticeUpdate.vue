@@ -1,5 +1,7 @@
 <template>
-  
+  <div>
+    <p>NoticeUpdate</p>
+  </div>
 </template>
 
 <script>
