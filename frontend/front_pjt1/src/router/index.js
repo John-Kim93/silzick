@@ -8,6 +8,7 @@ import Notice from '../components/board/Notice.vue'
 import Request from '../components/board/Request.vue'
 import RequestCreate from '../components/board/RequestCreate.vue'
 import RequestDetail from '../components/board/RequestDetail.vue'
+import RequestUpdate from '../components/board/RequestUpdate.vue'
 
 Vue.use(VueRouter)
 
@@ -51,6 +52,11 @@ const routes = [
     path: '/Board/Request/Detail/:id',
     name : 'RequestDetail',
     component : RequestDetail
+  },
+  {
+    path: '/Board/Request/Detail/:id/Update',
+    name : 'RequestUpdate',
+    component : RequestUpdate
   },
 ]
 

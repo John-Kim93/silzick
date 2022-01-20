@@ -6,7 +6,9 @@
     <p>{{ user_post.title }}</p>
     <p>{{ user_post.content }}</p>
     <div>
-      <button>수정</button>
+      <router-link :to="{name:'RequestUpdate', params:{id:index}}">
+        <button>수정</button>
+      </router-link>
       <button @click="deleteRequest">삭제</button>
     </div>
   </div>
@@ -25,10 +27,6 @@ export default {
   },
   methods: {
     deleteRequest: function () {
-      // const data = {
-      //   user_post : this.user_post,
-      //   index: this.index
-      // }
       this.$store.dispatch('deleteRequest', this.index)
       this.$router.push({
         name: 'Request',

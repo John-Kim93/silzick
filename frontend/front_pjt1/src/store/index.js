@@ -87,7 +87,14 @@ export default new Vuex.Store({
       // const index = state.user_post[res]
       // console.log(index)
       state.user_post.splice(res, 1)
-    }
+    },
+    UPDATE_REQUEST: function (state, res) {
+      const requestId = res.index
+      const index = state.user_post.findIndex(res => {
+        return res.index === requestId
+      })
+      state.user_post[index] = res
+    },
   },
   actions: {
     createRequest: function ({commit}, res) {
@@ -97,7 +104,10 @@ export default new Vuex.Store({
     deleteRequest: function({commit}, res) {
       // console.log('delete')
       commit('DELETE_REQUEST', res)
-    }
+    },
+    updateRequest: function ({commit}, res) {
+      commit('UPDATE_REQUEST', res)
+    },
   },
   modules: {
   }
