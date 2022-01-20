@@ -1,14 +1,46 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Main</router-link> |
-      <router-link to="/Login">Login</router-link> |
-      <router-link to="/Board">Board</router-link> |
-      <router-link to="/Signup">Signup</router-link>
+    <div
+      v-if="isLogin"
+      class="d-flex m-3"
+    >
+      <button
+        class="btn"
+        style="background-color:black;"
+      >
+        <router-link to="/Board">
+          <b-icon
+            icon="book-half"
+            font-scale="2.5"
+            variant="light"
+          >
+          </b-icon>
+        </router-link>
+      </button>
+      <button
+        class="btn"
+        style="background-color:black;"
+      > <b-icon
+          icon="question-circle"
+          font-scale="2.5"
+          variant="light"
+        >
+        </b-icon>
+      </button>
     </div>
     <router-view/>
   </div>
 </template>
+
+<script>
+export default {
+  data: function () {
+    return {
+      isLogin : this.$store.state.isLogin
+    }
+  }
+}
+</script>
 
 <style>
 #app {
@@ -28,10 +60,6 @@
 
 #nav a {
   font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+  color: #ffffff;
 }
 </style>
