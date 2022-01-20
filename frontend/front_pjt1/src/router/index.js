@@ -7,6 +7,7 @@ import Signup from '../views/Signup.vue'
 import Notice from '../components/board/Notice.vue'
 import Request from '../components/board/Request.vue'
 import RequestCreate from '../components/board/RequestCreate.vue'
+import RequestDetail from '../components/board/RequestDetail.vue'
 
 Vue.use(VueRouter)
 
@@ -45,6 +46,11 @@ const routes = [
     path: '/Board/Request/Create',
     name : 'RequestCreate',
     component : RequestCreate
+  },
+  {
+    path: '/Board/Request/Detail/:id',
+    name : 'RequestDetail',
+    component : RequestDetail
   },
 ]
 

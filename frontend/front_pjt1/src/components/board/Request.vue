@@ -18,9 +18,9 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="post in user_post" :key="post.id">
-          <td>{{ post.id }}</td>
-          <td>{{ post.author }}</td>
+        <tr :key="index" v-for="(post, index) in user_post" @click="detail(index)">
+          <td>{{ index + 1 }}</td>
+          <td>{{ post.user }}</td>
           <td>{{ post.title }}</td>
           <td>{{ post.created_at }}</td>
         </tr>
@@ -35,14 +35,23 @@ export default {
   name : 'Request',
   data : function() {
     return {
-      user_post : this.$store.state.user_post
+      user_post : this.$store.state.user_post,
+      user : this.$store.state.user,
     }
   },
   methods : {
     create : function () {
       this.$router.push('Request/Create')
     },
-  }
+    detail : function (index) {
+      this.$router.push({
+        name: 'RequestDetail',
+        params: {
+          id: index
+        }
+      })
+    },
+  },
 }
 </script>
 
