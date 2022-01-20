@@ -16,7 +16,7 @@ export default new Vuex.Store({
       title : 'test1_user',
       created_at : '22.01.19',
     },
-    isLogin : false,
+    isLogin : true,
     user : {
       user_id: 'ssafy',
       user_name: '김종현',
