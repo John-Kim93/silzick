@@ -4,6 +4,8 @@ import Main from '../views/Main.vue'
 import Login from '../views/Login.vue'
 import Board from '../views/Board.vue'
 import Signup from '../views/Signup.vue'
+import FindID from '../views/FindID.vue'
+import FindPW from '../views/FindPW.vue'
 
 Vue.use(VueRouter)
 
@@ -27,6 +29,16 @@ const routes = [
     path: '/Signup',
     name: 'Signup',
     component: Signup
+  },
+  {
+    path: '/FindID',
+    name: 'FindID',
+    component: FindID
+  },
+  {
+    path: '/FindPW',
+    name: 'FindPW',
+    component: FindPW
   },
 ]
 
