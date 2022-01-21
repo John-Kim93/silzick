@@ -34,6 +34,7 @@ export default {
   },
   methods: {
     updateRequest: function () {
+      // console.log(this.id)
       const requestData = {
         user: this.user,
         title: this.title,

@@ -41,7 +41,7 @@ export default new Vuex.Store({
         created_at : '22.01.23',
       },
     ],
-    // isLogin: true,
+    isLogin: false,
     user: {
       user_id: 'ssafy',
       user_name: '윤종목',
@@ -89,11 +89,12 @@ export default new Vuex.Store({
       state.user_post.splice(res, 1)
     },
     UPDATE_REQUEST: function (state, res) {
+      // console.log(res)
       const requestId = res.index
-      const index = state.user_post.findIndex(res => {
-        return res.index === requestId
-      })
-      state.user_post[index] = res
+      // const index = state.user_post.findIndex(res => {
+      //   return res.index === requestId
+      // })
+      state.user_post[requestId] = res
     },
   },
   actions: {

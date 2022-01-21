@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div id="nav">
-      <router-link to="/Board/Notice">공지사항</router-link> |
-      <router-link to="/Board/Request">건의사항</router-link>
-    </div>
-    <router-view/>
     <div>
       <p>공지사항</p>
     </div>

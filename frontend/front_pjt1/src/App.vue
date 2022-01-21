@@ -3,7 +3,8 @@
     <div id="nav">
       <router-link to="/">Main</router-link> |
       <router-link to="/Login">Login</router-link> |
-      <router-link to="/Board">Board</router-link> |
+      <router-link to="/Notice">Notice</router-link> |
+      <router-link to="/Request">Request</router-link> |
       <router-link to="/Signup">Signup</router-link>
     </div>
     <router-view/>
@@ -17,6 +18,7 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+
 }
 
 #nav {

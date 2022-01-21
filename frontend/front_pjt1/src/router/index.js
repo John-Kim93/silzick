@@ -2,13 +2,12 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Main from '../views/Main.vue'
 import Login from '../views/Login.vue'
-import Board from '../views/Board.vue'
 import Signup from '../views/Signup.vue'
-import Notice from '../components/board/Notice.vue'
-import Request from '../components/board/Request.vue'
-import RequestCreate from '../components/board/RequestCreate.vue'
-import RequestDetail from '../components/board/RequestDetail.vue'
-import RequestUpdate from '../components/board/RequestUpdate.vue'
+import Notice from '../views/Notice.vue'
+import Request from '../views/Request.vue'
+import RequestCreate from '@/components/request/RequestCreate.vue'
+import RequestDetail from '../components/request/RequestDetail.vue'
+import RequestUpdate from '../components/request/RequestUpdate.vue'
 
 Vue.use(VueRouter)
 
@@ -24,37 +23,32 @@ const routes = [
     component: Login
   },
   {
-    path: '/Board',
-    name: 'Board',
-    component: Board
-  },
-  {
     path: '/Signup',
     name: 'Signup',
     component: Signup
   },
   {
-    path: '/Board/Notice',
+    path: '/Notice',
     name : 'Notice',
     component: Notice
   },
   {
-    path: '/Board/Request',
+    path: '/Request',
     name : 'Request',
     component: Request
   },
   {
-    path: '/Board/Request/Create',
+    path: '/Request/Create',
     name : 'RequestCreate',
     component : RequestCreate
   },
   {
-    path: '/Board/Request/Detail/:id',
+    path: '/Request/Detail/:id',
     name : 'RequestDetail',
     component : RequestDetail
   },
   {
-    path: '/Board/Request/Detail/:id/Update',
+    path: '/Request/Detail/:id/Update',
     name : 'RequestUpdate',
     component : RequestUpdate
   },
