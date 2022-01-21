@@ -2,13 +2,13 @@
   <div id="app">
     <div
       v-if="isLogin"
-      class="d-flex m-3"
+      class="d-flex mx-3 py-3 fix"
     >
       <button
         class="btn"
         style="background-color:black;"
       >
-        <router-link to="/Board">
+        <router-link to="/Notice">
           <b-icon
             icon="book-half"
             font-scale="2.5"
@@ -27,6 +27,11 @@
         >
         </b-icon>
       </button>
+      <button class="btn" style="background-color:black;">
+        <router-link to="/">
+          <b-icon icon="house" font-scale="2.5" variant="light"></b-icon>
+        </router-link>
+      </button>
     </div>
     <router-view/>
   </div>
@@ -36,9 +41,13 @@
 export default {
   data: function () {
     return {
-      isLogin : this.$store.state.isLogin
     }
-  }
+  },
+  computed: {
+    isLogin () {
+      return this.$store.state.isLogin
+    }
+  },
 }
 </script>
 
@@ -61,5 +70,9 @@ export default {
 #nav a {
   font-weight: bold;
   color: #ffffff;
+}
+
+.fix {
+  position: fixed;
 }
 </style>

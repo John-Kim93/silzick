@@ -18,6 +18,7 @@
       v-if="isLogin"
       class="btn-2nd-position"
       variant="outline-light"
+      @click="logout"
     > 로그아웃
     </b-button>
   </div>
@@ -28,7 +29,16 @@ export default {
   name: 'Main',
   data: function () {
     return {
-      isLogin : this.$store.state.isLogin
+      }
+  },
+  computed: {
+    isLogin () {
+      return this.$store.state.isLogin
+    }
+  },
+  methods: {
+    logout: function() {
+      this.$store.dispatch('logout')
     }
   }
 }

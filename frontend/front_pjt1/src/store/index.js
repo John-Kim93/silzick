@@ -108,6 +108,12 @@ export default new Vuex.Store({
       // })
       state.user_post[requestId] = res
     },
+    LOGOUT : function (state) {
+      state.isLogin = false
+    },
+    LOGIN : function (state) {
+      state.isLogin = true
+    }
   },
   actions: {
     createNotice: function ({commit}, res) {
@@ -131,6 +137,12 @@ export default new Vuex.Store({
     },
     updateRequest: function ({commit}, res) {
       commit('UPDATE_REQUEST', res)
+    },
+    logout : function ({commit}) {
+      commit('LOGOUT')
+    },
+    login : function ({commit}) {
+      commit('LOGIN')
     },
   },
   modules: {

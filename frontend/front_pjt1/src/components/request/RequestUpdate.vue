@@ -1,12 +1,29 @@
 <template>
   <div>
-    <p>RequestUpdate</p>
-    <div>
-      <!-- 작성자 : <input type="text" v-model="user"> -->
-      제목 : <input type="text" v-model="title">
-      내용 : <textarea v-model="content" cols="30" rows="10"></textarea>
+    <img src="https://ifh.cc/g/7ruaO5.png" id="bg" alt="bgImg">
+    <div class="container location" style="width:70%">
+      <input
+        type="text"
+        v-model="title"
+        style="background-color:black"
+        class="my-title form-control"
+      >
+      <textarea
+        style="background-color:black"
+        class="my-content form-control my-3"
+        type="text"
+        v-model="content"
+        cols="30" rows="10"
+      ></textarea>
+      <div>
+        <b-button
+          @click="updateRequest"
+          variant="outline-light"
+          class="d-flex"
+          style="margin-left:auto"
+        >수정</b-button>
+      </div>
     </div>
-    <button @click="updateRequest">수정</button>
   </div>
 </template>
 
@@ -52,5 +69,27 @@ export default {
 </script>
 
 <style>
-
+  .location {
+    position: fixed;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+  }
+  input[type=text] {
+    border: solid black;
+    color: white
+  }
+  input[type=text]:focus {
+    border: solid white;
+    color: white
+  }
+  textarea[type=text] {
+    border: solid black;
+    color: white;
+  }
+  textarea[type=text]:focus {
+    border: solid white;
+    color: white
+  }
 </style>

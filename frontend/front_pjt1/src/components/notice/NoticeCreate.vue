@@ -1,12 +1,31 @@
 <template>
   <div>
-    <p>NoticeCreate</p>
+    <img src="https://ifh.cc/g/7ruaO5.png" id="bg" alt="bgImg">
+    <div class="container location" style="width:70%">
+      <input
+        style="background-color:black"
+        class="my-title form-control"
+        type="text"
+        v-model="title"
+        placeholder="제목을 입력하세요."
+      >
+      <textarea
+        style="background-color:black"
+        class="my-content form-control my-3"
+        type="text"
+        v-model="content"
+        cols="30" rows="10"
+        placeholder="공지사항을 입력하세요."
+      ></textarea>
       <div>
-      <!-- 작성자 : <input type="text" v-model="user"> -->
-      제목 : <input type="text" v-model="title">
-      내용 : <textarea v-model="content" cols="30" rows="10"></textarea>
+        <b-button
+          @click="create"
+          variant="outline-light"
+          class="d-flex"
+          style="margin-left:auto"
+        >공지하기</b-button>
+      </div>
     </div>
-    <button @click="create">작성</button>
   </div>
 </template>
 
@@ -40,5 +59,27 @@ export default {
 </script>
 
 <style>
-
+  .location {
+    position: fixed;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+  }
+  input[type=text] {
+    border: solid black;
+    color: white
+  }
+  input[type=text]:focus {
+    border: solid white;
+    color: white
+  }
+  textarea[type=text] {
+    border: solid black;
+    color: white;
+  }
+  textarea[type=text]:focus {
+    border: solid white;
+    color: white
+  }
 </style>

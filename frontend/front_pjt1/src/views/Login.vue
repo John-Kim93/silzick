@@ -32,7 +32,8 @@
             <p class="my-1">Remember me</p>
           </label>
         </div>
-        <router-link class="w-100 btn btn-lg btn-secondary" type="submit" to="/">Log In</router-link>
+        <router-link class="w-100 btn btn-lg btn-secondary" type="submit" to="/" >Log In</router-link>
+        <button @click="login">Log In</button>
         <router-link to="/FindID">아이디 찾기 / </router-link>
         <router-link to="/FindPW">비밀번호 찾기</router-link>
       </div>
@@ -65,7 +66,10 @@ export default {
     }
   },
   methods: {
-
+    login : function () {
+      this.$store.dispatch('login')
+      this.$router.push('/')
+    }
   }
 }
 </script>
