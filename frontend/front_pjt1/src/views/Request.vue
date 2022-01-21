@@ -4,7 +4,8 @@
       <p>건의사항</p>
     </div>
     <div class="container">
-      <table class="table table-dark table-hover">
+      <button @click="create">글쓰기</button>
+      <table class="table table-hover">
         <thead>
           <tr>
             <td>번호</td>
@@ -23,7 +24,6 @@
         </tbody>
       </table>
     </div>
-    <button @click="create">글쓰기</button>
   </div>
   </template>
 
@@ -51,7 +51,7 @@ export default {
     },
     
   },
-  mounted: function () {
+  created: function () {
     if (this.isLogin === false) {
       this.$router.push({
         name: 'Main'

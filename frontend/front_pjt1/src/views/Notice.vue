@@ -3,8 +3,9 @@
     <div>
       <p>공지사항</p>
     </div>
-    <div>
-      <table class="table table-dark table-hover">
+    <div class="container">
+    <button @click="create">글쓰기</button>
+      <table class="table table-hover">
         <thead>
           <tr>
             <td>번호</td>
@@ -14,9 +15,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="post in admin_post" :key="post.id">
-            <td>{{ post.id }}</td>
-            <td>{{ post.author }}</td>
+          <tr :key="index" v-for="(post, index) in admin_post" @click="detail(index)">
+            <td>{{ index + 1 }}</td>
+            <td>{{ post.user }}</td>
             <td>{{ post.title }}</td>
             <td>{{ post.created_at }}</td>
           </tr>
@@ -31,7 +32,30 @@ export default {
   name : 'Notice',
   data : function() {
     return {
-      admin_post : this.$store.state.admin_post
+      isLogin: this.$store.state.isLogin,
+      admin_post : this.$store.state.admin_post,
+      user : this.$store.state.user,
+    }
+  },
+  methods : {
+    create : function () {
+      this.$router.push('Notice/Create')
+    },
+    detail : function (index) {
+      this.$router.push({
+        name: 'NoticeDetail',
+        params: {
+          id: index
+        }
+      })
+    },
+    
+  },
+  created: function () {
+    if (this.isLogin === false) {
+      this.$router.push({
+        name: 'Main'
+      })
     }
   }
 }

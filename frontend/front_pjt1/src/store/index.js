@@ -41,7 +41,7 @@ export default new Vuex.Store({
         created_at : '22.01.23',
       },
     ],
-    isLogin: false,
+    isLogin: true,
     user: {
       user_id: 'ssafy',
       user_name: '윤종목',
@@ -80,6 +80,18 @@ export default new Vuex.Store({
     ],
   },
   mutations: {
+    CREATE_NOTICE: function (state, res) {
+      state.admin_post.push(res)
+    },
+    DELETE_NOTICE: function (state, res) {
+      // const index = state.user_post[res]
+      // console.log(index)
+      state.admin_post.splice(res, 1)
+    },
+    UPDATE_NOTICE: function (state, res) {
+      const noticeId = res.index
+      state.admin_post[noticeId] = res
+    },
     CREATE_REQUEST: function (state, res) {
       state.user_post.push(res)
     },
@@ -98,6 +110,17 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    createNotice: function ({commit}, res) {
+      // console.log(res)
+      commit('CREATE_NOTICE', res)
+    },
+    deleteNotice: function({commit}, res) {
+      // console.log('delete')
+      commit('DELETE_NOTICE', res)
+    },
+    updateNotice: function ({commit}, res) {
+      commit('UPDATE_NOTICE', res)
+    },
     createRequest: function ({commit}, res) {
       // console.log(res)
       commit('CREATE_REQUEST', res)
