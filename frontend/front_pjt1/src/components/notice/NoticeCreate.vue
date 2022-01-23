@@ -4,14 +4,14 @@
     <div class="container location" style="width:70%">
       <input
         style="background-color:black"
-        class="my-title form-control"
+        class="form-control"
         type="text"
         v-model="title"
         placeholder="제목을 입력하세요."
       >
       <textarea
         style="background-color:black"
-        class="my-content form-control my-3"
+        class="form-control my-3 enter"
         type="text"
         v-model="content"
         cols="30" rows="10"
@@ -82,4 +82,16 @@ export default {
     border: solid white;
     color: white
   }
+  .enter {
+    white-space: pre-line;
+  }
+  /* .notes {
+    background-attachment: local;
+    background-image:
+      linear-gradient(to right, white 10px, transparent 10px),
+      linear-gradient(to left, white 10px, transparent 10px),
+      repeating-linear-gradient(white, white 30px, #ccc 30px, #ccc 31px, white 31px);
+    line-height: auto;
+    padding: 8px 10px;
+  } */
 </style>

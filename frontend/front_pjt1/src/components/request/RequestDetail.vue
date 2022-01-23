@@ -1,15 +1,30 @@
 <template>
   <div>
-    <p>RequestDetail</p>
-    <p>{{ user_post.user }}</p>
-    <p>{{ user_post.created_at }}</p>
-    <p>{{ user_post.title }}</p>
-    <p>{{ user_post.content }}</p>
+    <img src="https://ifh.cc/g/7ruaO5.png" id="bg" alt="bgImg">
     <div>
-      <router-link :to="{name:'RequestUpdate', params:{id:index}}">
-        <button>수정</button>
+      <h1 class="location2" style="color:white">REQUEST</h1>
+    </div>
+    <div class="location3">
+      <router-link style="text-decoration:none" :to="{name:'RequestUpdate', params:{id:index}}">
+        <b-button variant="outline-primary" class="d-inline mx-3" style="margin-left:auto">수정</b-button>
       </router-link>
-      <button @click="deleteRequest">삭제</button>
+      <b-button @click="deleteRequest" variant="outline-danger" class="d-inline" style="margin-left:auto">삭제</b-button>
+    </div>
+    <div class="container location" style="width:100%; color:white; text-align:left">
+      <!-- <hr>
+      <h5>{{ user_post.user }}</h5> -->
+      <hr>
+      <h5>{{ user_post.created_at }}</h5>
+      <hr>
+      <h5>{{ user_post.title }}</h5>
+      <hr>
+      <p class="enter">{{ user_post.content }}</p>
+      <hr>
+      <div class="d-flex justify-content-center">
+        <router-link :to="{name:'Request'}">
+          <b-button variant="outline-light">목록으로</b-button>
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -37,5 +52,14 @@ export default {
 </script>
 
 <style>
-
+  .location2 {
+    position: fixed;
+    top: 20%;
+    left: 16%
+  }
+  /* .location3 {
+    position: fixed;
+    top: 20%;
+    right: 16%
+  } */
 </style>

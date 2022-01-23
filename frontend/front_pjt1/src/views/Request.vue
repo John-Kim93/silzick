@@ -24,11 +24,10 @@
           </tr>
         </tbody>
       </table>
-      <div>
-        <b-button @click="create" variant="outline-light" class="d-flex" style="margin-left:auto">건의하기</b-button>
-      </div>
     </div>
-    
+    <div class="location3">
+      <b-button @click="create" variant="outline-light">건의하기</b-button>
+    </div>
   </div>
 </template>
 

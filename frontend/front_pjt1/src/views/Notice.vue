@@ -5,8 +5,11 @@
       <b-button @click="moveToNotice" variant="outline-light">공지사항</b-button>
       <b-button class="mx-3" @click="moveToRequest" variant="outline-light">건의사항</b-button>
     </div>
+    <div class="location3">
+      <b-button @click="create" variant="outline-light">공지작성</b-button>
+    </div>
     <div class="container location">
-      <table class="table table-hover my-3">
+      <table class="table table-hover my-3" :per-page="perPage" :current-page="currentPage" :items="items"> <!--:부터 pagination-->
         <thead class="white">
           <tr>
             <td>번호</td>
@@ -24,10 +27,23 @@
           </tr>
         </tbody>
       </table>
-        <div>
-        <b-button @click="create" variant="outline-light" class="d-flex" style="margin-left:auto">공지하기</b-button>
-      </div>
+      <!-- <b-pagination
+        v-model="currentPage"
+        :total-rows="rows"
+        :per-page="perPage"
+        align="center"
+      ></b-pagination> -->
     </div>
+    <!-- <div class="btn-cover">
+    <button :disabled="pageNum === 0" @click="prevPage" class="page-btn">
+      이전
+    </button>
+    <span class="page-count">{{ pageNum + 1 }} / {{ pageCount }} 페이지</span>
+    <button :disabled="pageNum >= pageCount - 1" @click="nextPage" class="page-btn">
+      다음
+    </button>
+    </div> -->
+
   </div>
 </template>
 
@@ -36,9 +52,16 @@ export default {
   name : 'Notice',
   data : function() {
     return {
+      // pageNum: 0,
+      // pageSize: {
+      //   default: 10
+      // },
+      // currentPage: 1, //pagination
+      // perPage: 3, //pagination
       isLogin: this.$store.state.isLogin,
       admin_post : this.$store.state.admin_post,
       user : this.$store.state.user,
+      // items : this.$store.state.admin_post, //pagination
     }
   },
   methods : {
@@ -62,9 +85,32 @@ export default {
       this.$router.push({
         name: 'Request'
       })
+    },
+    nextPage () {
+      this.pageNum += 1
+    },
+    prevPage () {
+      this.pageNum -= 1
     }
-    
   },
+  // computed: {
+  //   pageCount () {
+  //     let listLength = this.$state.store.admin_post.length,
+  //       listSize = this.pageSize,
+  //       page = Math.floor(listLength / listSize ) + 1
+  //       return page
+  //   },
+  //   paginatedData () {
+  //     const start = this.pageNum * this.pageSize,
+  //     end = start + (this.pageSize - 1);
+  //     return this.admin_post.slice(start, end)
+  //   }
+  // },
+  // computed: { //pagination
+  //   rows () {
+  //     return this.items.length
+  //   }
+  // },
   created: function () {
     if (this.isLogin === false) {
       this.$router.push({
