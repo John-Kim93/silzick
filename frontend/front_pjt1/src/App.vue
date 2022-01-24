@@ -4,14 +4,19 @@
       v-if="isLogin"
       class="d-flex mx-3 py-3 fix"
     >
+      <button class="btn" style="background-color:black;">
+        <router-link to="/">
+          <b-icon icon="house" font-scale="2.5" variant="light"></b-icon>
+        </router-link>
+      </button>
       <button
         class="btn"
         style="background-color:black;"
       >
         <router-link to="/Notice">
           <b-icon
-            icon="book-half"
-            font-scale="2.5"
+            icon="card-text"
+            font-scale="2.7"
             variant="light"
           >
           </b-icon>
@@ -26,11 +31,6 @@
           variant="light"
         >
         </b-icon>
-      </button>
-      <button class="btn" style="background-color:black;">
-        <router-link to="/">
-          <b-icon icon="house" font-scale="2.5" variant="light"></b-icon>
-        </router-link>
       </button>
     </div>
     <router-view/>

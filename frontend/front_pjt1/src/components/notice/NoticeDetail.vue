@@ -13,11 +13,11 @@
     <div class="container location" style="width:70%; color:white; text-align:left">
       <!-- <p>작성자 : {{ admin_post.user }}</p> -->
       <hr>
-      <h5>{{ admin_post.created_at }}</h5>
+      <h5>{{ post.created_at }}</h5>
       <hr>
-      <h5>{{ admin_post.title }}</h5>
+      <h5>{{ post.title }}</h5>
       <hr>
-      <p class="enter">{{ admin_post.content }}</p>
+      <p class="enter">{{ post.content }}</p>
       <hr>
       <div class="d-flex justify-content-center">
         <router-link :to="{name:'Notice'}">
@@ -29,16 +29,34 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'NoticeDetail',
+  // data: function () {
+  //   const index = this.$route.params.id
+  //   const admin_posts = this.$store.state.admin_post
+  //   return {
+  //     admin_post : admin_posts[index],
+  //     index: index,
+  //   }
+  // },
   data: function () {
-    const index = this.$route.params.id
-    const admin_posts = this.$store.state.admin_post
     return {
-      admin_post : admin_posts[index],
-      index: index,
+      index: this.$route.params.id
     }
   },
+  computed: {
+    ...mapState(["admin_post"]),
+    post : function () {
+      // return this.admin_post[this.index]
+      // return this.admin_post.keys(post).find(id => post[id]==this.index)
+      return this.admin_post.find(post => post.id === this.index)
+    }
+  },
+  created: function () {
+      console.log(this.index)
+    },
   methods: {
     deleteNotice: function () {
       this.$store.dispatch('deleteNotice', this.index)

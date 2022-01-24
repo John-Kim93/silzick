@@ -28,28 +28,38 @@
 </template>
 
 <script>
-import dayjs from 'dayjs'
+// import dayjs from 'dayjs'
+import { mapState } from 'vuex';
 export default {
   name: 'NoticeUpdate',
   data : function() {
-    const index = this.$route.params.id
+    // const index = this.$route.params.id
     return {
-      id: index,
-      user : this.$store.state.user.user_id,
-      title: this.$store.state.admin_post[index].title,
-      content: this.$store.state.admin_post[index].content,
-      created_at: dayjs().format("YY.MM.DD"),
+      index : this.$route.params.id,
+      // user : this.$store.state.user.user_id,
+      title: null,
+      content: null,
+      // created_at: this.$store.state.admin_post[this.index].created_at,
     }
+  },
+  computed: {
+    ...mapState(["admin_post", "user"]),
+    post: function () {
+      return this.admin_post.find(post => post.id === this.index)
+    } 
+  },
+  created: function () {
+    this.title = this.post.title;
+    this.content = this.post.content;
   },
   methods: {
     updateNotice: function () {
-      // console.log(this.id)
       const noticeData = {
-        user: this.user,
+        id : this.index,
+        user: this.user.user_id,
         title: this.title,
         content: this.content,
-        created_at: this.created_at,
-        index : this.id,
+        created_at: this.post.created_at,
       }
       this.$store.dispatch("updateNotice", noticeData),
       this.$router.push({

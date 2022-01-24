@@ -24,6 +24,7 @@
         v-model="content"
         cols="30" rows="10"
         placeholder="공지사항을 입력하세요."
+        required
       ></textarea>
     </div>
   </div>
@@ -35,6 +36,7 @@ export default {
   name: 'NoticeCreate',
   data : function() {
     return {
+      // id : 
       user : this.$store.state.user.user_id,
       title: null,
       content: null,

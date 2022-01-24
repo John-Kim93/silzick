@@ -5,8 +5,11 @@
       <b-button @click="moveToNotice" variant="outline-light">공지사항</b-button>
       <b-button class="mx-3" @click="moveToRequest" variant="outline-light">건의사항</b-button>
     </div>
+    <div class="location3">
+      <b-button @click="create" variant="outline-light">건의하기</b-button>
+    </div>
     <div class="container location">
-      <table class="table table-hover my-3" :per-page="perPage" :current-page="currentPage">
+      <table class="table table-hover my-3">
         <thead class="white">
           <tr>
             <td>번호</td>
@@ -25,8 +28,14 @@
         </tbody>
       </table>
     </div>
-    <div class="location3">
-      <b-button @click="create" variant="outline-light">건의하기</b-button>
+    <div class="btn-cover location4 d-flex">
+      <b-button :disabled="pageNum === 0" @click="prevPage" class="page-btn btn-sm" variant="outline-light">
+        이전
+      </b-button>
+      <span class="page-count white mx-3 mt-1">{{ pageNum + 1 }} / {{ pageCount }} 페이지</span>
+      <b-button :disabled="pageNum >= pageCount - 1" @click="nextPage" class="page-btn btn-sm" variant="outline-light">
+        다음
+      </b-button>
     </div>
   </div>
 </template>
@@ -36,6 +45,8 @@ export default {
   name : 'Request',
   data : function() {
     return {
+      pageNum: 0,
+      pageSize: 10,
       isLogin: this.$store.state.isLogin,
       user_post : this.$store.state.user_post,
       user : this.$store.state.user,
