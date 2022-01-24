@@ -42,7 +42,7 @@
     <button :disabled="pageNum >= pageCount - 1" @click="nextPage" class="page-btn">
       다음
     </button>
-    </div> -->
+    s</div> -->
 
   </div>
 </template>

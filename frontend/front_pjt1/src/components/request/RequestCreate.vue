@@ -1,6 +1,15 @@
 <template>
   <div>
     <img src="https://ifh.cc/g/7ruaO5.png" id="bg" alt="bgImg">
+    <div>
+      <b-button
+        @click="create"
+        variant="outline-light"
+        class="d-flex location3"
+        style="margin-left:auto"
+      >건의하기
+      </b-button>
+    </div>
     <div class="container location" style="width:70%">
       <input
         style="background-color:black"
@@ -17,14 +26,6 @@
         cols="30" rows="10"
         placeholder="건의사항을 입력하세요."
       ></textarea>
-      <div>
-        <b-button
-          @click="create"
-          variant="outline-light"
-          class="d-flex"
-          style="margin-left:auto"
-        >건의하기</b-button>
-      </div>
     </div>
   </div>
 </template>

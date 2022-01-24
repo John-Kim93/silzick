@@ -1,6 +1,14 @@
 <template>
   <div>
     <img src="https://ifh.cc/g/7ruaO5.png" id="bg" alt="bgImg">
+    <div>
+      <b-button
+        @click="create"
+        variant="outline-light"
+        class="d-flex location3"
+        style="margin-left:auto"
+      >공지하기</b-button>
+    </div>
     <div class="container location" style="width:70%">
       <input
         style="background-color:black"
@@ -11,20 +19,12 @@
       >
       <textarea
         style="background-color:black"
-        class="form-control my-3 enter"
+        class="form-control my-3 notes"
         type="text"
         v-model="content"
         cols="30" rows="10"
         placeholder="공지사항을 입력하세요."
       ></textarea>
-      <div>
-        <b-button
-          @click="create"
-          variant="outline-light"
-          class="d-flex"
-          style="margin-left:auto"
-        >공지하기</b-button>
-      </div>
     </div>
   </div>
 </template>
@@ -88,9 +88,9 @@ export default {
   /* .notes {
     background-attachment: local;
     background-image:
-      linear-gradient(to right, white 10px, transparent 10px),
-      linear-gradient(to left, white 10px, transparent 10px),
-      repeating-linear-gradient(white, white 30px, #ccc 30px, #ccc 31px, white 31px);
+      linear-gradient(to right, black 10px, transparent 10px),
+      linear-gradient(to left, black 10px, transparent 10px),
+      repeating-linear-gradient(black, black 30px, white 30px, white 31px, white 31px);
     line-height: auto;
     padding: 8px 10px;
   } */
