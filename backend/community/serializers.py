@@ -18,4 +18,4 @@ class RequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Request
-        fields = ('id', 'title', 'content', 'created_at', 'updated_at', 'user_id',)
+        fields = ('title', 'content',)
