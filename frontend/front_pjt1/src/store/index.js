@@ -44,9 +44,9 @@ export default new Vuex.Store({
         created_at : '22.01.23',
       },
     ],
-    isLogin: true,
+    isLogin: false,
     user: {
-      user_name: '윤종목',
+      user_name: null,
     },
     user_post : [
       {
@@ -113,6 +113,10 @@ export default new Vuex.Store({
     LOGIN: function (state, res) {
       const jwt_info = VueJwtDecode.decode(res.data.token)
       state.user.user_name = jwt_info.username
+      state.isLogin = true
+    },
+    LOGOUT: function (state) {
+      state.isLogin = false
     }
   },
   actions: {
@@ -145,12 +149,18 @@ export default new Vuex.Store({
         data: res.data,
       })
         .then(res => {
+          localStorage.setItem('jwt',res.data.token)
           commit('LOGIN', res)
         })
         .then(()=> router.push('/'))
         .catch(err => {
           console.log(err)
         })
+    },
+    logOut: function ({commit}){
+      commit('LOGOUT')
+      localStorage.removeItem('jwt')
+      router.go(router.currentRoute)
     },
   },
   modules: {
