@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import createPersistedState from "vuex-persistedstate"
+import axios from 'axios'
+import VueJwtDecode from 'vue-jwt-decode'
+import router from '../router'
 
 Vue.use(Vuex)
 
@@ -41,10 +44,9 @@ export default new Vuex.Store({
         created_at : '22.01.23',
       },
     ],
-    isLogin: true,
+    isLogin: false,
     user: {
-      user_id: 'ssafy',
-      user_name: '윤종목',
+      user_name: null,
     },
     user_post : [
       {
@@ -108,6 +110,14 @@ export default new Vuex.Store({
       // })
       state.user_post[requestId] = res
     },
+    LOGIN: function (state, res) {
+      const jwt_info = VueJwtDecode.decode(res.data.token)
+      state.user.user_name = jwt_info.username
+      state.isLogin = true
+    },
+    LOGOUT: function (state) {
+      state.isLogin = false
+    }
   },
   actions: {
     createNotice: function ({commit}, res) {
@@ -131,6 +141,26 @@ export default new Vuex.Store({
     },
     updateRequest: function ({commit}, res) {
       commit('UPDATE_REQUEST', res)
+    },
+    logIn: function ({commit}, res){
+      axios({
+        method: 'post',
+        url: 'http://127.0.0.1:8000/accounts/api-token-auth/',
+        data: res.data,
+      })
+        .then(res => {
+          localStorage.setItem('jwt',res.data.token)
+          commit('LOGIN', res)
+        })
+        .then(()=> router.push('/'))
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    logOut: function ({commit}){
+      commit('LOGOUT')
+      localStorage.removeItem('jwt')
+      router.go(router.currentRoute)
     },
   },
   modules: {

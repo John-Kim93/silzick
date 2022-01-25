@@ -38,7 +38,7 @@ export default {
     return {
       isLogin : this.$store.state.isLogin
     }
-  }
+  },
 }
 </script>
 

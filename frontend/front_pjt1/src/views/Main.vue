@@ -7,7 +7,6 @@
     <router-link to="/Signup" v-if="!isLogin">
       <b-button class="btn-2nd-position" variant="outline-light">회원가입</b-button>
     </router-link>
-    
     <b-button
       v-if="isLogin"
       class="btn-1st-position"
@@ -18,19 +17,24 @@
       v-if="isLogin"
       class="btn-2nd-position"
       variant="outline-light"
+      @click='logOut'
     > 로그아웃
     </b-button>
   </div>
 </template>
 
 <script>
+import {mapActions} from 'vuex'
 export default {
   name: 'Main',
   data: function () {
     return {
       isLogin : this.$store.state.isLogin
     }
-  }
+  },
+  methods: {
+    ...mapActions(['logOut'])
+  },
 }
 </script>
 
