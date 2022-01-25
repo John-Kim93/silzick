@@ -95,8 +95,12 @@ export default new Vuex.Store({
     },
     DELETE_NOTICE: function (state, res) {
       // const index = state.user_post[res]
-      // console.log(index)
-      state.admin_post.splice(res, 1)
+      // console.log(res)
+      state.admin_post.forEach(function (post, index) {
+        if (post.id == res) {
+          state.admin_post.splice(index, 1)
+        }
+      })
     },
     UPDATE_NOTICE: function (state, res) {
       // console.log(res)
@@ -111,17 +115,18 @@ export default new Vuex.Store({
       state.user_post.push(res)
     },
     DELETE_REQUEST: function (state, res) {
-      // const index = state.user_post[res]
-      // console.log(index)
-      state.user_post.splice(res, 1)
+      state.user_post.forEach(function (post, index) {
+        if (post.id == res) {
+          state.user_post.splice(index, 1)
+        }
+      })
     },
     UPDATE_REQUEST: function (state, res) {
-      // console.log(res)
-      const requestId = res.index
-      // const index = state.user_post.findIndex(res => {
-      //   return res.index === requestId
-      // })
-      state.user_post[requestId] = res
+      state.user_post.forEach(function (post, index) {
+        if (post.id == res.id) {
+          state.user_post[index] = res
+        }
+      })
     },
     LOGOUT : function (state) {
       state.isLogin = false

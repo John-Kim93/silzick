@@ -10,17 +10,17 @@
       </router-link>
       <b-button @click="deleteRequest" variant="outline-danger" class="d-inline" style="margin-left:auto">삭제</b-button>
     </div>
-    <div class="container location" style="width:100%; color:white; text-align:left">
+    <div class="container location" style="width:70%; color:white; text-align:left">
       <!-- <hr>
       <h5>{{ user_post.user }}</h5> -->
       <hr>
-      <h5>{{ user_post.created_at }}</h5>
+      <h5>{{ post.created_at }}</h5>
       <hr>
-      <h5>{{ user_post.title }}</h5>
+      <h5>{{ post.title }}</h5>
       <hr>
-      <p class="enter">{{ user_post.content }}</p>
+      <p class="enter">{{ post.content }}</p>
       <hr>
-      <div class="d-flex justify-content-center">
+      <div class="d-flex justify-content-center location5">
         <router-link :to="{name:'Request'}">
           <b-button variant="outline-light">목록으로</b-button>
         </router-link>
@@ -30,15 +30,31 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'RequestDetail',
+  // data: function () {
+  //   const index = this.$route.params.id
+  //   const user_posts = this.$store.state.user_post
+  //   return {
+  //     user_post : user_posts[index],
+  //     index: index,
+  //   }
+  // },
   data: function () {
-    const index = this.$route.params.id
-    const user_posts = this.$store.state.user_post
     return {
-      user_post : user_posts[index],
-      index: index,
+      index: this.$route.params.id
     }
+  },
+  computed: {
+    ...mapState(["user_post"]),
+    post: function () {
+      return this.user_post.find(post => post.id === this.index)
+    }
+  },
+  created: function () {
+
   },
   methods: {
     deleteRequest: function () {
@@ -57,9 +73,9 @@ export default {
     top: 20%;
     left: 16%
   }
-  /* .location3 {
+  .location5 {
     position: fixed;
-    top: 20%;
-    right: 16%
-  } */
+    top: 85%;
+    left: 47%
+  }
 </style>

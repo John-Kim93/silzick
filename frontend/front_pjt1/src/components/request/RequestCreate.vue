@@ -14,6 +14,12 @@
       <input
         style="background-color:black"
         class="form-control"
+        type="number"
+        v-model="id"
+        placeholder="id를 입력하세요">
+      <input
+        style="background-color:black"
+        class="form-control"
         type="text"
         v-model="title"
         placeholder="제목을 입력하세요."
@@ -36,6 +42,7 @@ export default {
   name: 'RequestCreate',
   data : function() {
     return {
+      id : null,
       user : this.$store.state.user.user_id,
       title: null,
       content: null,
@@ -45,6 +52,7 @@ export default {
   methods: {
     create: function () {
       const requestData = {
+        id : this.id,
         user: this.user,
         title: this.title,
         content: this.content,

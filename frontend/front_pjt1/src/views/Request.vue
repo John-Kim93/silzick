@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="d-flex justify-content-center">
     <img src="https://ifh.cc/g/7ruaO5.png" id="bg" alt="bgImg">
     <div class="d-flex location2">
       <b-button @click="moveToNotice" variant="outline-light">공지사항</b-button>
@@ -8,7 +8,7 @@
     <div class="location3">
       <b-button @click="create" variant="outline-light">건의하기</b-button>
     </div>
-    <div class="container location">
+    <div class="container location" style="width:70%">
       <table class="table table-hover my-3">
         <thead class="white">
           <tr>
@@ -19,8 +19,8 @@
           </tr>
         </thead>
         <tbody class="white">
-          <tr :key="index" v-for="(post, index) in user_post" @click="detail(index)">
-            <td>{{ index + 1 }}</td>
+          <tr :key="index" v-for="(post, index) in paginatedData" @click="detail(post.id)">
+            <td>{{ index + 1 + ( pageNum * 10 ) }}</td>
             <td>{{ post.user }}</td>
             <td>{{ post.title }}</td>
             <td>{{ post.created_at }}</td>
@@ -73,6 +73,25 @@ export default {
       this.$router.push({
         name: 'Request'
       })
+    },
+    nextPage () {
+      this.pageNum += 1
+    },
+    prevPage () {
+      this.pageNum -= 1
+    }
+  },
+  computed: {
+    pageCount () {
+      let listLength = this.user_post.length,
+        listSize = this.pageSize,
+        page = Math.floor(listLength / listSize ) + 1
+        return page
+    },
+    paginatedData () {
+      const start = this.pageNum * this.pageSize,
+      end = start + (this.pageSize);
+      return this.user_post.slice(start, end)
     }
   },
   created: function () {
@@ -85,13 +104,13 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
   .location {
     position: fixed;
-    top: 50%;
+    top: 63%;
     left: 50%;
-    transform: translate(-50%, -50%);
     width: 70%;
+    height: 70%;
   }
   .table-hover thead tr:hover th, .table-hover tbody tr:hover td {
     background-color: white;
@@ -103,5 +122,9 @@ export default {
     position: fixed;
     top: 20%;
     left: 16%
+  }
+  .location4 {
+    position: fixed;
+    top: 85%;
   }
 </style>

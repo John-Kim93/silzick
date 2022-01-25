@@ -11,7 +11,7 @@
       <b-button @click="deleteNotice" variant="outline-danger" class="d-inline" style="margin-left:auto">삭제</b-button>
     </div>
     <div class="container location" style="width:70%; color:white; text-align:left">
-      <!-- <p>작성자 : {{ admin_post.user }}</p> -->
+      <!-- <p>d : {{ post.id }}</p> -->
       <hr>
       <h5>{{ post.created_at }}</h5>
       <hr>
@@ -19,7 +19,7 @@
       <hr>
       <p class="enter">{{ post.content }}</p>
       <hr>
-      <div class="d-flex justify-content-center">
+      <div class="d-flex justify-content-center location5">
         <router-link :to="{name:'Notice'}">
           <b-button variant="outline-light">목록으로</b-button>
         </router-link>
@@ -55,10 +55,11 @@ export default {
     }
   },
   created: function () {
-      console.log(this.index)
+      // console.log(this.index)
     },
   methods: {
     deleteNotice: function () {
+      // console.log(this.index)
       this.$store.dispatch('deleteNotice', this.index)
       this.$router.push({
         name: 'Notice',

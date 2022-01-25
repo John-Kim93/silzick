@@ -8,7 +8,7 @@
     <div class="location3">
       <b-button @click="create" variant="outline-light">공지작성</b-button>
     </div>
-    <div class="container location">
+    <div class="container location" style="width:70%">
       <table class="table table-hover my-3">
         <thead class="white">
           <tr>
@@ -104,13 +104,12 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
   .location {
     position: fixed;
     top: 63%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    width: 70%;
+    width: 30%;
     height: 70%;
   }
   .table-hover thead tr:hover th, .table-hover tbody tr:hover td {
