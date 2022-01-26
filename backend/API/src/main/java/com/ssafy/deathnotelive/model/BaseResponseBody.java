@@ -1,4 +1,4 @@
-package com.ssafy.deathnotelive.common.model;
+package com.ssafy.deathnotelive.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

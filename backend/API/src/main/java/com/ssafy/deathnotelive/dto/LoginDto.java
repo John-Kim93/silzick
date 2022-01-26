@@ -1,6 +1,6 @@
 package com.ssafy.deathnotelive.dto;
 
-import com.ssafy.deathnotelive.common.model.BaseResponseBody;
+import com.ssafy.deathnotelive.model.BaseResponseBody;
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;

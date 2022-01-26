@@ -2,12 +2,10 @@ package com.ssafy.deathnotelive.config;
 
 import com.ssafy.deathnotelive.config.jwt.JwtAuthenticationFilter;
 import com.ssafy.deathnotelive.config.jwt.JwtAuthorizationFilter;
-import com.ssafy.deathnotelive.config.jwt.JwtProperties;
 import com.ssafy.deathnotelive.entity.User;
 import com.ssafy.deathnotelive.repository.UserRepository;
 import com.ssafy.deathnotelive.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,7 +19,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * Security 설정 Config
@@ -83,7 +80,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public UserDetailsService userDetailsService() {
         return userId -> {
-            User user = userService.findByUseId(userId);
+            User user = userService.getByUserId(userId);
             if (user == null) {
                 throw new UsernameNotFoundException(userId);
             }
