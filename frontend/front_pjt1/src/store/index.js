@@ -23,8 +23,6 @@ export default new Vuex.Store({
       state.admin_post.push(res)
     },
     DELETE_NOTICE: function (state, res) {
-      // const index = state.user_post[res]
-      // console.log(res)
       state.admin_post.forEach(function (post, index) {
         if (post.id == res) {
           state.admin_post.splice(index, 1)
@@ -32,13 +30,15 @@ export default new Vuex.Store({
       })
     },
     UPDATE_NOTICE: function (state, res) {
-      // console.log(res)
       state.admin_post.forEach(function (post, index) {
         if (post.id == res.id) {
           state.admin_post[index] = res
         }
       })
 
+    },
+    GET_REQUESTS: function (state, res) {
+      state.user_post = res
     },
     CREATE_REQUEST: function (state, res) {
       state.user_post.push(res)
@@ -59,7 +59,6 @@ export default new Vuex.Store({
     },
     LOGIN: function (state, res) {
       const jwt_info = VueJwtDecode.decode(res.data.token)
-      // console.log(jwt_info)
       state.isLogin = true
       state.user = jwt_info
       state.token = res.data.token
@@ -73,8 +72,8 @@ export default new Vuex.Store({
       axios({
         method: 'post',
         url: 'http://127.0.0.1:8000/community/notice/',
-        data: res.data,
-        headers: this.getters.setToken
+        data: res,
+        headers: this.getters.setToken,
       })
         .then(res => {
           console.log(res)
@@ -82,34 +81,43 @@ export default new Vuex.Store({
         .catch(err => {
           console.log(err)
         })
-      // commit('CREATE_REQUEST', res)
       commit('CREATE_NOTICE', res)
     },
     deleteNotice: function({commit}, res) {
-      // console.log('delete')
       commit('DELETE_NOTICE', res)
     },
     updateNotice: function ({commit}, res) {
       commit('UPDATE_NOTICE', res)
     },
-    createRequest: function ({commit}, res) {
-      // console.log(res)
+    getRequests: function ({commit}) {
       axios({
-        method: 'post',
+        method: 'get',
         url: 'http://127.0.0.1:8000/community/request/',
-        data: res.data,
         headers: this.getters.setToken
       })
         .then(res => {
-          console.log(res)
+          commit('GET_REQUESTS', res.data)
         })
         .catch(err => {
           console.log(err)
         })
-      commit('CREATE_REQUEST', res)
+      },
+    createRequest: function ({commit}, res) {
+      axios({
+        method: 'post',
+        url: 'http://127.0.0.1:8000/community/request/',
+        data: res,
+        headers: this.getters.setToken
+      })
+        .then(res => {
+          commit('CREATE_REQUEST', res)
+          router.push({name:'RequestDetail', params: {id:`${res.data.id}`}})
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
     deleteRequest: function({commit}, res) {
-      // console.log('delete')
       commit('DELETE_REQUEST', res)
     },
     updateRequest: function ({commit}, res) {
@@ -139,7 +147,7 @@ export default new Vuex.Store({
   getters: {
     setToken: function (state) {
       const config = {
-        Authorization : `JWT  ${state.token}`
+        Authorization : `JWT ${state.token}`
       }
       return config
     }

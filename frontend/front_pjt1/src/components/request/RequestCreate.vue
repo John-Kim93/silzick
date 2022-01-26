@@ -37,6 +37,7 @@ export default {
     return {
       title: null,
       content: null,
+      // user_id: null,
     }
   },
   methods: {
@@ -44,6 +45,7 @@ export default {
       const requestData = {
         title: this.title,
         content: this.content,
+        // user_id: this.$store.state.user.user_id,
       }
       this.$store.dispatch("createRequest", requestData),
       this.$router.push({
