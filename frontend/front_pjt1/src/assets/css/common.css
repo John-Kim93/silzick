@@ -6,3 +6,7 @@
         height: 100%;
         z-index: -2;
     }
+
+#black-font {
+    color: black;
+}

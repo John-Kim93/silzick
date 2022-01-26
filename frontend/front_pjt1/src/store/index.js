@@ -12,84 +12,11 @@ export default new Vuex.Store({
     createPersistedState(),
   ],
   state: {
-    admin_post : [
-      {
-        id : 0,
-        user : 'admin',
-        title : 'test1_admin_title',
-        content : 'test1_admin_content',
-        created_at : '22.01.19',
-      },
-      {
-        id : 1,
-        user : 'admin',
-        title : 'test2_admin_title',
-        content : 'test2_admin_content',
-        created_at : '22.01.20',
-      },
-      {
-        id : 2,
-        user : 'admin',
-        title : 'test3_admin_title',
-        content : 'test3_admin_content',
-        created_at : '22.01.21',
-      },
-      {
-        id : 3,
-        user : 'admin',
-        title : 'test4_admin_title',
-        content : 'test4_admin_content',
-        created_at : '22.01.22',
-      },
-      {
-        id : 4,
-        user : 'admin',
-        title : 'test5_admin_title',
-        content : 'test5_admin_content',
-        created_at : '22.01.23',
-      },
-    ],
+    admin_post : [],
     isLogin: false,
-    user: {
-      user_name: null,
-    },
-    user_post : [
-      {
-        id : 0,
-        user : 'A',
-        title : 'test1_user_title',
-        content : 'test1_user_content',
-        created_at : '22.01.19',
-      },
-      {
-        id : 1,
-        user : 'B',
-        title : 'test2_user_title',
-        content : 'test2_user_content',
-        created_at : '22.01.20',
-      },
-      {
-        id : 2,
-        user : 'C',
-        title : 'test3_user_title',
-        content : 'test3_user_content',
-        created_at : '22.01.21',
-      },
-      {
-        id : 3,
-        user : 'D',
-        title : 'test4_user_title',
-        content : 'test4_user_content',
-        created_at : '22.01.22',
-      },
-      {
-        id : 4,
-        user : 'E',
-        title : 'test5_user_title',
-        content : 'test5_user_content',
-        created_at : '22.01.23',
-      },
-    ],
+    user: null,
+    user_post : [],
+    token: null,
   },
   mutations: {
     CREATE_NOTICE: function (state, res) {
@@ -132,8 +59,10 @@ export default new Vuex.Store({
     },
     LOGIN: function (state, res) {
       const jwt_info = VueJwtDecode.decode(res.data.token)
-      state.user.user_name = jwt_info.username
+      // console.log(jwt_info)
       state.isLogin = true
+      state.user = jwt_info
+      state.token = res.data.token
     },
     LOGOUT: function (state) {
       state.isLogin = false
@@ -141,7 +70,19 @@ export default new Vuex.Store({
   },
   actions: {
     createNotice: function ({commit}, res) {
-      // console.log(res)
+      axios({
+        method: 'post',
+        url: 'http://127.0.0.1:8000/community/notice/',
+        data: res.data,
+        headers: this.getters.setToken
+      })
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      // commit('CREATE_REQUEST', res)
       commit('CREATE_NOTICE', res)
     },
     deleteNotice: function({commit}, res) {
@@ -153,6 +94,18 @@ export default new Vuex.Store({
     },
     createRequest: function ({commit}, res) {
       // console.log(res)
+      axios({
+        method: 'post',
+        url: 'http://127.0.0.1:8000/community/request/',
+        data: res.data,
+        headers: this.getters.setToken
+      })
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          console.log(err)
+        })
       commit('CREATE_REQUEST', res)
     },
     deleteRequest: function({commit}, res) {
@@ -182,6 +135,14 @@ export default new Vuex.Store({
       localStorage.removeItem('jwt')
       router.go(router.currentRoute)
     },
+  },
+  getters: {
+    setToken: function (state) {
+      const config = {
+        Authorization : `JWT  ${state.token}`
+      }
+      return config
+    }
   },
   modules: {
   }

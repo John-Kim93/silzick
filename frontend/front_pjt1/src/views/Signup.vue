@@ -11,6 +11,7 @@
         <div>
           <label class="d-flex align-items-start mx-2">Username</label>
           <input
+            id="black-font"
             type="text"
             class="form-control form-control-lg mb-3"
             placeholder="ID"

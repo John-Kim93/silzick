@@ -38,11 +38,17 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
+
 export default {
   data: function () {
     return {
+
     }
   },
+  computed: {
+    ...mapState(['isLogin']),
+  }
 }
 </script>
 
