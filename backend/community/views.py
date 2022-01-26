@@ -10,6 +10,7 @@ from .models import Request, Notice
 
 @api_view(['GET', 'POST'])
 def request_create(request):
+    print(request)
     if request.method == 'GET':
         requests = Request.objects.all()
         serializer = RequestSerializer(requests, many=True)
@@ -17,7 +18,9 @@ def request_create(request):
 
     elif request.method == 'POST':
         serializer = RequestSerializer(data=request.data)
+        # print('1')
         if serializer.is_valid(raise_exception=True):
+            # print('2')
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 

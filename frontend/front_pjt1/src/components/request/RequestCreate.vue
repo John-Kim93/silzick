@@ -14,12 +14,6 @@
       <input
         style="background-color:black"
         class="form-control"
-        type="number"
-        v-model="id"
-        placeholder="id를 입력하세요">
-      <input
-        style="background-color:black"
-        class="form-control"
         type="text"
         v-model="title"
         placeholder="제목을 입력하세요."
@@ -37,26 +31,19 @@
 </template>
 
 <script>
-import dayjs from 'dayjs'
 export default {
   name: 'RequestCreate',
   data : function() {
     return {
-      id : null,
-      user : this.$store.state.user.user_id,
       title: null,
       content: null,
-      created_at: dayjs().format("YY.MM.DD"),
     }
   },
   methods: {
     create: function () {
       const requestData = {
-        id : this.id,
-        user: this.user,
         title: this.title,
         content: this.content,
-        created_at: this.created_at,
       }
       this.$store.dispatch("createRequest", requestData),
       this.$router.push({
@@ -67,7 +54,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .location {
     position: fixed;
     top: 60%;

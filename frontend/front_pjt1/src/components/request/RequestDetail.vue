@@ -67,7 +67,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .location2 {
     position: fixed;
     top: 20%;
