@@ -1,16 +1,15 @@
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 
 from django.shortcuts import get_object_or_404
 
+from django.contrib.auth import get_user_model
 from .serializers import RequestSerializer, NoticeSerializer
 from .models import Request, Notice
 
-
 @api_view(['GET', 'POST'])
 def request_create(request):
-    print(request)
     if request.method == 'GET':
         requests = Request.objects.all()
         serializer = RequestSerializer(requests, many=True)
@@ -18,10 +17,9 @@ def request_create(request):
 
     elif request.method == 'POST':
         serializer = RequestSerializer(data=request.data)
-        # print('1')
         if serializer.is_valid(raise_exception=True):
-            # print('2')
-            serializer.save()
+            user = get_object_or_404(get_user_model(), username=request.user)
+            serializer.save(user=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(['PUT', 'DELETE'])
@@ -48,9 +46,9 @@ def notice_create(request):
     elif request.method == 'POST':
         serializer = NoticeSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            user = get_object_or_404(get_user_model(), username=request.user)
+            serializer.save(user=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 
 @api_view(['PUT', 'DELETE'])
 def notice_update_delete(request, notice_pk):

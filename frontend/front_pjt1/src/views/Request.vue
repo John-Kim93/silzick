@@ -21,9 +21,9 @@
         <tbody class="white">
           <tr :key="index" v-for="(post, index) in paginatedData" @click="detail(post.id)">
             <td>{{ index + 1 + ( pageNum * 10 ) }}</td>
-            <td>{{ post.user }}</td>
+            <td>{{ post.user.username }}</td>
             <td>{{ post.title }}</td>
-            <td>{{ post.created_at }}</td>
+            <td>{{ post.created_at.slice(0,10) }}</td>
           </tr>
         </tbody>
       </table>
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
 export default {
   name : 'Request',
   data : function() {
@@ -48,7 +49,6 @@ export default {
       pageNum: 0,
       pageSize: 10,
       isLogin: this.$store.state.isLogin,
-      user_post : this.$store.state.user_post,
       user : this.$store.state.user,
     }
   },
@@ -81,7 +81,18 @@ export default {
       this.pageNum -= 1
     }
   },
+  created: function () {
+    console.log(this.user_post)
+    if (this.isLogin === false) {
+      this.$router.push({
+        name: 'Main'
+      }) 
+    } else {
+      this.$store.dispatch('getRequests')
+    }
+  },
   computed: {
+    ...mapState(['user_post']),
     pageCount () {
       let listLength = this.user_post.length,
         listSize = this.pageSize,
@@ -94,13 +105,6 @@ export default {
       return this.user_post.slice(start, end)
     }
   },
-  created: function () {
-    if (this.isLogin === false) {
-      this.$router.push({
-        name: 'Main'
-      })
-    }
-  }
 }
 </script>
 
