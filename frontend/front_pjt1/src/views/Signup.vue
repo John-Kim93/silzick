@@ -11,6 +11,7 @@
         <div>
           <label class="d-flex align-items-start mx-2">Username</label>
           <input
+            id="black-font"
             type="text"
             class="form-control form-control-lg mb-3"
             placeholder="ID"
@@ -32,7 +33,7 @@
             type="password"
             class="form-control form-control-lg mb-3"
             placeholder="PW"
-            v-model="credentials.confirm_password"
+            v-model="credentials.passwordConfirmation"
           >
         </div>
         <div class="form-group">
@@ -44,7 +45,7 @@
             v-model="credentials.email"
           >
         </div>
-        <router-link class="w-100 btn btn-lg btn-secondary" type="submit" to="/">Sign Up</router-link>
+        <button class="w-100 btn btn-lg btn-secondary" @click="signUp">Sign Up</button>
       </div>
     </div>  
   </main>
@@ -66,7 +67,7 @@ export default {
       credentials: {
         username: null,
         password: null,
-        confirm_password: null,
+        passwordConfirmation: null,
         email: null,
       }
     }
@@ -77,6 +78,20 @@ export default {
     }
   },
   methods: {
+    signUp : function() {
+      this.$axios({
+        method: 'post',
+        url: 'http://127.0.0.1:8000/accounts/signup/',
+        data: this.credentials
+      })
+        .then(res => {
+          console.log(res)
+          this.$router.push('/Login')
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
 
   }
 }

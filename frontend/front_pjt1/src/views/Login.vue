@@ -11,6 +11,7 @@
         <div>
           <label class="d-flex align-items-start mx-2">Username</label>
           <input
+            id="black-font"
             type="text"
             class="form-control form-control-lg mb-4"
             placeholder="ID"
@@ -32,7 +33,7 @@
             <p class="my-1">Remember me</p>
           </label>
         </div>
-        <router-link class="w-100 btn btn-lg btn-secondary" type="submit" to="/">Log In</router-link>
+        <button class="w-100 btn btn-lg btn-secondary" @click=logIn({data:credentials})>Log In</button>
         <router-link to="/FindID">아이디 찾기 / </router-link>
         <router-link to="/FindPW">비밀번호 찾기</router-link>
       </div>
@@ -41,6 +42,7 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex'
 export default {
   name: 'login',
   computed: {
@@ -65,7 +67,7 @@ export default {
     }
   },
   methods: {
-
+    ...mapActions(['logIn'])
   }
 }
 </script>

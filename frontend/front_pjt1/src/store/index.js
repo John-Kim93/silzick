@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import createPersistedState from "vuex-persistedstate"
+import axios from 'axios'
+import VueJwtDecode from 'vue-jwt-decode'
+import router from '../router'
 
 Vue.use(Vuex)
 
@@ -9,129 +12,145 @@ export default new Vuex.Store({
     createPersistedState(),
   ],
   state: {
-    admin_post : [
-      {
-        user : 'admin',
-        title : 'test1_admin_title',
-        content : 'test1_admin_content',
-        created_at : '22.01.19',
-      },
-      {
-        user : 'admin',
-        title : 'test2_admin_title',
-        content : 'test2_admin_content',
-        created_at : '22.01.20',
-      },
-      {
-        user : 'admin',
-        title : 'test3_admin_title',
-        content : 'test3_admin_content',
-        created_at : '22.01.21',
-      },
-      {
-        user : 'admin',
-        title : 'test4_admin_title',
-        content : 'test4_admin_content',
-        created_at : '22.01.22',
-      },
-      {
-        user : 'admin',
-        title : 'test5_admin_title',
-        content : 'test5_admin_content',
-        created_at : '22.01.23',
-      },
-    ],
-    isLogin: true,
-    user: {
-      user_id: 'ssafy',
-      user_name: '윤종목',
-    },
-    user_post : [
-      {
-        user : 'A',
-        title : 'test1_user_title',
-        content : 'test1_user_content',
-        created_at : '22.01.19',
-      },
-      {
-        user : 'B',
-        title : 'test2_user_title',
-        content : 'test2_user_content',
-        created_at : '22.01.20',
-      },
-      {
-        user : 'C',
-        title : 'test3_user_title',
-        content : 'test3_user_content',
-        created_at : '22.01.21',
-      },
-      {
-        user : 'D',
-        title : 'test4_user_title',
-        content : 'test4_user_content',
-        created_at : '22.01.22',
-      },
-      {
-        user : 'E',
-        title : 'test5_user_title',
-        content : 'test5_user_content',
-        created_at : '22.01.23',
-      },
-    ],
+    admin_post : [],
+    isLogin: false,
+    user: null,
+    user_post : [],
+    token: null,
   },
   mutations: {
     CREATE_NOTICE: function (state, res) {
       state.admin_post.push(res)
     },
     DELETE_NOTICE: function (state, res) {
-      // const index = state.user_post[res]
-      // console.log(index)
-      state.admin_post.splice(res, 1)
+      state.admin_post.forEach(function (post, index) {
+        if (post.id == res) {
+          state.admin_post.splice(index, 1)
+        }
+      })
     },
     UPDATE_NOTICE: function (state, res) {
-      const noticeId = res.index
-      state.admin_post[noticeId] = res
+      state.admin_post.forEach(function (post, index) {
+        if (post.id == res.id) {
+          state.admin_post[index] = res
+        }
+      })
+
+    },
+    GET_REQUESTS: function (state, res) {
+      state.user_post = res
     },
     CREATE_REQUEST: function (state, res) {
       state.user_post.push(res)
     },
     DELETE_REQUEST: function (state, res) {
-      // const index = state.user_post[res]
-      // console.log(index)
-      state.user_post.splice(res, 1)
+      state.user_post.forEach(function (post, index) {
+        if (post.id == res) {
+          state.user_post.splice(index, 1)
+        }
+      })
     },
     UPDATE_REQUEST: function (state, res) {
-      // console.log(res)
-      const requestId = res.index
-      // const index = state.user_post.findIndex(res => {
-      //   return res.index === requestId
-      // })
-      state.user_post[requestId] = res
+      state.user_post.forEach(function (post, index) {
+        if (post.id == res.id) {
+          state.user_post[index] = res
+        }
+      })
     },
+    LOGIN: function (state, res) {
+      const jwt_info = VueJwtDecode.decode(res.data.token)
+      state.isLogin = true
+      state.user = jwt_info
+      state.token = res.data.token
+    },
+    LOGOUT: function (state) {
+      state.isLogin = false
+    }
   },
   actions: {
     createNotice: function ({commit}, res) {
-      // console.log(res)
+      axios({
+        method: 'post',
+        url: 'http://127.0.0.1:8000/community/notice/',
+        data: res,
+        headers: this.getters.setToken,
+      })
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          console.log(err)
+        })
       commit('CREATE_NOTICE', res)
     },
     deleteNotice: function({commit}, res) {
-      // console.log('delete')
       commit('DELETE_NOTICE', res)
     },
     updateNotice: function ({commit}, res) {
       commit('UPDATE_NOTICE', res)
     },
+    getRequests: function ({commit}) {
+      axios({
+        method: 'get',
+        url: 'http://127.0.0.1:8000/community/request/',
+        headers: this.getters.setToken
+      })
+        .then(res => {
+          commit('GET_REQUESTS', res.data)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      },
     createRequest: function ({commit}, res) {
-      // console.log(res)
-      commit('CREATE_REQUEST', res)
+      axios({
+        method: 'post',
+        url: 'http://127.0.0.1:8000/community/request/',
+        data: res,
+        headers: this.getters.setToken
+      })
+        .then(res => {
+          commit('CREATE_REQUEST', res)
+          router.push({name:'RequestDetail', params: {id:`${res.data.id}`}})
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
     deleteRequest: function({commit}, res) {
-      // console.log('delete')
       commit('DELETE_REQUEST', res)
     },
     updateRequest: function ({commit}, res) {
       commit('UPDATE_REQUEST', res)
     },
+    logIn: function ({commit}, res){
+      axios({
+        method: 'post',
+        url: 'http://127.0.0.1:8000/accounts/api-token-auth/',
+        data: res.data,
+      })
+        .then(res => {
+          localStorage.setItem('jwt',res.data.token)
+          commit('LOGIN', res)
+        })
+        .then(()=> router.push('/'))
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    logOut: function ({commit}){
+      commit('LOGOUT')
+      localStorage.removeItem('jwt')
+      router.go(router.currentRoute)
+    },
+  },
+  getters: {
+    setToken: function (state) {
+      const config = {
+        Authorization : `JWT ${state.token}`
+      }
+      return config
+    }
   },
   modules: {
   }
