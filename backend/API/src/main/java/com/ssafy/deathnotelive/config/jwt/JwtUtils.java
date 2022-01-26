@@ -1,9 +1,9 @@
-package com.ssafy.deathnotelive.config.security;
+package com.ssafy.deathnotelive.config.jwt;
 
+import com.ssafy.deathnotelive.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
-import me.benny.practice.spring.security.user.User;
 import org.springframework.data.util.Pair;
 
 import java.security.Key;
@@ -16,8 +16,8 @@ public class JwtUtils {
      * @param token 토큰
      * @return username
      */
-    public static String getUsername(String token) {
-        // jwtToken에서 username을 찾습니다.
+    public static String getUserId(String token) {
+        // jwtToken에서 userId를 찾습니다.
         return Jwts.parserBuilder()
                 .setSigningKeyResolver(SigningKeyResolver.instance)
                 .build()
