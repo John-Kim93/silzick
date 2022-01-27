@@ -22,7 +22,7 @@ public class NoticeService {
     private final ModelMapper modelMapper;
 
     //공지사항 전체 검색
-    public List<NoticeDto.Notices> getAllNotice() {
+    public List<NoticeDto.Notices> getAllNotices() {
         List<Notice> notices = noticeRepository.findAll();
         List<NoticeDto.Notices> list = notices
                 .stream()
@@ -40,10 +40,10 @@ public class NoticeService {
     }
 
     //공지사항 상세조회
-    public NoticeDto.noticeDetail findNotice(Long noticeNo) {
+    public NoticeDto.NoticeDetail findNotice(Long noticeNo) {
         hitUp(noticeNo);
         Notice notice = noticeRepository.findById(noticeNo).orElseThrow(() -> new NoticeNotFoundException("EORROR"));
-        return NoticeDto.noticeDetail.builder()
+        return NoticeDto.NoticeDetail.builder()
                 .noticeNo(notice.getId())
                 .title(notice.getTitle())
                 .content(notice.getContent())

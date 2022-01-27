@@ -16,12 +16,14 @@ public enum ErrorCode {
     // User
     EMAIL_DUPLICATION(400, "M001", "Email is Duplication"),
     LOGIN_INPUT_INVALID(400, "M002", "Login input is invalid"),
-    USER_NOT_FOUND(400,"m003","The user can't be founded by condition"),
-    USERID_DUPLICATION(400,"m004","UserId is Duplication"),
+    USER_NOT_FOUND(400, "m003", "The user can't be found by condition"),
+    USERID_DUPLICATION(400, "m004", "UserId is Duplication"),
 
     // Notice
-    NOTICE_NOT_FOUND(400, "N001", "Notice can't be founded with noticeNo")
+    NOTICE_NOT_FOUND(400, "N001", "No notices were found for that noticeMo"),
 
+    // Board
+    BOARD_NOT_FOUND(400, "B001", "No boards were found for that boardMo"),
     ;
     private final String code;
     private final String message;

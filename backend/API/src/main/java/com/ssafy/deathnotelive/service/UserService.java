@@ -21,11 +21,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    /**
-     * 유저 등록
-     *
-     * @return 유저 권한을 가지고 있는 유저
-     */
+    //일반 유저 등록(관리자는 DB에서 직접 등록)
     public User signup(UserDto.UserRegist registerInfo) {
         String userId = registerInfo.getUserId();
         String password = registerInfo.getPassword();
@@ -44,7 +40,7 @@ public class UserService {
                 .build());
     }
 
-
+    //유저 아이디로 찾기
     public User getByUserId(String userId) {
         User user = userRepository.getByUserId(userId);
         if (user == null) throw new UserNotFoundException("Error");
@@ -53,6 +49,7 @@ public class UserService {
         }
     }
 
+    //로그인
     public String logIn(String userId, String password) {
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserNotFoundException("Error"));
         if (passwordEncoder.matches(password, user.getPassword())) {
@@ -61,6 +58,7 @@ public class UserService {
         throw new UserNotFoundException("Error");
     }
 
+    //유저 정보 가져오기
     public UserDto.UserInfo getUserInfo(String userId) {
         User user = userRepository.getByUserId(userId);
         return UserDto.UserInfo.builder()
@@ -69,6 +67,7 @@ public class UserService {
                 .build();
     }
 
+    //유저 정보 수정
     public void modifyUser(UserDto.ModifyUserInfo modifyUserInfo) {
         User user = userRepository.findByUserId(modifyUserInfo.getUserId()).orElseThrow(() -> new UserNotFoundException("EORROR"));
         user.setUserId(modifyUserInfo.getUserId());
@@ -76,6 +75,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    //회원 탈퇴
     public void deleteUser(String userId) {
         User user = userRepository.getByUserId(userId);
         userRepository.delete(user);
