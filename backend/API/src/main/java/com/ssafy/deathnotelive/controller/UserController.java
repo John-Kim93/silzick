@@ -34,7 +34,7 @@ public class UserController {
             @ApiResponse(code = 404, message = "사용자 없음"),
             @ApiResponse(code = 500, message = "서버 오류")
     })
-    public ResponseEntity login(
+    public ResponseEntity<String> login(
             @RequestBody @ApiParam(value = "로그인 정보", required = true) LoginDto.Request requestInfo, HttpServletResponse response) {
 
         String userId = requestInfo.getUserId();
@@ -44,7 +44,7 @@ public class UserController {
         cookie.setMaxAge(JwtProperties.EXPIRATION_TIME); // 쿠키의 만료시간 설정
         cookie.setPath("/");
         response.addCookie(cookie);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity("로그인에 성공했습니다.",HttpStatus.OK);
     }
 
     @PostMapping("signup")
