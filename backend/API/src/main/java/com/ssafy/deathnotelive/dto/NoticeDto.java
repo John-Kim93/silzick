@@ -34,7 +34,7 @@ public class NoticeDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class noticeDetail {
+    public static class NoticeDetail {
         @ApiModelProperty(name = "공지사항 번호")
         private Long noticeNo;
         @ApiModelProperty(name = "작성자")

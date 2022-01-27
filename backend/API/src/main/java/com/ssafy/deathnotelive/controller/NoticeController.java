@@ -46,8 +46,8 @@ public class NoticeController {
             @ApiResponse(code = 404, message = "사용자 없음"),
             @ApiResponse(code = 500, message = "서버 오류")
     })
-    public ResponseEntity<List<NoticeDto.Notices>> getAllNotice() {
-        List<NoticeDto.Notices> list = noticeService.getAllNotice();
+    public ResponseEntity<List<NoticeDto.Notices>> getAllNotices() {
+        List<NoticeDto.Notices> list = noticeService.getAllNotices();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -59,10 +59,10 @@ public class NoticeController {
             @ApiResponse(code = 404, message = "사용자 없음"),
             @ApiResponse(code = 500, message = "서버 오류")
     })
-    public ResponseEntity<NoticeDto.noticeDetail> getNoticeDetail(
+    public ResponseEntity<NoticeDto.NoticeDetail> getNoticeDetail(
             @PathVariable @ApiParam(value = "정보를 조회할 공지사항 번호", required = true) Long noticeNo
     ) {
-        NoticeDto.noticeDetail noticeDetail = noticeService.findNotice(noticeNo);
+        NoticeDto.NoticeDetail noticeDetail = noticeService.findNotice(noticeNo);
         return new ResponseEntity(noticeDetail, HttpStatus.OK);
     }
 
@@ -92,8 +92,6 @@ public class NoticeController {
     public ResponseEntity<List<NoticeDto.Notices>> deleteNotice(
             @PathVariable @ApiParam(value = "삭제할 공지사항 번호", required = true) Long noticeNo
     ) {
-        System.out.println(noticeNo);
-        System.out.println("여기까지 성공!");
         noticeService.deleteNotice(noticeNo);
         return new ResponseEntity("정상적으로 삭제되었습니다.", HttpStatus.OK);
     }
