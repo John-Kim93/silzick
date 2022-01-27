@@ -2,6 +2,7 @@ package com.ssafy.deathnotelive.config;
 
 import com.ssafy.deathnotelive.config.jwt.JwtAuthenticationFilter;
 import com.ssafy.deathnotelive.config.jwt.JwtAuthorizationFilter;
+import com.ssafy.deathnotelive.config.jwt.JwtUtils;
 import com.ssafy.deathnotelive.entity.User;
 import com.ssafy.deathnotelive.repository.UserRepository;
 import com.ssafy.deathnotelive.service.UserService;
@@ -15,8 +16,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -30,6 +29,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserService userService;
     private final UserRepository userRepository;
+    private final JwtUtils jwtUtils;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -40,7 +40,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS); //토큰 기반 인증(세션 X)
         // jwt filter
         http.addFilterBefore(
-                new JwtAuthenticationFilter(authenticationManager()),
+                new JwtAuthenticationFilter(jwtUtils),
                 UsernamePasswordAuthenticationFilter.class
         ).addFilterBefore(
                 new JwtAuthorizationFilter(userRepository),
@@ -50,9 +50,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 // /와 /home은 모두에게 허용
                 .antMatchers("/", "/home", "/user/signup", "/user/login").permitAll()
-                // hello 페이지는 USER 롤을 가진 유저에게만 허용
-                .antMatchers("/note").hasRole("USER")
-                .antMatchers("/admin").hasRole("ADMIN")
                 .antMatchers(HttpMethod.POST, "/notice").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/notice").hasRole("ADMIN")
                 .anyRequest().authenticated();
@@ -71,20 +68,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/webjars/**");
     }
 
-    /**
-     * UserDetailsService 구현
-     *
-     * @return UserDetailsService
-     */
-    @Bean
-    @Override
-    public UserDetailsService userDetailsService() {
-        return userId -> {
-            User user = userService.getByUserId(userId);
-            if (user == null) {
-                throw new UsernameNotFoundException(userId);
-            }
-            return user;
-        };
-    }
 }

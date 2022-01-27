@@ -1,5 +1,6 @@
 package com.ssafy.deathnotelive.service;
 
+import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import com.ssafy.deathnotelive.config.jwt.JwtUtils;
 import com.ssafy.deathnotelive.dto.UserDto;
 import com.ssafy.deathnotelive.entity.User;
@@ -30,9 +31,9 @@ public class UserService {
         String password = registerInfo.getPassword();
         String email = registerInfo.getEmail();
 
-        if(userRepository.getByUserId(userId)!=null){
+        if (userRepository.getByUserId(userId) != null) {
             throw new UserIdDuplicationException("ERROR");
-        }else if(userRepository.getByEmail(email) != null){
+        } else if (userRepository.getByEmail(email) != null) {
             throw new EmailDuplicationException("ERROR");
         }
         return userRepository.save(User.builder()
@@ -58,5 +59,25 @@ public class UserService {
             return JwtUtils.createToken(user);
         }
         throw new UserNotFoundException("Error");
+    }
+
+    public UserDto.UserInfo getUserInfo(String userId) {
+        User user = userRepository.getByUserId(userId);
+        return UserDto.UserInfo.builder()
+                .userId(user.getUserId())
+                .email(user.getEmail())
+                .build();
+    }
+
+    public void modifyUser(UserDto.ModifyUserInfo modifyUserInfo) {
+        User user = userRepository.findByUserId(modifyUserInfo.getUserId()).orElseThrow(() -> new UserNotFoundException("EORROR"));
+        user.setUserId(modifyUserInfo.getUserId());
+        user.setEmail(modifyUserInfo.getEmail());
+        userRepository.save(user);
+    }
+
+    public void deleteUser(String userId) {
+        User user = userRepository.getByUserId(userId);
+        userRepository.delete(user);
     }
 }
