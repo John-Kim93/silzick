@@ -19,6 +19,8 @@ public enum ErrorCode {
     USER_NOT_FOUND(400,"m003","The user can't be founded by condition"),
     USERID_DUPLICATION(400,"m004","UserId is Duplication"),
 
+    // Notice
+    NOTICE_NOT_FOUND(400, "N001", "Notice can't be founded with noticeNo")
 
     ;
     private final String code;

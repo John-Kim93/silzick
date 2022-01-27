@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@ApiModel("Member")
+@ApiModel("User")
 public class UserDto {
 
     @Data
@@ -28,8 +28,6 @@ public class UserDto {
     @AllArgsConstructor
     @Builder
     public static class UserInfo {
-        @ApiModelProperty(name = "유저 PK", example = "1")
-        private Long userPk;
         @ApiModelProperty(name = "유저 Id", example = "ssafy")
         private String userId;
         @ApiModelProperty(name = "유저 Email", example = "ssafy@ssafy.com")
@@ -41,7 +39,6 @@ public class UserDto {
     @AllArgsConstructor
     @Builder
     public static class ModifyUserInfo {
-
         @ApiModelProperty(name = "유저 Id", example = "ssafy")
         private String userId;
         @ApiModelProperty(name = "유저 Email", example = "ssafy@ssafy.com")
