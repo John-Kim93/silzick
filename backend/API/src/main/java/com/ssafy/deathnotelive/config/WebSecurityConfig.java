@@ -50,8 +50,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 // /와 /home은 모두에게 허용
                 .antMatchers("/", "/home", "/user/signup", "/user/login").permitAll()
-                .antMatchers(HttpMethod.POST, "/notice").hasRole("ADMIN")
-                .antMatchers(HttpMethod.DELETE, "/notice").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/notice/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/notice/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/notice/**").hasRole("ADMIN")
                 .anyRequest().authenticated();
 
     }
