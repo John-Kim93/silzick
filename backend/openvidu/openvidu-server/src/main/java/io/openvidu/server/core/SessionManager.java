@@ -145,6 +145,18 @@ public abstract class SessionManager {
 		}
 	}
 
+	//onSendMessage를 쓰기 위한 오버로딩
+	public void sendMessage(Participant participant, String message, Integer transactionId, String sessionId) {
+		try {
+			JsonObject messageJson = JsonParser.parseString(message).getAsJsonObject();
+			sessionEventsHandler.onSendMessage(participant, messageJson, getParticipants(participant.getSessionId()),
+					participant.getSessionId(), participant.getUniqueSessionId(), transactionId, null);
+		} catch (JsonSyntaxException | IllegalStateException e) {
+			throw new OpenViduException(Code.SIGNAL_FORMAT_INVALID_ERROR_CODE,
+					"Provided signal object '" + message + "' has not a valid JSON format");
+		}
+	}
+
 	public abstract void streamPropertyChanged(Participant participant, Integer transactionId, String streamId,
 			String property, JsonElement newValue, String changeReason);
 
@@ -465,7 +477,7 @@ public abstract class SessionManager {
 	 * <strong>Dev advice:</strong> Send notifications to all participants to inform
 	 * that their session has been forcibly closed.
 	 *
-	 * @see SessionManmager#closeSession(String)
+	 * see SessionManmager#closeSession(String)
 	 */
 	@PreDestroy
 	public void close() {
