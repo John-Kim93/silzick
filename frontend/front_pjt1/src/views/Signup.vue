@@ -15,7 +15,7 @@
             type="text"
             class="form-control form-control-lg mb-3"
             placeholder="ID"
-            v-model="credentials.username"
+            v-model="userId"
           >
         </div>
         <div class="form-group">
@@ -24,7 +24,8 @@
             type="password"
             class="form-control form-control-lg mb-3"
             placeholder="PW"
-            v-model="credentials.password"
+            v-model="password"
+            @change="checkPwd"
           >
         </div>
         <div class="form-group">
@@ -33,8 +34,13 @@
             type="password"
             class="form-control form-control-lg mb-3"
             placeholder="PW"
-            v-model="credentials.passwordConfirmation"
+            v-model="passwordConfirmation"
+            @change="checkPwd"
           >
+        </div>
+        <div class="d-flex flex-row-reverse">
+          <p v-if="ableToUsePwd" class="text-success">{{msgPwd}}</p>
+          <p v-if="!ableToUsePwd" class="text-danger">{{msgPwd}}</p>
         </div>
         <div class="form-group">
           <label class="d-flex align-items-start mx-2">E-mail address</label>
@@ -42,34 +48,32 @@
             type="e-mail"
             class="form-control form-control-lg mb-4"
             placeholder="E-mail"
-            v-model="credentials.email"
+            v-model="email"
           >
         </div>
-        <button class="w-100 btn btn-lg btn-secondary" @click="signUp">Sign Up</button>
+        <button class="w-100 btn btn-lg btn-secondary" @click="signup">Sign Up</button>
       </div>
     </div>  
   </main>
 </template>
 
 <script>
+import { signup } from '@/api/user.js';
+import { mapState } from 'vuex'
+
 export default {
   name: 'Signup',
   computed: {
-    isLogin() {
-      return this.$store.state.isLogin
-    },
-    user() {
-      return this.$store.state.user
-    }
+    ...mapState(['isLogin', 'user'])
   },
   data() {
     return {
-      credentials: {
-        username: null,
-        password: null,
-        passwordConfirmation: null,
-        email: null,
-      }
+      userId: null,
+      password: null,
+      passwordConfirmation: null,
+      email: null,
+      msgPwd: null,
+      ableToUsePwd: false,
     }
   },
   mounted() {
@@ -78,21 +82,34 @@ export default {
     }
   },
   methods: {
-    signUp : function() {
-      this.$axios({
-        method: 'post',
-        url: 'http://127.0.0.1:8000/accounts/signup/',
-        data: this.credentials
-      })
-        .then(res => {
-          console.log(res)
-          this.$router.push('/Login')
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    }
-
+    signup : function() {
+      const credentials = {
+        userId : this.userId,
+        password : this.password,
+        email : this.email,
+      }
+      signup(credentials,
+        () => {
+          alert("회원가입 성공");
+          this.$router.push({ name : "Login" })
+        },
+        () => {
+          alert("회원가입 실패");
+        }
+      )
+    },
+    checkPwd() {
+      if (this.password.length < 6) {
+        this.msgPwd = "비밀번호를 6자 이상 입력해주세요.";
+        this.ableToUsePwd = false;
+      } else if (this.password === this.passwordConfirmation) {
+        this.msgPwd = "비밀번호가 일치합니다.";
+        this.ableToUsePwd = true;
+      } else {
+        this.msgPwd = "비밀번호가 일치하지 않습니다."
+        this.ableToUsePwd = false;
+      }
+    },
   }
 }
 </script>

@@ -40,11 +40,11 @@ public class MissionStartRunnable implements Runnable {
         try {
 //            String temp = "signal:game";
 //            params.addProperty("type", temp);
+            JsonObject data = new JsonObject();
+            JsonObject params = new JsonObject();
 
             int cnt = 1;
             while (true) {
-                JsonObject data = new JsonObject();
-                JsonObject params = new JsonObject();
 
                 //60초마다 실행.
                 Thread.sleep(60000);

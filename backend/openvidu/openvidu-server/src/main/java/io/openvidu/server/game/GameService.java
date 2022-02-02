@@ -160,24 +160,26 @@ public class GameService {
         if (target.getRoles().toString().equals(name)) {
             //사망처리
             target.setAlive(false);
+
             //경찰일시 경찰 수 -1;
             if (target.getRoles() == Roles.POLICE) {
                 alivePolices.computeIfPresent(sessionId, (k, v) -> v - 1);
             }
 
-            //키라 사망 or 경찰 수 0명시 게임 종료
-            if (target.getRoles() == Roles.KIRA || alivePolices.get(sessionId) < 1) {
-                finishGame(participant, sessionId, participants, params, data);
-            } else {
-                //사망 소식 전하기.
-                data = new JsonObject();
-                data.addProperty("dead", target.getParticipant().getParticipantPublicId());
-                params.add("data", data);
-                for (Participant p : participants) {
-                    rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
-                            ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
-                }
+            //사망 소식 전하기.
+            data = new JsonObject();
+            data.addProperty("dead", target.getParticipant().getParticipantPublicId());
+            params.add("data", data);
+            for (Participant p : participants) {
+                rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+                        ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+
             }
+        }
+
+        //키라 사망 or 경찰 수 0명시 게임 종료
+        if (target.getRoles() == Roles.KIRA || alivePolices.get(sessionId) < 1) {
+            finishGame(participant, sessionId, participants, params, data);
         }
 
 
