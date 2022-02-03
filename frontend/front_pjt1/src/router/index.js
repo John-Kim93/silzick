@@ -15,10 +15,16 @@ import MainGame from '../views/MainGame.vue'
 import Skill from '../views/Skill.vue'
 import Rule from '../views/Rule.vue'
 import Card from '../views/Card.vue'
+import Attend from '../views/Attend.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/Attend/:hostname',
+    name: 'Attend',
+    component: Attend,
+  },
   {
     path: '/MainGame',
     name: 'MainGame',
