@@ -69,7 +69,7 @@ export default {
         user,
         () => {
           this.saveUser()
-          this.$router.push('/')
+          this.$router.go(-1)
           alert("로그인에 성공했습니다.")
         },
         (err) => {
