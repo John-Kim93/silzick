@@ -8,6 +8,7 @@ import io.openvidu.server.rpc.RpcNotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.PUT;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,7 +17,6 @@ public class GameService {
     static final int PREPAREGAME = 0;
     static final int GAMESTART = 1;
     static final int USESKILL = 2;
-    static final int EXCHANGENAME = 3;
 
     private static final Logger log = LoggerFactory.getLogger(GameService.class);
 
@@ -26,15 +26,15 @@ public class GameService {
      * 게임 정보 관리.
      */
     //Tread 관리
-    protected ConcurrentHashMap<String, ArrayList<Thread>> gameThread = new ConcurrentHashMap<>();
+    protected ConcurrentHashMap<String, Thread> gameThread = new ConcurrentHashMap<>();
     // 직업 관리 <sessionId , role>
     protected static ConcurrentHashMap<String, ArrayList<Roles>> gameRoles = new ConcurrentHashMap<>();
     // 역할 분배 관리 <sessionId, <Participant, role>>
     protected static ConcurrentHashMap<String, ArrayList<Characters>> userRoles = new ConcurrentHashMap<>();
-    // 명함 교환 관리
-    protected static ConcurrentHashMap<String, ArrayList<Participant>> exchangeCandidates = new ConcurrentHashMap<>();
     // 미션 대상 관리
     protected static ConcurrentHashMap<String, ArrayList<Participant>> missionCandidates = new ConcurrentHashMap<>();
+    // 참가자 목록 관리
+    protected static ConcurrentHashMap<String, ArrayList<Participant>> participantsList = new ConcurrentHashMap<>();
     // 살아있는 경찰 수 관리
     protected static ConcurrentHashMap<String, Integer> alivePolices = new ConcurrentHashMap<>();
 
@@ -70,9 +70,6 @@ public class GameService {
             case USESKILL: // 스킬 사용
                 useSkill(participant, message, sessionId, participants, params, data, notice);
                 return;
-            case EXCHANGENAME: // 명함 교환
-                makeCandidates(participant, message, sessionId, participants, params, data, notice);
-                return;
         }
     }
 
@@ -89,19 +86,15 @@ public class GameService {
 
         log.info("finishGame is called by {}", participant.getParticipantPublicId());
 
-        Thread missionThread = gameThread.get(sessionId).get(0);
-        Thread nameThread = gameThread.get(sessionId).get(0);
+        Thread deathNoteThread = gameThread.get(sessionId);
 
         //자원 반납
         gameThread.remove(sessionId);
         gameRoles.remove(sessionId);
         userRoles.remove(sessionId);
 
-        if (missionThread != null) {
-            missionThread.interrupt();
-        }
-        if (nameThread != null) {
-            nameThread.interrupt();
+        if (deathNoteThread != null) {
+            deathNoteThread.interrupt();
         }
 
         data.addProperty("gameStatus", 4);
@@ -114,20 +107,6 @@ public class GameService {
         }
     }
 
-    private void makeCandidates(Participant participant, JsonObject message, String sessionId, Set<Participant> participants,
-                                JsonObject params, JsonObject data, RpcNotificationService notice) {
-
-        //이렇게 넣으면 되려나?? if로 비교해야되나?
-        //있으면 가져와서 넣기, 없으면 Arraylist만들어서 participant 넣고 exchangeCandidates에 넣기
-        if (exchangeCandidates.containsKey(sessionId)) {
-            exchangeCandidates.get(sessionId).add(participant);
-        } else {
-            ArrayList<Participant> pList = new ArrayList<Participant>();
-            pList.add(participant);
-            exchangeCandidates.put(sessionId, pList);
-        }
-
-    }
 
     private void useSkill(Participant participant, JsonObject message, String sessionId, Set<Participant> participants,
                           JsonObject params, JsonObject data, RpcNotificationService notice) {
@@ -234,22 +213,14 @@ public class GameService {
         }
 
         //쓰래드 생성 및 등록.
-        ExchangeNameRunnable exchangeNameRun = new ExchangeNameRunnable(sessionId, notice);
-        MissionStartRunnable missionStartRunnable = new MissionStartRunnable(sessionId, userRoles.get(sessionId), notice);
-        Thread nameThread = new Thread(exchangeNameRun);
-        Thread missionThread = new Thread(missionStartRunnable);
+        GameRunnable gameRunnable = new GameRunnable(sessionId, userRoles.get(sessionId), participantsList.get(sessionId) ,missionCandidates.get(sessionId), notice);
+        Thread deathNoteThread = new Thread(gameRunnable);
 
         //스래드 시작.(명교, 미션 쓰레드 두개 다 시작)
-        nameThread.start();
-        missionThread.start();
-
-        //쓰래드 등록(둘 다 등록)
-        ArrayList<Thread> threadList = new ArrayList<>();
-        threadList.add(nameThread);
-        threadList.add(missionThread);
+        deathNoteThread.start();
 
         //게임 끝날때 삭제 했기 때문에 ifAbsent씀.
-        gameThread.putIfAbsent(sessionId, threadList);
+        gameThread.putIfAbsent(sessionId, deathNoteThread);
 
     }
 
@@ -290,6 +261,9 @@ public class GameService {
             playRoles.add(Roles.POLICE);
             polices++;
         }
+        //참여자 목록 등록
+        ArrayList<Participant> pList = new ArrayList<>(participants);
+        participantsList.putIfAbsent(sessionId, pList);
 
         //살아있는 경찰 수 관리
         alivePolices.putIfAbsent(sessionId, polices);
