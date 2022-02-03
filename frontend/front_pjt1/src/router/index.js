@@ -11,10 +11,28 @@ import Request from '../views/Request.vue'
 import RequestCreate from '@/components/request/RequestCreate.vue'
 import RequestDetail from '@/components/request/RequestDetail.vue'
 import RequestUpdate from '@/components/request/RequestUpdate.vue'
+import MainGame from '../views/MainGame.vue'
+import Skill from '../views/Skill.vue'
+import Rule from '../views/Rule.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/MainGame',
+    name: 'MainGame',
+    component: MainGame
+  },
+  {
+    path: '/Skill',
+    name: 'Skill',
+    component: Skill,
+  },
+  {
+    path: '/Rule',
+    name: 'Rule',
+    component: Rule,
+  },
   {
     path: '/',
     name: 'Main',
