@@ -22,7 +22,6 @@ import com.google.gson.JsonParser;
 import io.openvidu.client.internal.ProtocolElements;
 import io.openvidu.server.core.Participant;
 import io.openvidu.server.rpc.RpcNotificationService;
-import org.checkerframework.checker.units.qual.C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +58,7 @@ public class GameService {
     // 경찰총장, 노트주인 따로 관리
     protected static ConcurrentHashMap<String, ArrayList<Participant>> captainList = new ConcurrentHashMap<>();
     // 데스노트 적힌사람.
-    protected static ConcurrentHashMap<String, ArrayList<Characters>> noteList = new ConcurrentHashMap<>();
+    protected static ConcurrentHashMap<String, ArrayList<Characters>> deathNoteList = new ConcurrentHashMap<>();
 
     public void gameNavigator(Participant participant, JsonObject message, Set<Participant> participants,
                               String sessionId, RpcNotificationService notice) {
@@ -168,7 +167,7 @@ public class GameService {
         //중요인물 자원 반납
         captainList.remove(sessionId);
         //노트 자원 반납.
-        noteList.remove(sessionId);
+        deathNoteList.remove(sessionId);
 
 
         if (deathNoteThread != null) {
@@ -197,8 +196,9 @@ public class GameService {
          * {
          *   gameStatus : 2,
          *   skillType : kill / protect / announce / note / noteUse
-         *   target : connectionId, / all(방송 기능 설정????)
+         *   target : connectionId
          *   (kill, note에만 필요) name : 'L', 'KIRA', 'GUARD', 'BROADCASTER', 'CRIMINAL', 'POLICE' 중 하나.
+         *   (announce에만 필요) announceMessage : "으아아아아 테스트!!"
          * }
          */
         //사용하는 스킬 타입 구별
@@ -262,21 +262,28 @@ public class GameService {
                 //스킬 타겟 보호 설정
                 target.setProtected(true);
                 break;
-            case "announce":
-                break;
+
+//                //announce 필요한가?????
+//            case "announce":
+//                String announce = data.get("announceMessage").getAsString();
+//                for (Participant p : participants) {
+//                    rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+//                            ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+//                }
+//                break;
             case "note":
                 name = data.get("name").getAsString();
-                ArrayList<Characters> nList = noteList.get(sessionId);
+                //노트 목록 불러오기
+                ArrayList<Characters> noteList = deathNoteList.get(sessionId);
 
                 //성공시 이름 적은 아이디, 실패시 실패 문구.
                 if (target.getRoles().toString().equals(name)) {
-                    nList.add(target);
+                    //노트에 사람 적기
+                    noteList.add(target);
                     data.addProperty("writeName", target.getParticipant().getParticipantPublicId());
                     params.add("data", data);
-//                    ArrayList<Characters> nList = new ArrayList<Characters>();
-//                    nList.add(target);
-//                    noteList.putIfAbsent(sessionId,nList);
-
+                    //노트 집어넣기. ???이렇게 바뀌면 되나??
+                    deathNoteList.computeIfPresent(sessionId, (k, v) -> v = noteList);
                 } else {
                     data.addProperty("writeName", "the name isn't matched");
                     params.add("data", data);
@@ -285,45 +292,50 @@ public class GameService {
                 rpcNotificationService.sendNotification(KIRA.getParticipantPrivateId(),
                         ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                 break;
-//            case "noteUse":
-//                for(Characters c : not) {
-//                    //보호되는 상태가 아니면
-//                    if (!target.isProtected()) {
-//                        //사망처리
-//                        target.setAlive(false);
-//
-//                        //경찰일시 경찰 수 -1;
-//                        if (target.getRoles() == Roles.POLICE) {
-//                            alivePolices.computeIfPresent(sessionId, (k, v) -> v - 1);
-//                        }
-//
-//                        //사망 소식 전하기.
-//                        data = new JsonObject();
-//                        data.addProperty("dead", target.getParticipant().getParticipantPublicId());
-//                        params.add("data", data);
-//                        for (Participant p : participants) {
-//                            rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
-//                                    ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
-//
-//                        }
-//                        //보호 중이면.
-//                    } else {
-//                        //방어됨 소식 알리기.
-//                        data = new JsonObject();
-//                        data.addProperty("isprotected", target.getParticipant().getParticipantPublicId());
-//                        params.add("data", data);
-//                        for (Participant p : participants) {
-//                            rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
-//                                    ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
-//                        }
-//                    }
-//                }
-//                break;
+            case "noteUse":
+                noteList = deathNoteList.get(sessionId);
+
+                // 노트에 적힌 사람들 죄다 죽이기.
+                for (Characters c : noteList) {
+                    //보호되는 상태가 아니면
+                    if (!c.isProtected()) {
+                        //사망처리
+                        c.setAlive(false);
+
+                        //경찰일시 경찰 수 -1;
+                        if (c.getRoles() == Roles.POLICE) {
+                            alivePolices.computeIfPresent(sessionId, (k, v) -> v - 1);
+                        }
+
+                        //사망 소식 전하기.
+                        data = new JsonObject();
+                        data.addProperty("dead", c.getParticipant().getParticipantPublicId());
+                        params.add("data", data);
+                        for (Participant p : participants) {
+                            rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+                                    ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+
+                        }
+                        //보호 중이면.
+                    } else {
+                        //방어됨 소식 알리기.
+                        data = new JsonObject();
+                        data.addProperty("isprotected", c.getParticipant().getParticipantPublicId());
+                        params.add("data", data);
+                        for (Participant p : participants) {
+                            rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+                                    ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+                        }
+                    }
+                }
+
+                deathNoteList.computeIfPresent(sessionId, (k, v) -> v = new ArrayList<Characters>());
+                break;
         }
 
 
         //키라 사망 or 경찰 수 0명시 게임 종료
-        if (target.getRoles() == Roles.KIRA || alivePolices.get(sessionId) < 1) {
+        if ((target.getRoles() == Roles.KIRA && !target.isAlive()) || alivePolices.get(sessionId) < 1) {
             finishGame(participant, sessionId, participants, params, data);
         }
 
