@@ -11,6 +11,7 @@
       v-if="isLogin"
       class="btn-1st-position"
       variant="outline-light"
+      @click="createRoom"
     > 방생성
     </b-button>
     <b-button
@@ -24,17 +25,21 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 import cookies from 'vue-cookies'
+
+const gameStore = 'gameStore'
 
 export default {
   name: 'Main',
   computed: {
+    ...mapState(['username']),
     isLogin () {
       return cookies.isKey("JWT-AUTHENTICATION")
     }
   },
   methods: {
+    ...mapActions(gameStore, ['setHostname']),
     ...mapMutations(['RESET_USER']),
     logout () {
       if (cookies.isKey('JWT-AUTHENTICATION')) {
@@ -42,6 +47,13 @@ export default {
         this.RESET_USER()
         this.$router.go(this.$router.currentRoute)
       }
+    },
+    createRoom () {
+      console.log(this.username)
+      this.$router.push({
+        name : 'Attend',
+        params : {hostname : this.username},
+      })
     }
 
   },
