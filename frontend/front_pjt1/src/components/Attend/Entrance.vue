@@ -12,17 +12,19 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
+const gameStore = 'gameStore';
+
 export default {
 	name: 'Entrance',
-    data:function(){
+    data () {
         return{
             nickname:''
         }
     },
 	methods:  {
-		nicknameUpdate(){
-            this.$emit('nick-name-update',this.nickname)
-        }
-	},
+        ...mapActions(gameStore, ['nicknameUpdate'])
+    }
 };
 </script>

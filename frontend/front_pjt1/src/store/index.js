@@ -5,6 +5,7 @@ import VueJwtDecode from 'vue-jwt-decode'
 import cookies from 'vue-cookies'
 import board from './modules/board'
 import notice from './modules/notice'
+import gameStore from './modules/gameStore'
 
 Vue.use(Vuex)
 
@@ -34,5 +35,6 @@ export default new Vuex.Store({
   modules: {
     board,
     notice,
+    gameStore,
   }
 })
