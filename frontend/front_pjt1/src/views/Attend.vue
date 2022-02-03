@@ -2,7 +2,7 @@
   <div id="main-container" class="container d-flex">
     <!-- 닉네임 작성전 대기 -->
     <div id="noenter" v-if="!is_enter">
-      <entrance  @nick-name-update='nicknameUpdate'/>
+      <entrance />
     </div>
 
     <!-- 작성 후 세션의 대기방 -->
@@ -73,14 +73,14 @@
 </template>
 
 <script>
-import axios from "axios";
 import UserVideo from "../components/Attend/UserVideo.vue";
 import Entrance from "@/components/Attend/Entrance.vue";
 import Ready from '@/components/Attend/Ready.vue';
 import Jobs from  '@/components/Attend/Jobs.vue';
 import JobSelect from '@/components/Attend/JobSelect.vue';
+import { mapState, mapActions } from 'vuex'
 
-axios.defaults.headers.post["Content-Type"] = "application/json";
+const gameStore = 'gameStore';
 
 export default {
   name: "Attend",
@@ -93,10 +93,14 @@ export default {
   },
   data () {
     return {
-
+      
     }
   },
+  computed: {
+    ...mapState(gameStore, ['hostname', 'subscribers', 'publisher', 'is_enter', 'is_ready', 'jobs'])
+  },
   methods: {
+    ...mapActions(gameStore, ['setHostname']),
     ready () {
       this.is_ready = true
       
@@ -115,8 +119,8 @@ export default {
     },
   },
   created (){
-    const hostname = this.$router.params.hostname
-    this.$store.dispatch('setHostname', hostname)
+    const hostname = this.$router.history.current.params.hostname
+    this.setHostname(hostname)
   }
 }
 </script>

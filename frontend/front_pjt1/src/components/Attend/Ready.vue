@@ -16,19 +16,24 @@ export default {
 	props: {
 		streamManager: Object,
 	},
-    computed: {
+	computed: {
 		clientData () {
 			const { clientData } = this.getConnectionData();
 			return clientData;
 		},
 	},
 
-    methods: {
+	methods: {
 		getConnectionData () {
 			const { connection } = this.streamManager.stream;
 			return JSON.parse(connection.data);
 		},
 	},
+	created () {
+		console.log('@@@@@@@@')
+		console.log(this.streamManager)
+		console.log('@@@@@@@@@')
+	}
 };
 </script>
 <style>

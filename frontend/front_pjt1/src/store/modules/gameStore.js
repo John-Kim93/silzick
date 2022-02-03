@@ -2,6 +2,8 @@ import axios from 'axios'
 import { OpenVidu } from "openvidu-browser";
 import { OPENVIDU_SERVER_URL, OPENVIDU_SERVER_SECRET } from '@/config/index.js'
 
+axios.defaults.headers.post["Content-Type"] = "application/json";
+
 const gameStore = {
   namespaced: true,
 
@@ -81,7 +83,7 @@ const gameStore = {
       session.on("streamDestroyed", ({ stream }) => {
         const index = subscribers.indexOf(stream.streamManager, 0);
         if (index >= 0) {
-          this.subscribers.splice(index, 1);
+          subscribers.splice(index, 1);
         }
       });
 
@@ -96,10 +98,10 @@ const gameStore = {
       // 'token' parameter should be retrieved and returned by your own backend
       dispatch("getToken", state.hostname).then((token) => {
         session
-          .connect(token, { clientData: this.nickname })
+          .connect(token, { clientData: state.nickname })
           .then(() => {
             // --- Get your own camera stream with the desired properties ---
-            let publisher = this.OV.initPublisher(undefined, {
+            let publisher = OV.initPublisher(undefined, {
               audioSource: undefined, // The source of audio. If undefined default microphone
               videoSource: undefined, // The source of video. If undefined default webcam
               publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
@@ -118,7 +120,7 @@ const gameStore = {
 
             // --- Publish your stream ---
 
-            session.publish(this.publisher);
+            session.publish(state.publisher);
           })
           .catch((error) => {
             console.log(
