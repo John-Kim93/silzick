@@ -1,6 +1,5 @@
 <template>
   <div id="main-container" class="container d-flex">
-    
     <!-- 닉네임 작성전 대기 -->
     <div id="noenter" v-if="!is_enter">
       <entrance  @nick-name-update='nicknameUpdate'/>
