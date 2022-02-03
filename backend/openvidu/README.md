@@ -29,9 +29,12 @@ mvn -DskipTests=true install
 mvn -DDOMAIN_OR_PUBLIC_IP=localhost -DHTTPS_PORT=4443 -DOPENVIDU_SECRET=MY_SECRET exec:java
 ```
 
-성공시
+##### #성공시
 
-![image-20220131185451027](C:\Users\multicampus\AppData\Roaming\Typora\typora-user-images\image-20220131185451027.png)
+```
+OpenVidu Server URL : https://localhost:4443/
+OpenVidu Dashboard : https://localhost:4443/dashboard
+```
 
 
 

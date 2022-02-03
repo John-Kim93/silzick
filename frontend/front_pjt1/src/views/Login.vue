@@ -3,10 +3,6 @@
     <img src="https://ifh.cc/g/g1KuX0.jpg" id="bg" alt="bgImg">
     <div class="card bg-dark box-shadow">
       <div class="card-body p-5">
-        <!-- <div class="form-group">
-            <label>Email address</label>
-            <input type="email" class="form-control form-control-lg" placeholder="Email address" />
-        </div> -->
           <label style="font-size:2rem;">Log In</label>
         <div>
           <label class="d-flex align-items-start mx-2">Username</label>
@@ -15,7 +11,7 @@
             type="text"
             class="form-control form-control-lg mb-4"
             placeholder="ID"
-            v-model="credentials.username"
+            v-model="requestInfo.userId"
           >
         </div>
         <div class="form-group">
@@ -24,7 +20,8 @@
             type="password"
             class="form-control form-control-lg"
             placeholder="PW"
-            v-model="credentials.password"
+            v-model="requestInfo.password"
+            @keyup.enter="login({data:requestInfo})"
           >
         </div>
         <div class="checkbox mb-2">
@@ -33,7 +30,7 @@
             <p class="my-1">Remember me</p>
           </label>
         </div>
-        <button class="w-100 btn btn-lg btn-secondary" @click=logIn({data:credentials})>Log In</button>
+        <button class="w-100 btn btn-lg btn-secondary" @click="login({data:requestInfo})">Log In</button>
         <router-link to="/FindID">아이디 찾기 / </router-link>
         <router-link to="/FindPW">비밀번호 찾기</router-link>
       </div>
@@ -42,22 +39,18 @@
 </template>
 
 <script>
-import {mapActions} from 'vuex'
+import { mapActions, mapState } from 'vuex'
+
 export default {
-  name: 'login',
+  name: 'Login',
   computed: {
-    isLogin() {
-      return this.$store.state.isLogin
-    },
-    user() {
-      return this.$store.state.user
-    }
+    ...mapState(['user'])
   },
   data() {
     return {
-      credentials: {
-        username: null,
+      requestInfo: {
         password: null,
+        userId: null,
       }
     }
   },
@@ -67,7 +60,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['logIn'])
+    ...mapActions(['login'])
   }
 }
 </script>

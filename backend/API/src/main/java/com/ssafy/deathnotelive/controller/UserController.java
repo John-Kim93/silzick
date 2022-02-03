@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("user")
 @Api(tags = {"User Controller"})
 @Slf4j
-@CrossOrigin("*")
 public class UserController {
 
     private final UserService userService;
@@ -44,7 +43,7 @@ public class UserController {
         cookie.setMaxAge(JwtProperties.EXPIRATION_TIME); // 쿠키의 만료시간 설정
         cookie.setPath("/");
         response.addCookie(cookie);
-        return new ResponseEntity("로그인에 성공했습니다.",HttpStatus.OK);
+        return new ResponseEntity("로그인 성공!", HttpStatus.OK);
     }
 
     @PostMapping("signup")

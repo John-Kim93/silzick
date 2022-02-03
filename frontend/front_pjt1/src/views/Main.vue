@@ -17,27 +17,28 @@
       v-if="isLogin"
       class="btn-2nd-position"
       variant="outline-light"
-      @click='logOut'
+      @click='logout'
     > 로그아웃
     </b-button>
   </div>
 </template>
 
 <script>
-import {mapActions} from 'vuex'
+import cookies from 'vue-cookies'
+
 export default {
   name: 'Main',
-  data: function () {
-    return {
-      }
-  },
   computed: {
     isLogin () {
-      return this.$store.state.isLogin
+      return cookies.isKey("JWT-AUTHENTICATION")
     }
   },
   methods: {
-    ...mapActions(['logOut'])
+    logout () {
+      cookies.remove('JWT-AUTHENTICATION')
+      this.$router.go(this.$router.currentRoute)
+    }
+
   },
 }
 </script>

@@ -4,6 +4,8 @@ import createPersistedState from "vuex-persistedstate"
 import axios from 'axios'
 import VueJwtDecode from 'vue-jwt-decode'
 import router from '../router'
+import { login } from '@/api/user.js'
+import cookies from 'vue-cookies'
 
 Vue.use(Vuex)
 
@@ -13,10 +15,8 @@ export default new Vuex.Store({
   ],
   state: {
     admin_post : [],
-    isLogin: false,
     user: null,
     user_post : [],
-    token: null,
   },
   mutations: {
     CREATE_NOTICE: function (state, res) {
@@ -58,20 +58,15 @@ export default new Vuex.Store({
       })
     },
     LOGIN: function (state, res) {
-      const jwt_info = VueJwtDecode.decode(res.data.token)
-      state.isLogin = true
+      const jwt_info = VueJwtDecode.decode(res.data)
       state.user = jwt_info
-      state.token = res.data.token
     },
-    LOGOUT: function (state) {
-      state.isLogin = false
-    }
   },
   actions: {
-    createNotice: function ({commit}, res) {
-      axios({
+    async createNotice ({commit}, res) {
+      await axios({
         method: 'post',
-        url: 'http://127.0.0.1:8000/community/notice/',
+        url: 'http://127.0.0.1:8000/notice/',
         data: res,
         headers: this.getters.setToken,
       })
@@ -89,27 +84,33 @@ export default new Vuex.Store({
     updateNotice: function ({commit}, res) {
       commit('UPDATE_NOTICE', res)
     },
-    getRequests: function ({commit}) {
+    getRequests ({commit}) {
+      const cookie = cookies.get('JWT-AUTHENTICATION')
+      console.log(cookie)
       axios({
         method: 'get',
-        url: 'http://127.0.0.1:8000/community/request/',
-        headers: this.getters.setToken
+        url: 'http://127.0.0.1:8080/board',
+        headers: { 'Cookie': cookie }
       })
         .then(res => {
-          commit('GET_REQUESTS', res.data)
+          console.log('@@@@@@@')
+          console.log(res)
+          commit()
         })
         .catch(err => {
           console.log(err)
+          alert(err)
         })
       },
     createRequest: function ({commit}, res) {
       axios({
         method: 'post',
-        url: 'http://127.0.0.1:8000/community/request/',
+        url: 'http://127.0.0.1:8080/board/regist/',
         data: res,
-        headers: this.getters.setToken
+        // headers: cookies.get('JWT')
       })
         .then(res => {
+          console.log(res)
           commit('CREATE_REQUEST', res)
           router.push({name:'RequestDetail', params: {id:`${res.data.id}`}})
         })
@@ -123,34 +124,23 @@ export default new Vuex.Store({
     updateRequest: function ({commit}, res) {
       commit('UPDATE_REQUEST', res)
     },
-    logIn: function ({commit}, res){
-      axios({
-        method: 'post',
-        url: 'http://127.0.0.1:8000/accounts/api-token-auth/',
-        data: res.data,
-      })
-        .then(res => {
-          localStorage.setItem('jwt',res.data.token)
-          commit('LOGIN', res)
-        })
-        .then(()=> router.push('/'))
-        .catch(err => {
-          console.log(err)
-        })
-    },
-    logOut: function ({commit}){
-      commit('LOGOUT')
-      localStorage.removeItem('jwt')
-      router.go(router.currentRoute)
+    async login ({commit}, user){
+      await login(
+        user.data,
+        (res) => {
+          console.log(res.data)
+          commit(res.data)
+          router.push('/')
+          alert("로그인에 성공했습니다.")
+        },
+        (error) => {
+          console.log(error)
+          alert("로그인에 실패했습니다.")
+        }
+      )
     },
   },
   getters: {
-    setToken: function (state) {
-      const config = {
-        Authorization : `JWT ${state.token}`
-      }
-      return config
-    }
   },
   modules: {
   }
