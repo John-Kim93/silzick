@@ -6,6 +6,7 @@ public class Characters {
     private Roles roles;
     private boolean isAlive = true;
     private Participant participant;
+    private boolean isProtected = false;
 
     public Characters(Roles roles, Participant participant) {
         this.roles = roles;
@@ -18,6 +19,14 @@ public class Characters {
 
     public boolean isAlive() {
         return isAlive;
+    }
+
+    public boolean isProtected() {
+        return isProtected;
+    }
+
+    public void setProtected(boolean aProtected) {
+        isProtected = aProtected;
     }
 
     public Participant getParticipant() {

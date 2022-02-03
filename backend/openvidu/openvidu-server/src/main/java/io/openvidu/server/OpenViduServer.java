@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 import io.openvidu.server.core.TokenRegister;
+import io.openvidu.server.game.GameService;
 import org.bouncycastle.util.Arrays;
 import org.kurento.jsonrpc.internal.server.config.JsonRpcConfiguration;
 import org.kurento.jsonrpc.server.JsonRpcConfigurer;
@@ -90,291 +91,297 @@ import io.openvidu.server.webhook.CDRLoggerWebhook;
  *
  * @author Pablo Fuente (pablofuenteperez@gmail.com)
  */
-@Import({ JsonRpcConfiguration.class })
+@Import({JsonRpcConfiguration.class})
 @SpringBootApplication
 public class OpenViduServer implements JsonRpcConfigurer {
 
-	private static final Logger log = LoggerFactory.getLogger(OpenViduServer.class);
+    private static final Logger log = LoggerFactory.getLogger(OpenViduServer.class);
 
-	public static String wsUrl;
-	public static String httpUrl;
+    public static String wsUrl;
+    public static String httpUrl;
 
-	@Autowired
-	OpenviduConfig config;
+    @Autowired
+    OpenviduConfig config;
 
-	@Bean
-	@ConditionalOnMissingBean
-	@DependsOn("openviduConfig")
-	public CallDetailRecord cdr(OpenviduConfig openviduConfig) {
-		List<CDRLogger> loggers = new ArrayList<>();
-		if (openviduConfig.isCdrEnabled()) {
-			log.info("OpenVidu CDR service is enabled");
-			loggers.add(new CDRLoggerFile());
-		} else {
-			log.info("OpenVidu CDR service is disabled (may be enable with 'OPENVIDU_CDR=true')");
-		}
-		if (openviduConfig.isWebhookEnabled()) {
-			log.info("OpenVidu Webhook service is enabled");
-			loggers.add(new CDRLoggerWebhook(openviduConfig.getOpenViduWebhookEndpoint(),
-					openviduConfig.getOpenViduWebhookHeaders(), openviduConfig.getOpenViduWebhookEvents()));
-		} else {
-			log.info("OpenVidu Webhook service is disabled (may be enabled with 'OPENVIDU_WEBHOOK=true')");
-		}
-		return new CallDetailRecord(loggers);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    @DependsOn("openviduConfig")
+    public CallDetailRecord cdr(OpenviduConfig openviduConfig) {
+        List<CDRLogger> loggers = new ArrayList<>();
+        if (openviduConfig.isCdrEnabled()) {
+            log.info("OpenVidu CDR service is enabled");
+            loggers.add(new CDRLoggerFile());
+        } else {
+            log.info("OpenVidu CDR service is disabled (may be enable with 'OPENVIDU_CDR=true')");
+        }
+        if (openviduConfig.isWebhookEnabled()) {
+            log.info("OpenVidu Webhook service is enabled");
+            loggers.add(new CDRLoggerWebhook(openviduConfig.getOpenViduWebhookEndpoint(),
+                    openviduConfig.getOpenViduWebhookHeaders(), openviduConfig.getOpenViduWebhookEvents()));
+        } else {
+            log.info("OpenVidu Webhook service is disabled (may be enabled with 'OPENVIDU_WEBHOOK=true')");
+        }
+        return new CallDetailRecord(loggers);
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	@DependsOn("openviduConfig")
-	public CoturnCredentialsService coturnCredentialsService(OpenviduConfig openviduConfig) {
-		return new CoturnCredentialsServiceFactory().getCoturnCredentialsService(openviduConfig.getSpringProfile());
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    @DependsOn("openviduConfig")
+    public CoturnCredentialsService coturnCredentialsService(OpenviduConfig openviduConfig) {
+        return new CoturnCredentialsServiceFactory().getCoturnCredentialsService(openviduConfig.getSpringProfile());
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	@DependsOn("openviduConfig")
-	public SessionManager sessionManager() {
-		return new KurentoSessionManager();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    @DependsOn("openviduConfig")
+    public SessionManager sessionManager() {
+        return new KurentoSessionManager();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	@DependsOn({ "openviduConfig", "sessionManager", "mediaNodeStatusManager" })
-	public KmsManager kmsManager(OpenviduConfig openviduConfig, SessionManager sessionManager) {
-		if (openviduConfig.getKmsUris().isEmpty()) {
-			throw new IllegalArgumentException("'KMS_URIS' should contain at least one KMS url");
-		}
-		String firstKmsWsUri = openviduConfig.getKmsUris().get(0);
-		log.info("OpenVidu Server using one KMS: {}", firstKmsWsUri);
-		return new FixedOneKmsManager(sessionManager);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    @DependsOn({"openviduConfig", "sessionManager", "mediaNodeStatusManager"})
+    public KmsManager kmsManager(OpenviduConfig openviduConfig, SessionManager sessionManager) {
+        if (openviduConfig.getKmsUris().isEmpty()) {
+            throw new IllegalArgumentException("'KMS_URIS' should contain at least one KMS url");
+        }
+        String firstKmsWsUri = openviduConfig.getKmsUris().get(0);
+        log.info("OpenVidu Server using one KMS: {}", firstKmsWsUri);
+        return new FixedOneKmsManager(sessionManager);
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	@DependsOn("openviduConfig")
-	public RpcHandler rpcHandler() {
-		return new RpcHandler();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    @DependsOn("openviduConfig")
+    public RpcHandler rpcHandler() {
+        return new RpcHandler();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	@DependsOn("openviduConfig")
-	public SessionEventsHandler sessionEventsHandler() {
-		return new KurentoSessionEventsHandler();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    @DependsOn("openviduConfig")
+    public SessionEventsHandler sessionEventsHandler() {
+        return new KurentoSessionEventsHandler();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	@DependsOn("openviduConfig")
-	public TokenGenerator tokenGenerator() {
-		return new TokenGenerator();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    @DependsOn("openviduConfig")
+    public TokenGenerator tokenGenerator() {
+        return new TokenGenerator();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	@DependsOn("openviduConfig")
-	public TokenRegister tokenRegister() {
-		return new TokenRegister();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    @DependsOn("openviduConfig")
+    public TokenRegister tokenRegister() {
+        return new TokenRegister();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	@DependsOn("openviduConfig")
-	public RecordingManager recordingManager() {
-		return new RecordingManager(new LocalDockerManager(false), new LocalCustomFileManager());
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    @DependsOn("openviduConfig")
+    public RecordingManager recordingManager() {
+        return new RecordingManager(new LocalDockerManager(false), new LocalCustomFileManager());
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public LoadManager loadManager() {
-		return new DummyLoadManager();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public LoadManager loadManager() {
+        return new DummyLoadManager();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public RpcNotificationService notificationService() {
-		return new RpcNotificationService();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public GameService gameService() {
+        return new GameService();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public KurentoParticipantEndpointConfig kurentoEndpointConfig() {
-		return new KurentoParticipantEndpointConfig();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public RpcNotificationService notificationService() {
+        return new RpcNotificationService();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	@DependsOn({ "openviduConfig", "recordingManager" })
-	public RecordingManagerUtils recordingManagerUtils(OpenviduConfig openviduConfig,
-			RecordingManager recordingManager) {
-		return new RecordingManagerUtilsLocalStorage(openviduConfig, recordingManager);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public KurentoParticipantEndpointConfig kurentoEndpointConfig() {
+        return new KurentoParticipantEndpointConfig();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public RecordingUploader recordingUpload() {
-		return new DummyRecordingUploader();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    @DependsOn({"openviduConfig", "recordingManager"})
+    public RecordingManagerUtils recordingManagerUtils(OpenviduConfig openviduConfig,
+                                                       RecordingManager recordingManager) {
+        return new RecordingManagerUtilsLocalStorage(openviduConfig, recordingManager);
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public RecordingDownloader recordingDownload() {
-		return new DummyRecordingDownloader();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public RecordingUploader recordingUpload() {
+        return new DummyRecordingUploader();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public GeoLocationByIp geoLocationByIp() {
-		return new GeoLocationByIpDummy();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public RecordingDownloader recordingDownload() {
+        return new DummyRecordingDownloader();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public SDPMunging sdpMunging() {
-		return new SDPMunging();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public GeoLocationByIp geoLocationByIp() {
+        return new GeoLocationByIpDummy();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public QuarantineKiller quarantineKiller() {
-		return new QuarantineKillerDummy();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public SDPMunging sdpMunging() {
+        return new SDPMunging();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public MediaNodeStatusManager mediaNodeStatusManager() {
-		return new MediaNodeStatusManagerDummy();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public QuarantineKiller quarantineKiller() {
+        return new QuarantineKillerDummy();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(name = "SUPPORT_DEPRECATED_API", havingValue = "true")
-	public FilterRegistrationBean<ApiRestPathRewriteFilter> filterRegistrationBean() {
-		FilterRegistrationBean<ApiRestPathRewriteFilter> registrationBean = new FilterRegistrationBean<ApiRestPathRewriteFilter>();
-		ApiRestPathRewriteFilter apiRestPathRewriteFilter = new ApiRestPathRewriteFilter();
-		registrationBean.setFilter(apiRestPathRewriteFilter);
-		return registrationBean;
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public MediaNodeStatusManager mediaNodeStatusManager() {
+        return new MediaNodeStatusManagerDummy();
+    }
 
-	@Override
-	public void registerJsonRpcHandlers(JsonRpcHandlerRegistry registry) {
-		registry.addHandler(rpcHandler().withPingWatchdog(true).withInterceptors(new HttpHandshakeInterceptor()),
-				RequestMappings.WS_RPC);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(name = "SUPPORT_DEPRECATED_API", havingValue = "true")
+    public FilterRegistrationBean<ApiRestPathRewriteFilter> filterRegistrationBean() {
+        FilterRegistrationBean<ApiRestPathRewriteFilter> registrationBean = new FilterRegistrationBean<ApiRestPathRewriteFilter>();
+        ApiRestPathRewriteFilter apiRestPathRewriteFilter = new ApiRestPathRewriteFilter();
+        registrationBean.setFilter(apiRestPathRewriteFilter);
+        return registrationBean;
+    }
 
-	public static String getContainerIp() throws IOException, InterruptedException {
-		return CommandExecutor.execCommand(5000, "/bin/sh", "-c", "hostname -i | awk '{print $1}'");
-	}
+    @Override
+    public void registerJsonRpcHandlers(JsonRpcHandlerRegistry registry) {
+        registry.addHandler(rpcHandler().withPingWatchdog(true).withInterceptors(new HttpHandshakeInterceptor()),
+                RequestMappings.WS_RPC);
+    }
 
-	public static void main(String[] args) throws Exception {
+    public static String getContainerIp() throws IOException, InterruptedException {
+        return CommandExecutor.execCommand(5000, "/bin/sh", "-c", "hostname -i | awk '{print $1}'");
+    }
 
-		Map<String, String> CONFIG_PROPS = checkConfigProperties(OpenviduConfig.class);
+    public static void main(String[] args) throws Exception {
 
-		if (CONFIG_PROPS.get("SERVER_PORT") != null) {
+        Map<String, String> CONFIG_PROPS = checkConfigProperties(OpenviduConfig.class);
 
-			// Configuration property SERVER_PORT has been explicitly defined.
-			// Must initialize the application in that port on the host regardless of what
-			// HTTPS_PORT says. HTTPS_PORT does get used in the public URL.
+        if (CONFIG_PROPS.get("SERVER_PORT") != null) {
 
-			System.setProperty("server.port", CONFIG_PROPS.get("SERVER_PORT"));
+            // Configuration property SERVER_PORT has been explicitly defined.
+            // Must initialize the application in that port on the host regardless of what
+            // HTTPS_PORT says. HTTPS_PORT does get used in the public URL.
 
-			log.warn(
-					"You have set property server.port (or SERVER_PORT). This will serve OpenVidu Server on your host at port "
-							+ CONFIG_PROPS.get("SERVER_PORT") + ". But property HTTPS_PORT ("
-							+ CONFIG_PROPS.get("HTTPS_PORT")
-							+ ") still configures the port that should be used to connect to OpenVidu Server from outside. "
-							+ "Bear this in mind when configuring a proxy in front of OpenVidu Server");
+            System.setProperty("server.port", CONFIG_PROPS.get("SERVER_PORT"));
 
-		} else if (CONFIG_PROPS.get("HTTPS_PORT") != null) {
+            log.warn(
+                    "You have set property server.port (or SERVER_PORT). This will serve OpenVidu Server on your host at port "
+                            + CONFIG_PROPS.get("SERVER_PORT") + ". But property HTTPS_PORT ("
+                            + CONFIG_PROPS.get("HTTPS_PORT")
+                            + ") still configures the port that should be used to connect to OpenVidu Server from outside. "
+                            + "Bear this in mind when configuring a proxy in front of OpenVidu Server");
 
-			// Configuration property SERVER_PORT has NOT been explicitly defined.
-			// Must initialize the application in port HTTPS_PORT on the host. HTTPS_PORT
-			// does get used in the public URL as well.
+        } else if (CONFIG_PROPS.get("HTTPS_PORT") != null) {
 
-			System.setProperty("server.port", CONFIG_PROPS.get("HTTPS_PORT"));
+            // Configuration property SERVER_PORT has NOT been explicitly defined.
+            // Must initialize the application in port HTTPS_PORT on the host. HTTPS_PORT
+            // does get used in the public URL as well.
 
-		}
+            System.setProperty("server.port", CONFIG_PROPS.get("HTTPS_PORT"));
 
-		log.info("Using /dev/urandom for secure random generation");
-		System.setProperty("java.security.egd", "file:/dev/./urandom");
-		SpringApplication.run(OpenViduServer.class, Arrays.append(args, "--spring.main.banner-mode=off"));
+        }
 
-	}
+        log.info("Using /dev/urandom for secure random generation");
+        System.setProperty("java.security.egd", "file:/dev/./urandom");
+        SpringApplication.run(OpenViduServer.class, Arrays.append(args, "--spring.main.banner-mode=off"));
 
-	public static <T> Map<String, String> checkConfigProperties(Class<T> configClass) throws InterruptedException {
+    }
 
-		ConfigurableApplicationContext app = SpringApplication.run(configClass,
-				new String[] { "--spring.main.web-application-type=none" });
-		OpenviduConfig config = app.getBean(OpenviduConfig.class);
-		List<Error> errors = config.getConfigErrors();
+    public static <T> Map<String, String> checkConfigProperties(Class<T> configClass) throws InterruptedException {
 
-		if (!errors.isEmpty()) {
+        ConfigurableApplicationContext app = SpringApplication.run(configClass,
+                new String[]{"--spring.main.web-application-type=none"});
+        OpenviduConfig config = app.getBean(OpenviduConfig.class);
+        List<Error> errors = config.getConfigErrors();
 
-			// @formatter:off
-			String msg = "\n\n\n" + "   Configuration errors\n" + "   --------------------\n" + "\n";
+        if (!errors.isEmpty()) {
 
-			for (Error error : config.getConfigErrors()) {
-				msg += "   * ";
-				if (error.getProperty() != null) {
-					msg += "Property " + config.getPropertyName(error.getProperty());
-					if (error.getValue() == null || error.getValue().equals("")) {
-						msg += " is not set. ";
-					} else {
-						msg += "=" + error.getValue() + ". ";
-					}
-				}
+            // @formatter:off
+            String msg = "\n\n\n" + "   Configuration errors\n" + "   --------------------\n" + "\n";
 
-				msg += error.getMessage() + "\n";
-			}
+            for (Error error : config.getConfigErrors()) {
+                msg += "   * ";
+                if (error.getProperty() != null) {
+                    msg += "Property " + config.getPropertyName(error.getProperty());
+                    if (error.getValue() == null || error.getValue().equals("")) {
+                        msg += " is not set. ";
+                    } else {
+                        msg += "=" + error.getValue() + ". ";
+                    }
+                }
 
-			msg += "\n" + "\n" + "   Fix config errors\n" + "   ---------------\n" + "\n"
-					+ "   1) Return to shell pressing Ctrl+C\n"
-					+ "   2) Set correct values in '.env' configuration file\n" + "   3) Restart OpenVidu with:\n"
-					+ "\n" + "      $ ./openvidu restart\n" + "\n";
-			// @formatter:on
+                msg += error.getMessage() + "\n";
+            }
 
-			log.info(msg);
+            msg += "\n" + "\n" + "   Fix config errors\n" + "   ---------------\n" + "\n"
+                    + "   1) Return to shell pressing Ctrl+C\n"
+                    + "   2) Set correct values in '.env' configuration file\n" + "   3) Restart OpenVidu with:\n"
+                    + "\n" + "      $ ./openvidu restart\n" + "\n";
+            // @formatter:on
 
-			// Wait forever
-			new Semaphore(0).acquire();
+            log.info(msg);
 
-		} else {
+            // Wait forever
+            new Semaphore(0).acquire();
 
-			String msg = "\n\n\n" + "   Configuration properties\n" + "   ------------------------\n" + "\n";
+        } else {
 
-			final Map<String, String> CONFIG_PROPS = config.getConfigProps();
-			List<String> configPropNames = new ArrayList<>(config.getUserProperties());
-			Collections.sort(configPropNames);
+            String msg = "\n\n\n" + "   Configuration properties\n" + "   ------------------------\n" + "\n";
 
-			for (String property : configPropNames) {
-				String value = CONFIG_PROPS.get(property);
-				msg += "   * " + config.getPropertyName(property) + "=" + (value == null ? "" : value) + "\n";
-			}
-			msg += "\n\n";
+            final Map<String, String> CONFIG_PROPS = config.getConfigProps();
+            List<String> configPropNames = new ArrayList<>(config.getUserProperties());
+            Collections.sort(configPropNames);
 
-			log.info(msg);
+            for (String property : configPropNames) {
+                String value = CONFIG_PROPS.get(property);
+                msg += "   * " + config.getPropertyName(property) + "=" + (value == null ? "" : value) + "\n";
+            }
+            msg += "\n\n";
 
-			// Close the auxiliary ApplicationContext
-			app.close();
+            log.info(msg);
 
-			return CONFIG_PROPS;
-		}
-		return null;
-	}
+            // Close the auxiliary ApplicationContext
+            app.close();
 
-	@EventListener(ApplicationReadyEvent.class)
-	public void whenReady() {
+            return CONFIG_PROPS;
+        }
+        return null;
+    }
 
-		String dashboardUrl = httpUrl + config.getOpenViduFrontendDefaultPath().replaceAll("^/", "");
+    @EventListener(ApplicationReadyEvent.class)
+    public void whenReady() {
 
-		// @formatter:off
-		String msg = "\n\n----------------------------------------------------\n" + "\n" + "   OpenVidu is ready!\n"
-				+ "   ---------------------------\n" + "\n" + "   * OpenVidu Server URL: " + httpUrl + "\n" + "\n"
-				+ "   * OpenVidu Dashboard: " + dashboardUrl + "\n" + "\n"
-				+ "----------------------------------------------------\n";
-		// @formatter:on
+        String dashboardUrl = httpUrl + config.getOpenViduFrontendDefaultPath().replaceAll("^/", "");
 
-		log.info(msg);
-	}
+        // @formatter:off
+        String msg = "\n\n----------------------------------------------------\n" + "\n" + "   OpenVidu is ready!\n"
+                + "   ---------------------------\n" + "\n" + "   * OpenVidu Server URL: " + httpUrl + "\n" + "\n"
+                + "   * OpenVidu Dashboard: " + dashboardUrl + "\n" + "\n"
+                + "----------------------------------------------------\n";
+        // @formatter:on
+
+        log.info(msg);
+    }
 
 }
