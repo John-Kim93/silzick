@@ -27,11 +27,12 @@ const gameStore = {
   
   mutations: {
     NICKNAME_UPDATE (state, res) {
-      if (state.is_enter === true) {
+      if (state.is_enter == true) {
         state.is_enter = false
         state.nickname = res
       } else {
         state.is_enter = true
+        console.log(res)
         state.nickname = res
       }
     },
@@ -60,25 +61,26 @@ const gameStore = {
       commit('SET_HOSTNAME', hostname)
     },
     nicknameUpdate ({ commit, dispatch }, res) {
+      console.log('닉네임업데이트')
+      console.log(res)
       commit('NICKNAME_UPDATE', res)
       dispatch('joinSession')
     },
     joinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
       const OV = new OpenVidu();
-
       // --- Init a session ---
       const session = OV.initSession();
       const subscribers = [];
-
+      
       // --- Specify the actions when events take place in the session ---
-
+      
       // On every new Stream received...
       session.on("streamCreated", ({ stream }) => {
         const subscriber = session.subscribe(stream);
         subscribers.push(subscriber);
       });
-
+      
       // On every Stream destroyed...
       session.on("streamDestroyed", ({ stream }) => {
         const index = subscribers.indexOf(stream.streamManager, 0);
@@ -86,37 +88,39 @@ const gameStore = {
           subscribers.splice(index, 1);
         }
       });
-
+      
       // On every asynchronous exception...
       session.on("exception", ({ exception }) => {
         console.warn(exception);
       });
-
+      
       // --- Connect to the session with a valid user token ---
-
+      
       // 'getToken' method is simulating what your server-side should do.
       // 'token' parameter should be retrieved and returned by your own backend
       dispatch("getToken", state.hostname).then((token) => {
+        console.log('check')
+        console.log(subscribers)
         session
-          .connect(token, { clientData: state.nickname })
-          .then(() => {
-            // --- Get your own camera stream with the desired properties ---
-            let publisher = OV.initPublisher(undefined, {
-              audioSource: undefined, // The source of audio. If undefined default microphone
-              videoSource: undefined, // The source of video. If undefined default webcam
-              publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-              publishVideo: true, // Whether you want to start publishing with your video enabled or not
-              resolution: "640x480", // The resolution of your video
-              frameRate: 30, // The frame rate of your video
-              insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
-              mirror: false, // Whether to mirror your local video or not
-            });
-
-            commit('SET_PUBLISHER', publisher)
-            commit('SET_OV', OV)
-            commit('SET_SESSION', session)
-            commit('SET_SUBSCRIBERS', subscribers)
-            commit('SET_OVTOKEN', token)
+        .connect(token, { clientData: state.nickname })
+        .then(() => {
+          // --- Get your own camera stream with the desired properties ---
+          let publisher = OV.initPublisher(undefined, {
+            audioSource: undefined, // The source of audio. If undefined default microphone
+            videoSource: undefined, // The source of video. If undefined default webcam
+            publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+            publishVideo: true, // Whether you want to start publishing with your video enabled or not
+            resolution: "640x480", // The resolution of your video
+            frameRate: 30, // The frame rate of your video
+            insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+            mirror: false, // Whether to mirror your local video or not
+          });
+          
+          commit('SET_PUBLISHER', publisher)
+          commit('SET_OV', OV)
+          commit('SET_SESSION', session)
+          commit('SET_SUBSCRIBERS', subscribers)
+          commit('SET_OVTOKEN', token)
 
             // --- Publish your stream ---
 
@@ -133,11 +137,16 @@ const gameStore = {
       // window.addEventListener("beforeunload", this.leaveSession);
     },
     getToken({ dispatch }, mySessionId) {
+      console.log('겟토큰')
+      console.log(mySessionId)
+
       return dispatch('createSession', mySessionId).then((sessionId) =>
         dispatch('createToken', sessionId)
       );
     },
-    createSession(sessionId) {
+    createSession(context, sessionId) {
+      console.log('크리에이트세션')
+      console.log(sessionId)
       return new Promise((resolve, reject) => {
         axios
           .post(
@@ -152,7 +161,11 @@ const gameStore = {
               },
             }
           )
-          .then((response) => response.data)
+          .then((response) => {
+            console.log('세션성공')
+            console.log(response)
+            // response.data
+          })
           .then((data) => resolve(data.id))
           .catch((error) => {
             if (error.response.status === 409) {
@@ -174,6 +187,8 @@ const gameStore = {
       });
     },
     createToken(sessionId) {
+      console.log('크리에이트토큰')
+      console.log(sessionId)
       return new Promise((resolve, reject) => {
         axios
           .post(

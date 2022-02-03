@@ -30,9 +30,9 @@ export default {
 		},
 	},
 	created () {
-		console.log('@@@@@@@@')
-		console.log(this.streamManager)
-		console.log('@@@@@@@@@')
+		// console.log('@@@@@@@@')
+		// console.log(this.streamManager)
+		// console.log('@@@@@@@@@')
 	}
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="m-5">
         <label>Nickname</label>
         <input
             type="text"
@@ -7,7 +7,7 @@
             class="form-control"
             required
         >
-        <button class="btn btn-lg btn-success" @click="nicknameUpdate()">참가</button>
+        <button class="btn btn-lg btn-success" @click="nicknameUpdate(nickname)">참가</button>
     </div>
 </template>
 
@@ -24,7 +24,7 @@ export default {
         }
     },
 	methods:  {
-        ...mapActions(gameStore, ['nicknameUpdate'])
+        ...mapActions(gameStore, ['nicknameUpdate']),
     }
 };
 </script>

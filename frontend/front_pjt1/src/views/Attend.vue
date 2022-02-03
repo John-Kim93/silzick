@@ -36,7 +36,7 @@
             <div> chat</div>
             <input type="text" class="w-auto">
           </div>
-          <button class="btn btn-success col" @click="ready()">Ready</button>
+          <button class="btn btn-success col" @click="ready">Ready</button>
         </div>
         
       </div>
@@ -93,11 +93,11 @@ export default {
   },
   data () {
     return {
-      
+
     }
   },
   computed: {
-    ...mapState(gameStore, ['hostname', 'subscribers', 'publisher', 'is_enter', 'is_ready', 'jobs'])
+    ...mapState(gameStore, ['hostname', 'subscribers', 'publisher', 'is_enter', 'is_ready', 'jobs', 'nickname'])
   },
   methods: {
     ...mapActions(gameStore, ['setHostname']),
@@ -119,8 +119,18 @@ export default {
     },
   },
   created (){
-    const hostname = this.$router.history.current.params.hostname
-    this.setHostname(hostname)
+    if (this.hostname == undefined) {
+      console.log('@@@@@@@@')
+      console.log(this.nickname)
+      console.log('@@@@@@@@')
+      console.log(this.$router.history.current.params.hostname)
+      console.log('@@@@@@@@')
+      const hostname = this.$router.history.current.params.hostname
+      this.setHostname(hostname)
+      console.log(this.publisher)
+      console.log(this.hostname)
+      console.log('@@@@@@@@')
+    }
   }
 }
 </script>
