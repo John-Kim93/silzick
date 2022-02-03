@@ -14,6 +14,7 @@ import RequestUpdate from '@/components/request/RequestUpdate.vue'
 import MainGame from '../views/MainGame.vue'
 import Skill from '../views/Skill.vue'
 import Rule from '../views/Rule.vue'
+import Card from '../views/Card.vue'
 
 Vue.use(VueRouter)
 
@@ -32,6 +33,11 @@ const routes = [
     path: '/Rule',
     name: 'Rule',
     component: Rule,
+  },
+  {
+    path: '/Card',
+    name : 'Card',
+    component : Card,
   },
   {
     path: '/',
