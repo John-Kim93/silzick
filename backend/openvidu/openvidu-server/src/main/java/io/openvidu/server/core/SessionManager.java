@@ -145,10 +145,11 @@ public abstract class SessionManager {
 		}
 	}
 
-	//onSendMessage를 쓰기 위한 오버로딩
+	//메세지 받기 위한 메소드
 	public void sendMessage(Participant participant, String message, Integer transactionId, String sessionId) {
 		try {
 			JsonObject messageJson = JsonParser.parseString(message).getAsJsonObject();
+			messageJson.add("sessionId", JsonParser.parseString(sessionId));
 			sessionEventsHandler.onSendMessage(participant, messageJson, getParticipants(participant.getSessionId()),
 					participant.getSessionId(), participant.getUniqueSessionId(), transactionId, null);
 		} catch (JsonSyntaxException | IllegalStateException e) {
