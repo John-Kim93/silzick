@@ -40,6 +40,8 @@ const gameStore = {
       state.hostname = hostname
     },
     SET_PUBLISHER (state, res) {
+      console.log('뮤테이션 퍼블리셔 확인')
+      console.log(res)
       state.publisher = res
     },
     SET_OV (state, res) {
@@ -55,7 +57,7 @@ const gameStore = {
       state.OVToken = res
     },
   },
-  
+  // setHostname, nicknameUpdate, joinSession, getToken, createSession, createToken, leaveSession
   actions: {
     setHostname ({commit}, hostname) {
       commit('SET_HOSTNAME', hostname)
@@ -98,6 +100,8 @@ const gameStore = {
       
       // 'getToken' method is simulating what your server-side should do.
       // 'token' parameter should be retrieved and returned by your own backend
+      console.log('겟토큰 전에 스테이트호스트네임')
+      console.log(state.hostname)
       dispatch("getToken", state.hostname).then((token) => {
         console.log('check')
         console.log(subscribers)
@@ -115,7 +119,8 @@ const gameStore = {
             insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
             mirror: false, // Whether to mirror your local video or not
           });
-          
+          console.log('조인세션 퍼블리셔')
+          console.log(publisher)
           commit('SET_PUBLISHER', publisher)
           commit('SET_OV', OV)
           commit('SET_SESSION', session)
@@ -155,17 +160,16 @@ const gameStore = {
               customSessionId: sessionId,
             }),
             {
+              headers: {
+                'Content-Type' : 'application/json'
+              },
               auth: {
                 username: "OPENVIDUAPP",
                 password: OPENVIDU_SERVER_SECRET,
               },
             }
           )
-          .then((response) => {
-            console.log('세션성공')
-            console.log(response)
-            // response.data
-          })
+          .then((response) => response.data)
           .then((data) => resolve(data.id))
           .catch((error) => {
             if (error.response.status === 409) {
@@ -186,7 +190,7 @@ const gameStore = {
           });
       });
     },
-    createToken(sessionId) {
+    createToken(context, sessionId) {
       console.log('크리에이트토큰')
       console.log(sessionId)
       return new Promise((resolve, reject) => {
