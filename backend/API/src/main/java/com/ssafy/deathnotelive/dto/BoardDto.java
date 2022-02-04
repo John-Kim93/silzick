@@ -23,8 +23,8 @@ public class BoardDto {
         private String title;
         @ApiModelProperty(name = "조회수")
         private Integer hit;
-        @ApiModelProperty(name = "작성일")
-        private LocalDateTime createdAt;
+        @ApiModelProperty(name = "수정일")
+        private LocalDateTime modifiedAt;
     }
 
 

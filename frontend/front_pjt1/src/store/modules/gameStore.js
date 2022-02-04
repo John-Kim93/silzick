@@ -165,11 +165,14 @@ const gameStore = {
               },
               auth: {
                 username: "OPENVIDUAPP",
-                password: OPENVIDU_SERVER_SECRET,
+                password: "MY_SECRET",
               },
             }
           )
-          .then((response) => response.data)
+          .then((response) => {
+            response.data
+            console.log(response)
+          })
           .then((data) => resolve(data.id))
           .catch((error) => {
             if (error.response.status === 409) {

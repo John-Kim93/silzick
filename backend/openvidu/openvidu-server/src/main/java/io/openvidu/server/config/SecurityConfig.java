@@ -43,54 +43,54 @@ import io.openvidu.server.rest.RequestMappings;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	protected OpenviduConfig openviduConf;
+    @Autowired
+    protected OpenviduConfig openviduConf;
 
-	@Autowired
-	protected Environment environment;
+    @Autowired
+    protected Environment environment;
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
 
-		ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry conf = http.cors().and()
-				.csrf().disable().authorizeRequests()
-				.antMatchers(HttpMethod.GET, RequestMappings.API + "/config/openvidu-publicurl").permitAll()
-				.antMatchers(HttpMethod.GET, RequestMappings.ACCEPT_CERTIFICATE).permitAll()
-				.antMatchers(RequestMappings.API + "/**").hasRole("ADMIN")
-				.antMatchers(HttpMethod.GET, RequestMappings.CDR + "/**").hasRole("ADMIN")
-				.antMatchers(HttpMethod.GET, RequestMappings.FRONTEND_CE + "/**").hasRole("ADMIN")
-				.antMatchers(HttpMethod.GET, RequestMappings.CUSTOM_LAYOUTS + "/**").hasRole("ADMIN");
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry conf = http.cors().and()
+                .csrf().disable().authorizeRequests()
+                .antMatchers(HttpMethod.GET, RequestMappings.API + "/config/openvidu-publicurl").permitAll()
+                .antMatchers(HttpMethod.GET, RequestMappings.ACCEPT_CERTIFICATE).permitAll()
+                .antMatchers(RequestMappings.API + "/**").authenticated()
+                .antMatchers(HttpMethod.GET, RequestMappings.CDR + "/**").authenticated()
+                .antMatchers(HttpMethod.GET, RequestMappings.FRONTEND_CE + "/**").authenticated()
+                .antMatchers(HttpMethod.GET, RequestMappings.CUSTOM_LAYOUTS + "/**").authenticated();
 
-		// Secure recordings depending on OPENVIDU_RECORDING_PUBLIC_ACCESS
-		if (openviduConf.getOpenViduRecordingPublicAccess()) {
-			conf = conf.antMatchers(HttpMethod.GET, RequestMappings.RECORDINGS + "/**").permitAll();
-		} else {
-			conf = conf.antMatchers(HttpMethod.GET, RequestMappings.RECORDINGS + "/**").hasRole("ADMIN");
-		}
+        // Secure recordings depending on OPENVIDU_RECORDING_PUBLIC_ACCESS
+        if (openviduConf.getOpenViduRecordingPublicAccess()) {
+            conf = conf.antMatchers(HttpMethod.GET, RequestMappings.RECORDINGS + "/**").permitAll();
+        } else {
+            conf = conf.antMatchers(HttpMethod.GET, RequestMappings.RECORDINGS + "/**").authenticated();
+        }
 
-		conf.and().httpBasic();
+        conf.and().httpBasic();
 
-		// TODO: remove this when deprecating SUPPORT_DEPRECATED_API
-		if (Boolean.valueOf(environment.getProperty("SUPPORT_DEPRECATED_API"))) {
-			ApiRestPathRewriteFilter.protectOldPathsCe(conf, openviduConf);
-		}
-	}
+        // TODO: remove this when deprecating SUPPORT_DEPRECATED_API
+        if (Boolean.valueOf(environment.getProperty("SUPPORT_DEPRECATED_API"))) {
+            ApiRestPathRewriteFilter.protectOldPathsCe(conf, openviduConf);
+        }
+    }
 
-	@Bean
-	public CorsFilter corsFilter() {
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(Arrays.asList("*"));
-		config.setAllowedHeaders(Arrays.asList("*"));
-		config.setAllowedMethods(Arrays.asList("*"));
-		source.registerCorsConfiguration("/**", config);
-		return new CorsFilter(source);
-	}
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList("*"));
+        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setAllowedMethods(Arrays.asList("*"));
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
 
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication().withUser("OPENVIDUAPP").password("{noop}" + openviduConf.getOpenViduSecret())
-				.roles("ADMIN");
-	}
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication().withUser("OPENVIDUAPP").password("{noop}" + openviduConf.getOpenViduSecret())
+                .roles("ADMIN");
+    }
 
 }
