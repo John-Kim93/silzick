@@ -80,7 +80,7 @@ import io.openvidu.server.utils.RestUtils;
  * @author Pablo Fuente (pablofuenteperez@gmail.com)
  */
 @RestController
-@CrossOrigin
+@CrossOrigin("*")
 @ConditionalOnMissingBean(name = "sessionRestControllerPro")
 @RequestMapping(RequestMappings.API)
 public class SessionRestController {

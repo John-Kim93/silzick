@@ -60,12 +60,14 @@ const gameStore = {
       commit('SET_HOSTNAME', hostname)
     },
     nicknameUpdate ({ commit, dispatch }, res) {
+      console.log(     typeof(OPENVIDU_SERVER_SECRET))
       commit('NICKNAME_UPDATE', res)
       dispatch('joinSession')
     },
     joinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
       const OV = new OpenVidu();
+
 
       // --- Init a session ---
       const session = OV.initSession();
@@ -148,11 +150,14 @@ const gameStore = {
             {
               auth: {
                 username: "OPENVIDUAPP",
-                password: OPENVIDU_SERVER_SECRET,
+                password: "MY_SECRET",
               },
             }
           )
-          .then((response) => response.data)
+          .then((response) => {
+            response.data
+            console.log(response)
+          })
           .then((data) => resolve(data.id))
           .catch((error) => {
             if (error.response.status === 409) {
