@@ -27,6 +27,7 @@ const gameStore = {
   
   mutations: {
     NICKNAME_UPDATE (state, res) {
+      console.log(state.is_enter)
       if (state.is_enter == true) {
         state.is_enter = false
         state.nickname = res
@@ -40,8 +41,6 @@ const gameStore = {
       state.hostname = hostname
     },
     SET_PUBLISHER (state, res) {
-      console.log('뮤테이션 퍼블리셔 확인')
-      console.log(res)
       state.publisher = res
     },
     SET_OV (state, res) {
@@ -103,8 +102,6 @@ const gameStore = {
       console.log('겟토큰 전에 스테이트호스트네임')
       console.log(state.hostname)
       dispatch("getToken", state.hostname).then((token) => {
-        console.log('check')
-        console.log(subscribers)
         session
         .connect(token, { clientData: state.nickname })
         .then(() => {
@@ -119,17 +116,14 @@ const gameStore = {
             insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
             mirror: false, // Whether to mirror your local video or not
           });
-          console.log('조인세션 퍼블리셔')
-          console.log(publisher)
-          commit('SET_PUBLISHER', publisher)
           commit('SET_OV', OV)
+          commit('SET_PUBLISHER', publisher)
           commit('SET_SESSION', session)
           commit('SET_SUBSCRIBERS', subscribers)
           commit('SET_OVTOKEN', token)
 
             // --- Publish your stream ---
-
-            session.publish(state.publisher);
+          session.publish(state.publisher);
           })
           .catch((error) => {
             console.log(
@@ -157,8 +151,7 @@ const gameStore = {
           .post(
             `${OPENVIDU_SERVER_URL}/openvidu/api/sessions`,
             JSON.stringify({
-              customSessionId: sessionId,
-            }),
+              customSessionId: sessionId,}),
             {
               headers: {
                 'Content-Type' : 'application/json'
@@ -169,10 +162,7 @@ const gameStore = {
               },
             }
           )
-          .then((response) => {
-            response.data
-            console.log(response)
-          })
+          .then((response) =>response.data)
           .then((data) => resolve(data.id))
           .catch((error) => {
             if (error.response.status === 409) {
@@ -199,8 +189,8 @@ const gameStore = {
       return new Promise((resolve, reject) => {
         axios
           .post(
-            `${OPENVIDU_SERVER_URL}/openvidu/api/sessions/${sessionId}/connection`,
-            {},
+            `${OPENVIDU_SERVER_URL}/api/tokens`,JSON.stringify({
+              "session": sessionId,}),
             {
               auth: {
                 username: "OPENVIDUAPP",

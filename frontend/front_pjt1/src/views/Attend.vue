@@ -6,19 +6,18 @@
     </div>
 
     <!-- 작성 후 세션의 대기방 -->
-    <div id="enter" v-else class="container j">
-      <div class=" row justify-content-center m-5">
+    <div id="enter" v-else class="container">
+      <div class=" row">
         {{hostname}}의 방
       </div>
+      <hr>
       <div class="row justify-content-center">
         <!-- 참가자 리스트 -->
         <div class="col status">
-          <p>{{subscribers}}</p>
-          <p>{{publisher}}</p>
           <ready :streamManager="publisher"/>
           <div
             v-for="sub in subscribers"
-            :key="sub.stream.connection.connectionId"
+            :key="sub.stream.session.connection.connectionId"
           >
             <ready :stream-manager="sub" />
           </div>
@@ -43,7 +42,7 @@
         
       </div>
       <!-- 레디시 영상 송출 -->
-      <div id="RTC">
+      <div id="RTC" v-if="is_ready">
           <h1 id="session-title">{{ hostname }}</h1>
           <input
             class="btn btn-large btn-danger"
@@ -130,10 +129,6 @@ export default {
       console.log(this.hostname)
     }
   },
-  updated () {
-    console.log('업데이트 퍼블리셔')
-    console.log(this.publisher)
-  }
 }
 </script>
 

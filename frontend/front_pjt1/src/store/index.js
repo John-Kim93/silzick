@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import createPersistedState from "vuex-persistedstate"
+
 import VueJwtDecode from 'vue-jwt-decode'
 import cookies from 'vue-cookies'
 import board from './modules/board'
@@ -10,9 +10,7 @@ import gameStore from './modules/gameStore'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  plugins: [
-    createPersistedState(),
-  ],
+  
   state: {
     username: null,
   },
