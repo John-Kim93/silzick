@@ -229,6 +229,6 @@ input[type=text] {
 }
 input[type=text]:focus {
   border: solid white;
-  color: white
+  color: black
 }
 </style>

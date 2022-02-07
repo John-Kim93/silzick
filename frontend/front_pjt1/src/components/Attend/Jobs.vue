@@ -3,7 +3,8 @@
 		<div class="col-8 count">
             {{job}}
         </div>
-		<div class="col-4 count">명</div>
+		<button @click="addJob" class="col-2">+</button>
+		<button @click="removeJob" class="col-2">-</button>
 	</div>
 </template>
 
@@ -14,7 +15,9 @@ export default {
 	props: {
 		job:String
 	},
-
+	methods: {
+		
+	}
 };
 </script>
 <style>

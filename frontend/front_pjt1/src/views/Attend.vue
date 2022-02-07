@@ -7,7 +7,7 @@
 
     <!-- 작성 후 세션의 대기방 -->
     <div id="enter" v-else class="container">
-      <div v-if="!is_ready">
+      <div>
         <div class=" row">
           {{hostname}}의 방
         </div>
@@ -15,12 +15,15 @@
         <div class="row justify-content-center">
           <!-- 참가자 리스트 -->
           <div class="col status">
-            <ready :streamManager="publisher"/>
-            <div
-              v-for="sub in subscribers"
-              :key="sub.stream.session.connection.connectionId"
-            >
-              <ready :stream-manager="sub" />
+            <div v-if="publisher">
+              <ready :streamManager="publisher"/>
+              <div
+                v-for="sub in subscribers"
+                :key="sub.stream.session.connection.connectionId"
+              >
+                <ready :stream-manager="sub" />
+              </div>
+              <div>{{ readyCount }}</div>
             </div>
           </div>
           <!-- 직업리스트 -->
@@ -38,13 +41,24 @@
               <div> chat</div>
               <input type="text" class="w-auto">
             </div>
-            <button class="btn btn-success col" @click="isReady">Ready</button>
+            <button class="btn btn-success col" @click="setReady">Ready</button>
           </div>
           
         </div>
       </div>  
       <!-- 레디시 영상 송출 -->
-      <div id="RTC" v-if="is_ready">
+      <div id="RTC" v-if="false">
+        <div>
+          <div
+            v-for="(message, index) of messages"
+            :key="index"
+          >
+            <!-- <span>{{ message.sender }}</span> -->
+            <!-- <span>{{ message.time }}</span> -->
+            <span>{{ message }}</span>
+          </div>
+          <input type="text" style="color:black;" v-model="message" @keyup.enter="clickSendMessage">
+        </div>
           <h1 id="session-title">{{ hostname }}</h1>
           <input
             class="btn btn-large btn-danger"
@@ -96,14 +110,23 @@ export default {
   },
   data () {
     return {
-      test: this.publisher
+      test: this.publisher,
+      message: "init",
+      ready: true
     }
   },
   computed: {
-    ...mapState(gameStore, ['hostname', 'subscribers', 'publisher', 'is_enter', 'is_ready', 'jobs', 'nickname']),
+    ...mapState(gameStore, ['hostname', 'subscribers', 'publisher', 'is_enter', 'jobs', 'nickname', 'messages', 'readyCount']),
   },
   methods: {
-    ...mapActions(gameStore, ['setHostname','isReady']),
+    ...mapActions(gameStore, ['setHostname', 'sendMessage', 'leaveSession', 'setReady']),
+
+    clickSendMessage() {
+      if (this.message.trim()) {
+        this.sendMessage(this.message)
+        this.message=""
+      }
+    },
     
     videoOff(subscriber){
       subscriber.subscribeToAudio(false);  // true to unmute the audio track, false to mute it

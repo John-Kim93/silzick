@@ -9,10 +9,12 @@ const gameStore = {
 
   state: {
     // customed
+    isHost: false,
     hostname: undefined,
     nickname: undefined,
     is_enter: false,
-    is_ready: false,
+    isReady: false,
+    readyCount: 0,
 
     // Ovenvidu
     OV: undefined,
@@ -22,7 +24,15 @@ const gameStore = {
     subscribers: [],
 
     //game
-    jobs:['키라','추종자','경찰총장','방송인','경찰']
+    jobs:['키라','추종자','경찰총장','방송인','경찰'],
+    {
+      jobNmae: '키라',
+      isChange: false,
+      count: 1,
+    }
+
+    //chatting
+    messages: [],
   },
   
   mutations: {
@@ -37,15 +47,11 @@ const gameStore = {
         state.nickname = res
       }
     },
+    IS_HOST (state) {
+      state.isHost = true
+    },
     SET_HOSTNAME (state, hostname) {
       state.hostname = hostname
-    },
-    IS_READY (state,){
-      if (!state.is_ready){
-        state.is_ready = true
-      }else{
-        state.is_ready = false
-      }
     },
     SET_PUBLISHER (state, res) {
       state.publisher = res
@@ -62,20 +68,30 @@ const gameStore = {
     SET_OVTOKEN (state, res) {
       state.OVToken = res
     },
+    SET_MY_READY (state) {
+      state.publisher.ready = !state.publisher.ready
+      if (state.publisher.ready) {
+        state.readyCount ++
+      } else {
+        state.readyCount --
+      }
+    },
+
+    // 채팅 관련 기능
+    SET_MESSAGES(state, res) {
+      state.messages.push(res.message)
+    }
   },
   // setHostname, nicknameUpdate, joinSession, getToken, createSession, createToken, leaveSession
   actions: {
     setHostname ({commit}, hostname) {
       commit('SET_HOSTNAME', hostname)
     },
-    nicknameUpdate ({ commit, dispatch }, res) {
+    async nicknameUpdate ({ commit, dispatch }, res) {
       console.log('닉네임업데이트')
       console.log(res)
       commit('NICKNAME_UPDATE', res)
-      dispatch('joinSession')
-    },
-    isReady({commit},){
-      commit('IS_READY',)
+      await dispatch('joinSession')
     },
     joinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
@@ -89,7 +105,13 @@ const gameStore = {
       // On every new Stream received...
       session.on("streamCreated", ({ stream }) => {
         const subscriber = session.subscribe(stream);
+        subscriber.ready = false
+        // const readyStatus = {
+        //   subscrberId: subscriber.stream.connection.connectionId,
+        //   ready: false,
+        // }
         subscribers.push(subscriber);
+        // subsReady.push(readyStatus);
       });
       
       // On every Stream destroyed...
@@ -104,6 +126,26 @@ const gameStore = {
       session.on("exception", ({ exception }) => {
         console.warn(exception);
       });
+
+      session.on("signal:chat", (event)=>{
+        let eventData = JSON.parse(event.data);
+        let data = new Object()
+        data.message = eventData.message;
+        commit('SET_MESSAGES', data)
+      });
+
+      session.on("signal:ready", (event)=> {
+        state.subscribers.forEach(subscriber => {
+          if (subscriber.stream.connection.connectionId === event.from.connectionId) {
+            subscriber.ready = !subscriber.ready
+            if (subscriber.ready) {
+              state.readyCount ++
+            } else {
+              state.readyCount --
+            }
+          }
+        })
+      })
       
       // --- Connect to the session with a valid user token ---
       
@@ -126,6 +168,7 @@ const gameStore = {
             insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
             mirror: false, // Whether to mirror your local video or not
           });
+          publisher.ready = false
           commit('SET_OV', OV)
           commit('SET_PUBLISHER', publisher)
           commit('SET_SESSION', session)
@@ -228,7 +271,28 @@ const gameStore = {
 
       // window.removeEventListener("beforeunload", this.leaveSession);
     },
+    // 채팅 관련 통신
+    sendMessage ({ state }, message) {
+      state.session.signal({
+        type: 'chat',
+        data: JSON.stringify({message}),
+        to: [],
+      })
+    },
+    setReady ({commit, state}) {
+      commit('SET_MY_READY')
+      const readyRequest = {
+        isReady : state.isReady
+      }
+      state.session.signal({
+        type: 'ready',
+        data: JSON.stringify(readyRequest),
+        to: [],
+      })
+    },
+    // prepareGame ({state}) {
 
+    // }
 
   },
 }
