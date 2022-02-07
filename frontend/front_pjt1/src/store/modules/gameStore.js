@@ -40,6 +40,13 @@ const gameStore = {
     SET_HOSTNAME (state, hostname) {
       state.hostname = hostname
     },
+    IS_READY (state,){
+      if (!state.is_ready){
+        state.is_ready = true
+      }else{
+        state.is_ready = false
+      }
+    },
     SET_PUBLISHER (state, res) {
       state.publisher = res
     },
@@ -66,6 +73,9 @@ const gameStore = {
       console.log(res)
       commit('NICKNAME_UPDATE', res)
       dispatch('joinSession')
+    },
+    isReady({commit},){
+      commit('IS_READY',)
     },
     joinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
