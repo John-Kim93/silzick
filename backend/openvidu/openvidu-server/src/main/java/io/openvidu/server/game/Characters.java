@@ -3,9 +3,13 @@ package io.openvidu.server.game;
 import io.openvidu.server.core.Participant;
 
 public class Characters {
+    //역할 이름
     private Roles roles;
+    //생존 여부
     private boolean isAlive = true;
+    //역할 맡는 플레이어
     private Participant participant;
+    //보호막 적용중 여부
     private boolean isProtected = false;
 
     public Characters(Roles roles, Participant participant) {
