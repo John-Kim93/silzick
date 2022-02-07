@@ -7,40 +7,42 @@
 
     <!-- 작성 후 세션의 대기방 -->
     <div id="enter" v-else class="container">
-      <div class=" row">
-        {{hostname}}의 방
-      </div>
-      <hr>
-      <div class="row justify-content-center">
-        <!-- 참가자 리스트 -->
-        <div class="col status">
-          <ready :streamManager="publisher"/>
-          <div
-            v-for="sub in subscribers"
-            :key="sub.stream.session.connection.connectionId"
-          >
-            <ready :stream-manager="sub" />
-          </div>
-        </div>
-        <!-- 직업리스트 -->
-        <div class="col status">
-          <jobs :job="job" v-for="job in jobs" v-bind:key="job"/>          
-        </div>
-
-        <!-- 적용직업리스트 -->
-        <div class="col status">
-          <job-select :job="job" v-for="job in jobs" v-bind:key="job"/>
+      <div v-if="!is_ready">
+        <div class=" row">
+          {{hostname}}의 방
         </div>
         <hr>
-        <div class="row d-flex justify-content-between">
-          <div class="chat col-8">
-            <div> chat</div>
-            <input type="text" class="w-auto">
+        <div class="row justify-content-center">
+          <!-- 참가자 리스트 -->
+          <div class="col status">
+            <ready :streamManager="publisher"/>
+            <div
+              v-for="sub in subscribers"
+              :key="sub.stream.session.connection.connectionId"
+            >
+              <ready :stream-manager="sub" />
+            </div>
           </div>
-          <button class="btn btn-success col" @click="ready">Ready</button>
+          <!-- 직업리스트 -->
+          <div class="col status">
+            <jobs :job="job" v-for="job in jobs" v-bind:key="job"/>          
+          </div>
+
+          <!-- 적용직업리스트 -->
+          <div class="col status">
+            <job-select :job="job" v-for="job in jobs" v-bind:key="job"/>
+          </div>
+          <hr>
+          <div class="row d-flex justify-content-between">
+            <div class="chat col-8">
+              <div> chat</div>
+              <input type="text" class="w-auto">
+            </div>
+            <button class="btn btn-success col" @click="isReady">Ready</button>
+          </div>
+          
         </div>
-        
-      </div>
+      </div>  
       <!-- 레디시 영상 송출 -->
       <div id="RTC" v-if="is_ready">
           <h1 id="session-title">{{ hostname }}</h1>
@@ -54,7 +56,7 @@
           <div id="video-container" class="col-md-6">
             <user-video
               :stream-manager="publisher"
-              @click.native="updateMainVideoStreamManager(publisher)"
+              
             />
             <div
               v-for="sub in subscribers"
@@ -62,7 +64,7 @@
             >
               <user-video
                 :stream-manager="sub"
-                @click.native="updateMainVideoStreamManager(sub)"
+                
               />
               <button @click="videoOff(sub)">OFF</button>
             </div>
@@ -101,19 +103,8 @@ export default {
     ...mapState(gameStore, ['hostname', 'subscribers', 'publisher', 'is_enter', 'is_ready', 'jobs', 'nickname']),
   },
   methods: {
-    ...mapActions(gameStore, ['setHostname']),
-    ready () {
-      this.is_ready = true
-      
-      // if(this.ready){
-      //   this.ready = false
-      // }else{
-      //   this.ready = true
-      // }
-      // this.$socket.emit('ready', {
-      //   message: this.is_ready
-      // });
-    },
+    ...mapActions(gameStore, ['setHostname','isReady']),
+    
     videoOff(subscriber){
       subscriber.subscribeToAudio(false);  // true to unmute the audio track, false to mute it
       subscriber.subscribeToVideo(false);  // true to enable the video, false to disable it

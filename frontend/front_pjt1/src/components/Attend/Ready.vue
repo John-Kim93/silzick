@@ -25,7 +25,7 @@ export default {
 
 	methods: {
 		getConnectionData () {
-			console.log(this.streamManager.stream)
+			// console.log(this.streamManager.stream)
 			const { connection } = this.streamManager.stream;
 			return JSON.parse(connection.data);
 		},
