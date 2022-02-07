@@ -28,12 +28,12 @@
           </div>
           <!-- 직업리스트 -->
           <div class="col status">
-            <jobs :job="job" v-for="job in jobs" v-bind:key="job"/>          
+            <jobs :job="job" v-for="job in jobs" :key="job.jobName"/>          
           </div>
 
           <!-- 적용직업리스트 -->
           <div class="col status">
-            <job-select :job="job" v-for="job in jobs" v-bind:key="job"/>
+            <job-select :job="job" v-for="job in jobs" :key="job.jobName"/>
           </div>
           <hr>
           <div class="row d-flex justify-content-between">
@@ -116,7 +116,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['hostname', 'subscribers', 'publisher', 'is_enter', 'jobs', 'nickname', 'messages', 'readyCount']),
+    ...mapState(gameStore, ['hostname', 'subscribers', 'publisher', 'is_enter', 'jobs', 'nickname', 'messages', 'readyCount', 'isHost']),
   },
   methods: {
     ...mapActions(gameStore, ['setHostname', 'sendMessage', 'leaveSession', 'setReady']),

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { OpenVidu } from "openvidu-browser";
 import { OPENVIDU_SERVER_URL, OPENVIDU_SERVER_SECRET } from '@/config/index.js'
+import { jobs } from './gameUtil.js'
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -24,12 +25,7 @@ const gameStore = {
     subscribers: [],
 
     //game
-    jobs:['키라','추종자','경찰총장','방송인','경찰'],
-    {
-      jobNmae: '키라',
-      isChange: false,
-      count: 1,
-    }
+    jobs: jobs,
 
     //chatting
     messages: [],
@@ -80,18 +76,34 @@ const gameStore = {
     // 채팅 관련 기능
     SET_MESSAGES(state, res) {
       state.messages.push(res.message)
-    }
+    },
+
+    // 게임 관련 기능
+    GET_JOB_PROPS (state, jobProps) {
+      state.jobs = jobProps
+    },
+
+    CHANGE_JOB_COUNT(state, jobProps) {
+      state.jobs.forEach(job => {
+        if (job.jobName === jobProps.jobName) {
+          job.count = jobProps.count
+        }
+      })
+    },
+    
   },
   // setHostname, nicknameUpdate, joinSession, getToken, createSession, createToken, leaveSession
   actions: {
     setHostname ({commit}, hostname) {
       commit('SET_HOSTNAME', hostname)
     },
-    async nicknameUpdate ({ commit, dispatch }, res) {
-      console.log('닉네임업데이트')
-      console.log(res)
+    async nicknameUpdate ({ state, commit, dispatch }, res) {
       commit('NICKNAME_UPDATE', res)
       await dispatch('joinSession')
+      state.session.signal({
+        type: 'getJobProps',
+        to: [],
+      })
     },
     joinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
@@ -145,7 +157,19 @@ const gameStore = {
             }
           }
         })
-      })
+      });
+
+      session.on("signal:getJobProps", (event) => {
+        let jobProps = JSON.parse(event.data)
+        commit('GET_JOB_PROPS', jobProps)
+      });
+
+      session.on("signal:changeJobCount", (event) => {
+        let job = JSON.parse(event.data)
+        commit('CHANGE_JOB_COUNT', job)
+      });
+
+      
       
       // --- Connect to the session with a valid user token ---
       
@@ -287,6 +311,15 @@ const gameStore = {
       state.session.signal({
         type: 'ready',
         data: JSON.stringify(readyRequest),
+        to: [],
+      })
+    },
+
+    // 게임 기능
+    changeJobCount({ state }, jobProps) {
+      state.session.signal({
+        type: 'plusJobCount',
+        data: JSON.stringify(jobProps),
         to: [],
       })
     },

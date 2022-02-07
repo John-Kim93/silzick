@@ -1,22 +1,44 @@
 <template>
 	<div class="row count m-1">
 		<div class="col-8 count">
-            {{job}}
-        </div>
-		<button @click="addJob" class="col-2">+</button>
-		<button @click="removeJob" class="col-2">-</button>
+			{{job.jobName}}
+		</div>
+		<button @click="plus" class="col-2">+</button>
+		<button @click="minus" class="col-2">-</button>
 	</div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
+const gameStore = 'gameStore'
+
 export default {
 	name: 'Jobs',
 
 	props: {
-		job:String
+		job:Object
 	},
 	methods: {
-		
+		...mapActions(gameStore, ['changeJobCount']),
+		plus () {
+			if (this.job.isChange && this.job.count < this.job.maxCount) {
+				const jobProps = {
+					jobName: this.job.jobName,
+					count: this.job.count + 1
+				}
+				this.changeJobCount(jobProps)
+			}
+		},
+		minus () {
+			if (this.job.isChange && this.job.count > 0) {
+				const jobProps = {
+					jobName: this.job.jobName,
+					count: this.job.count - 1
+				}
+				this.changeJobCount(jobProps)
+			}
+		}
 	}
 };
 </script>

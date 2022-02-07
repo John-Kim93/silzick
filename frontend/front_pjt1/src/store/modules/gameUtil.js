@@ -1,40 +1,40 @@
 const jobs = [
   {
-    jobNmae: 'KIRA',
+    jobName: 'KIRA',
     isChange: false,
     count: 1,
     maxCount: 1,
   },
   {
-    jobNmae: 'CRIMINAL',
+    jobName: 'CRIMINAL',
     isChange: true,
     count: 1,
     maxCount: 3,
   },
   {
-    jobNmae: 'L',
+    jobName: 'L',
     isChange: false,
     count: 1,
     maxCount: 1,
   },
   {
-    jobNmae: 'POLICE',
+    jobName: 'POLICE',
     isChange: true,
     count: 1,
     maxCount: 3,
   },
   {
-    jobNmae: 'BROADCASTER',
+    jobName: 'BROADCASTER',
     isChange: true,
     count: 0,
     maxCount: 3,
   },
   {
-    jobNmae: 'GUARD',
+    jobName: 'GUARD',
     isChange: true,
     count: 0,
     maxCount: 3,
   },
 ]
 
-export default { jobs }
+export { jobs }
