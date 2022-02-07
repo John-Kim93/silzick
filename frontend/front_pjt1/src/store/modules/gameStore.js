@@ -13,9 +13,9 @@ const gameStore = {
     isHost: false,
     hostname: undefined,
     nickname: undefined,
-    is_enter: false,
     isReady: false,
     readyCount: 0,
+    activeGameStart: false,
 
     // Ovenvidu
     OV: undefined,
@@ -33,16 +33,9 @@ const gameStore = {
   
   mutations: {
     NICKNAME_UPDATE (state, res) {
-      console.log(state.is_enter)
-      if (state.is_enter == true) {
-        state.is_enter = false
         state.nickname = res
-      } else {
-        state.is_enter = true
-        console.log(res)
-        state.nickname = res
-      }
     },
+    // 메인페이지에서 "방생성" 누르고 들어오면 isHost = true
     IS_HOST (state) {
       state.isHost = true
     },
@@ -79,10 +72,12 @@ const gameStore = {
     },
 
     // 게임 관련 기능
+    // 직업 리스트 입력
     GET_JOB_PROPS (state, jobProps) {
       state.jobs = jobProps
     },
 
+    // 직업 정보 내 count 증감
     CHANGE_JOB_COUNT(state, jobProps) {
       state.jobs.forEach(job => {
         if (job.jobName === jobProps.jobName) {
@@ -92,11 +87,14 @@ const gameStore = {
     },
     
   },
-  // setHostname, nicknameUpdate, joinSession, getToken, createSession, createToken, leaveSession
+
   actions: {
+    // 게임 페이지 created되면 hostname URL에서 받아서 입력
     setHostname ({commit}, hostname) {
       commit('SET_HOSTNAME', hostname)
     },
+
+    // Attend에서 참가 누르면 닉네임 받아옴. 닉네임 받아서 조인세션허고 직업 리스트 요청
     async nicknameUpdate ({ state, commit, dispatch }, res) {
       commit('NICKNAME_UPDATE', res)
       await dispatch('joinSession')
@@ -105,25 +103,24 @@ const gameStore = {
         to: [],
       })
     },
+    // ★★★★★★★★★★★★★★겁나 중요함★★★★★★★★★★★★★★★★★
+    // 오픈바이두 연결하는 세션만드는 함수, 닉네입 입력 후 참가 누르면 동작함
     joinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
       const OV = new OpenVidu();
       // --- Init a session ---
       const session = OV.initSession();
+
       const subscribers = [];
-      
       // --- Specify the actions when events take place in the session ---
       
       // On every new Stream received...
+      // stream = 영상 송출과 관련된 정보들
+      // 세션에 publisher를 등록하면 자동으로 streamCreated가 실행되고 다른사람의 subscribers에 내 stream정보를 담는 로직
       session.on("streamCreated", ({ stream }) => {
         const subscriber = session.subscribe(stream);
         subscriber.ready = false
-        // const readyStatus = {
-        //   subscrberId: subscriber.stream.connection.connectionId,
-        //   ready: false,
-        // }
         subscribers.push(subscriber);
-        // subsReady.push(readyStatus);
       });
       
       // On every Stream destroyed...
@@ -139,6 +136,8 @@ const gameStore = {
         console.warn(exception);
       });
 
+      // session.on의 첫번째 인자 = event(String), 두번째 인자 = 앞의 event를 받아서 실행하는 함수(Function)
+      // event.data에 채팅 input에서 받은 내용을 parsing해서 state의 messages에 반영
       session.on("signal:chat", (event)=>{
         let eventData = JSON.parse(event.data);
         let data = new Object()
@@ -146,6 +145,7 @@ const gameStore = {
         commit('SET_MESSAGES', data)
       });
 
+      // ready 시그널에서 보낸사람 ID를 받음, 내 subscribers 기준으로 같은 사람 찾아서 ready 상태 변경
       session.on("signal:ready", (event)=> {
         state.subscribers.forEach(subscriber => {
           if (subscriber.stream.connection.connectionId === event.from.connectionId) {
@@ -159,11 +159,13 @@ const gameStore = {
         })
       });
 
+      // 직업 리스트 백에서 받아와서 state 수정
       session.on("signal:getJobProps", (event) => {
         let jobProps = JSON.parse(event.data)
         commit('GET_JOB_PROPS', jobProps)
       });
 
+      // 프론트에서 방장이 직업 +- 누르면 state의 직업별 count 숫자 바꿔주기
       session.on("signal:changeJobCount", (event) => {
         let job = JSON.parse(event.data)
         commit('CHANGE_JOB_COUNT', job)
@@ -213,16 +215,11 @@ const gameStore = {
       // window.addEventListener("beforeunload", this.leaveSession);
     },
     getToken({ dispatch }, mySessionId) {
-      console.log('겟토큰')
-      console.log(mySessionId)
-
       return dispatch('createSession', mySessionId).then((sessionId) =>
         dispatch('createToken', sessionId)
       );
     },
     createSession(context, sessionId) {
-      console.log('크리에이트세션')
-      console.log(sessionId)
       return new Promise((resolve, reject) => {
         axios
           .post(
@@ -261,8 +258,6 @@ const gameStore = {
       });
     },
     createToken(context, sessionId) {
-      console.log('크리에이트토큰')
-      console.log(sessionId)
       return new Promise((resolve, reject) => {
         axios
           .post(

@@ -1,7 +1,7 @@
 <template>
   <div id="main-container" class="container d-flex">
-    <!-- 닉네임 작성전 대기 -->
-    <div id="noenter" v-if="!is_enter">
+    <!-- 닉네임 작성전 대기방 // publisher가 발급되지 않음 = seesion이 발급되지 않음 -->
+    <div id="noenter" v-if="!publisher">
       <entrance />
     </div>
 
@@ -116,7 +116,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['hostname', 'subscribers', 'publisher', 'is_enter', 'jobs', 'nickname', 'messages', 'readyCount', 'isHost']),
+    ...mapState(gameStore, ['hostname', 'subscribers', 'publisher', 'jobs', 'nickname', 'messages', 'readyCount', 'isHost']),
   },
   methods: {
     ...mapActions(gameStore, ['setHostname', 'sendMessage', 'leaveSession', 'setReady']),

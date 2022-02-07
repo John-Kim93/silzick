@@ -14,11 +14,6 @@ export default {
 	props: {
 		job:Object
 	},
-	created () {
-		console.log('@@@@@@@@@@@@@')
-		console.log(this.job)
-		
-	}
 };
 </script>
 <style>
