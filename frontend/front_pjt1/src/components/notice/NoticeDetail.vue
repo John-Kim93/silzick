@@ -24,7 +24,7 @@
     <div class="container location" style="width:70%; color:white; text-align:left">
       <!-- <p>d : {{ post.id }}</p> -->
       <hr>
-      <h5>{{ post.created_at }}</h5>
+      <h5>{{ post.createdAt }}</h5>
       <hr>
       <h5>{{ post.title }}</h5>
       <hr>
@@ -43,10 +43,7 @@
 </template>
 
 <script>
-import { deleteNotice } from '@/api/notice.js'
-import { createNamespacedHelpers } from 'vuex'
-
-const { mapState } = createNamespacedHelpers('notice')
+import { getNotice, deleteNotice } from '@/api/notice.js'
 
 export default {
   name: 'NoticeDetail',
@@ -54,12 +51,6 @@ export default {
     return {
       index: this.$route.params.id
     }
-  },
-  computed: {
-    ...mapState(["admin_post"]),
-    post () {
-      return this.admin_post.find(post => post.id == this.index)
-    },
   },
   methods: {
     moveToUpdate () {
@@ -84,6 +75,18 @@ export default {
     moveToNotice () {
       this.$router.push({ name: 'Notice' })
     }
+  },
+  created () {
+    getNotice(
+      this.index,
+      (res) => {
+        alert(res)
+        this.post = res
+      },
+      (err) => {
+        alert(err)
+      }
+    )
   }
 }
 </script>

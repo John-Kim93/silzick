@@ -15,7 +15,7 @@ function createNotice (post, success, fail) {
 }
 
 function updateNotice (post, success, fail) {
-  api.post('/notice/modify', JSON.stringify(post)).then(success).catch(fail)
+  api.put('/notice/modify', JSON.stringify(post)).then(success).catch(fail)
 }
 
 function deleteNotice (boardNo, success, fail) {
