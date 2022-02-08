@@ -244,6 +244,8 @@ public class GameService {
         readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
 
         int cnt = 0;
+        System.out.println(readyState);
+        System.out.println(readyState.keySet().size());
         // publicId : true로 보냄.
         for (Participant p : readyState.keySet()) {
             data.addProperty(p.getParticipantPublicId(), readyState.get(p));

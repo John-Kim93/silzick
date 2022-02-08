@@ -6,7 +6,8 @@
         <div class=" row">
           {{sessionId}}의 방
         </div>
-        <button @click="test">test</button>
+        <button @click="test2">test2</button>
+        <button @click="test3">test3</button>
         <hr>
         <div class="row justify-content-center">
           <!-- 참가자 리스트 -->
@@ -114,11 +115,20 @@ export default {
   methods: {
     ...mapActions(gameStore, [ 'sendMessage', 'leaveSession', 'setReady']),
     
-    test() {
+    test2() {
       this.session.signal({
         type: 'game',
         data: {
           gameStatus: 2
+        },
+        to: [],
+      })
+    },
+    test3() {
+      this.session.signal({
+        type: 'game',
+        data: {
+          gameStatus: 3
         },
         to: [],
       })

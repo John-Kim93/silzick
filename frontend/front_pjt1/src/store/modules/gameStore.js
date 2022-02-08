@@ -161,32 +161,26 @@ const gameStore = {
       });
 
       // 직업 리스트 백에서 받아와서 state 수정
-      session.on("signal:game", (event) => {
+      session.on("signal:game2", (event) => {
+        state.subscribers.forEach(subscriber => {
+          subscriber.ready = event.data[subscriber.stream.connection.connectionId]
+        })
+      });
+      session.on("signal:game3", (event) => {
         console.log('게임시그널 받았다.')
         console.log(event)
-        if (event.data.gameStatus == 2) {
-          state.subscribers.forEach(subscriber => {
-            console.log(subscriber.stream.connection.connectionId)
-            if (Object.keys(event.data).includes(subscriber.stream.connection.connectionId)) {
-              console.log('성공!')
-            }
-          })
-        }
-        // let jobProps = JSON.parse(event.data)
-        // commit('GET_JOB_PROPS', jobProps)
+        console.log(typeof(event))
+        state.subscribers.forEach(subscriber => {
+          subscriber.ready = event.data[subscriber.stream.connection.connectionId]
+        })
       });
 
       // 프론트에서 방장이 직업 +- 누르면 state의 직업별 count 숫자 바꿔주기
       session.on("signal:changeJobCount", (event) => {
-        alert(event)
         let job = JSON.parse(event.data)
         commit('CHANGE_JOB_COUNT', job)
       });
-
-      
-      
       // --- Connect to the session with a valid user token ---
-      
       // 'getToken' method is simulating what your server-side should do.
       // 'token' parameter should be retrieved and returned by your own backend
       dispatch("getToken", state.sessionId).then((token) => {
