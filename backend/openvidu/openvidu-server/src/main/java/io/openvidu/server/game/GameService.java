@@ -250,6 +250,7 @@ public class GameService {
         //레디 값 토글
         readyState.compute(participant.getParticipantPublicId(), (k, v) -> v = !v);
         System.out.println(readyState);
+
         //레디값 변경.
         readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
 

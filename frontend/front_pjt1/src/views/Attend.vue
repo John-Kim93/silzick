@@ -6,7 +6,7 @@
         <div class=" row">
           {{sessionId}}의 방
         </div>
-        <button @click="test3">test3</button>
+        <button @click="test1">test1</button>
         <hr>
         <div class="row justify-content-center">
           <!-- 참가자 리스트 -->
@@ -37,7 +37,21 @@
               <div> chat</div>
               <input type="text" class="w-auto">
             </div>
-            <button class="btn btn-success col" @click="setReady">Ready</button>
+          <!-- ready / start button -->
+            <button
+              class="btn btn-success col"
+              @click="setReady"
+              v-if="!readyStatus"
+            >
+            Ready
+            </button>
+            <button
+              class="btn btn-success col"
+              @click="setReady"
+              v-else
+            >
+            Start
+            </button>
           </div>
           
         </div>
@@ -90,7 +104,7 @@ import UserVideo from "../components/Attend/UserVideo.vue";
 import Ready from '@/components/Attend/Ready.vue';
 import Jobs from  '@/components/Attend/Jobs.vue';
 import JobSelect from '@/components/Attend/JobSelect.vue';
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 
 const gameStore = 'gameStore';
 
@@ -109,16 +123,17 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['sessionId', 'subscribers', 'publisher', 'jobs', 'nickname', 'messages', 'readyCount', 'isHost', 'session']),
+    ...mapState(gameStore, ['sessionId', 'subscribers', 'publisher', 'jobs', 'nickname', 'messages', 'readyCount', 'isHost', 'session', 'readyStatus']),
   },
   methods: {
-    ...mapActions(gameStore, [ 'sendMessage', 'leaveSession', 'setReady', 'getReadyState']),
+    ...mapActions(gameStore, [ 'sendMessage', 'leaveSession', 'setReady', 'getReadyState', 'getJobsState']),
+    ...mapMutations(gameStore, ['SET_MY_READY']),
     
-    test3() {
+    test1() {
       this.session.signal({
         type: 'game',
         data: {
-          gameStatus: 3
+          gameStatus: 1
         },
         to: [],
       })
@@ -138,6 +153,7 @@ export default {
   },
   created () {
     this.getReadyState()
+    this.getJobsState()
   }
 }
 </script>

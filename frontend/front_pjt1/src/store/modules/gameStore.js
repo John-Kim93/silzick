@@ -16,6 +16,7 @@ const gameStore = {
     isReady: false,
     readyCount: 0,
     activeGameStart: false,
+    readyStatus: false,
     
     // Ovenvidu
     OV: undefined,
@@ -47,12 +48,9 @@ const gameStore = {
       state.OV = res
     },
     SET_SESSIONID (state, sessionId) {
-      console.log('!!!!!!!!!!!!!!!!!')
       state.sessionId = sessionId
     },
     SET_SESSION (state, res) {
-      console.log(res)
-      console.log('@@@@@@@@@@@@@@@@@')
       state.session = res
     },
     SET_SUBSCRIBERS (state, res) {
@@ -63,11 +61,6 @@ const gameStore = {
     },
     SET_MY_READY (state) {
       state.publisher.ready = !state.publisher.ready
-      if (state.publisher.ready) {
-        state.readyCount ++
-      } else {
-        state.readyCount --
-      }
     },
 
     // 채팅 관련 기능
@@ -145,44 +138,36 @@ const gameStore = {
         commit('SET_MESSAGES', data)
       });
 
-      // ready 시그널에서 보낸사람 ID를 받음, 내 subscribers 기준으로 같은 사람 찾아서 ready 상태 변경
-      session.on("signal:ready", (event)=> {
-        state.subscribers.forEach(subscriber => {
-          if (subscriber.stream.connection.connectionId === event.from.connectionId) {
-            subscriber.ready = !subscriber.ready
-            if (subscriber.ready) {
-              state.readyCount ++
-            } else {
-              state.readyCount --
-            }
+      // 게임 관련 시그널 관리
+      session.on("signal:game", (event) => {
+        if (event.data.gameStatus === 0){
+          for (let i=0; i<6; i++) {
+            state.jobs.forEach(job => {
+              if (job.jobName == event.data[i].jobName) {
+                job.count = event.data[i].count
+              }
+            })
           }
-        })
-      });
-
-      // 직업 리스트 백에서 받아와서 state 수정
-      session.on("signal:game", (event) => {
-        if(event.data.gameStatus === 2){
+        } else if(event.data.gameStatus === 1){
+          let job = event.data
+          console.log(job)
+          commit('CHANGE_JOB_COUNT', job)
+        } else if (event.data.gameStatus === 2){
           state.subscribers.forEach(subscriber => {
             subscriber.ready = event.data[subscriber.stream.connection.connectionId]
           })
-        }
-      });
-      session.on("signal:game", (event) => {
-        if(event.data.gameStatus === 3){
-          console.log('게임시그널 받았다.')
-          console.log(event)
-          console.log(typeof(event))
+        } else if (event.data.gameStatus === 3){
           state.subscribers.forEach(subscriber => {
             subscriber.ready = event.data[subscriber.stream.connection.connectionId]
           })
+          if (event.data.readyState) {
+            state.readyStatus = true
+          } else {
+            state.readyStatus = false
+          }
         }
       });
 
-      // 프론트에서 방장이 직업 +- 누르면 state의 직업별 count 숫자 바꿔주기
-      session.on("signal:changeJobCount", (event) => {
-        let job = JSON.parse(event.data)
-        commit('CHANGE_JOB_COUNT', job)
-      });
       // --- Connect to the session with a valid user token ---
       // 'getToken' method is simulating what your server-side should do.
       // 'token' parameter should be retrieved and returned by your own backend
@@ -312,12 +297,11 @@ const gameStore = {
     },
     setReady ({commit, state}) {
       commit('SET_MY_READY')
-      const readyRequest = {
-        isReady : state.isReady
-      }
       state.session.signal({
-        type: 'ready',
-        data: JSON.stringify(readyRequest),
+        type: 'game',
+        data: {
+          gameStatus: 3
+        },
         to: [],
       })
     },
@@ -325,8 +309,8 @@ const gameStore = {
     // 게임 기능
     changeJobCount({ state }, jobProps) {
       state.session.signal({
-        type: 'changeJobCount',
-        data: JSON.stringify(jobProps),
+        type: 'game',
+        data: jobProps,
         to: [],
       })
     },
@@ -339,8 +323,18 @@ const gameStore = {
         },
         to: [],
       })
+    },
+    getJobsState({state}) {
+      state.session.signal({
+        type: 'game',
+        data: {
+          gameStatus: 0
+        },
+        to: [],
+      })
     }
   },
+
 }
 
 export default gameStore;
