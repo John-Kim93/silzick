@@ -226,11 +226,10 @@ public class GameService {
         }
         params.add("data", data);
 
-        //방 참여자들에게 바뀐 데이터 보내주기.
-        for (Participant p : participants) {
-            rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
-                    ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
-        }
+        //신호 요청자에게 바뀐 데이터 보내주기.
+        rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
+                ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+
     }
 
     private void setReadySetting(Participant participant, String sessionId, Set<Participant> participants, JsonObject params, JsonObject data, RpcNotificationService notice) {
@@ -241,10 +240,19 @@ public class GameService {
         //레디값 변경.
         readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
 
+        int cnt = 0;
         // publicId : true로 보냄.
         for (Participant p : readyState.keySet()) {
             data.addProperty(p.getParticipantPublicId(), readyState.get(p));
+            if (readyState.get(p)) {
+                cnt++;
+            }
         }
+
+        if (participants.size() >= 6 && participants.size() == cnt) {
+            data.addProperty("readyState", true);
+        }
+
         params.add("data", data);
 
         //방 참여자들에게 바뀐 데이터 보내주기.
