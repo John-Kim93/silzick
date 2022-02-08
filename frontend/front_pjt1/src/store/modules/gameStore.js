@@ -79,6 +79,8 @@ const gameStore = {
 
     // 직업 정보 내 count 증감
     CHANGE_JOB_COUNT(state, jobProps) {
+      console.log('@@@@@@@@@@@@@@@@@@')
+      console.log(jobProps)
       state.jobs.forEach(job => {
         if (job.jobName === jobProps.jobName) {
           job.count = jobProps.count
@@ -167,6 +169,7 @@ const gameStore = {
 
       // 프론트에서 방장이 직업 +- 누르면 state의 직업별 count 숫자 바꿔주기
       session.on("signal:changeJobCount", (event) => {
+        alert(event)
         let job = JSON.parse(event.data)
         commit('CHANGE_JOB_COUNT', job)
       });
@@ -313,7 +316,7 @@ const gameStore = {
     // 게임 기능
     changeJobCount({ state }, jobProps) {
       state.session.signal({
-        type: 'plusJobCount',
+        type: 'changeJobCount',
         data: JSON.stringify(jobProps),
         to: [],
       })

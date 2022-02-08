@@ -127,8 +127,8 @@ export default {
 <style scoped>
   .location {
     position: fixed;
-    top: 63%;
-    left: 50%;
+    top: 26%;
+    left: 14%;
     width: 70%;
     height: 70%;
   }
