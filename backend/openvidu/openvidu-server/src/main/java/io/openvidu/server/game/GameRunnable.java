@@ -19,6 +19,7 @@ public class GameRunnable implements Runnable {
     public GameRunnable(String sessionId, ArrayList<Characters> userRoles, ArrayList<Participant> participantsList, ArrayList<Participant> missionCandidates, RpcNotificationService notice) {
         this.sessionId = sessionId;
         this.userRoles = userRoles;
+        this.participantsList = participantsList;
         this.missionCandidates = missionCandidates;
         this.notice = notice;
     }
