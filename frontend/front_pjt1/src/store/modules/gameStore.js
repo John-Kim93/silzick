@@ -160,18 +160,22 @@ const gameStore = {
       });
 
       // 직업 리스트 백에서 받아와서 state 수정
-      session.on("signal:game2", (event) => {
-        state.subscribers.forEach(subscriber => {
-          subscriber.ready = event.data[subscriber.stream.connection.connectionId]
-        })
+      session.on("signal:game", (event) => {
+        if(event.data.gameStatus === 2){
+          state.subscribers.forEach(subscriber => {
+            subscriber.ready = event.data[subscriber.stream.connection.connectionId]
+          })
+        }
       });
-      session.on("signal:game3", (event) => {
-        console.log('게임시그널 받았다.')
-        console.log(event)
-        console.log(typeof(event))
-        state.subscribers.forEach(subscriber => {
-          subscriber.ready = event.data[subscriber.stream.connection.connectionId]
-        })
+      session.on("signal:game", (event) => {
+        if(event.data.gameStatus === 3){
+          console.log('게임시그널 받았다.')
+          console.log(event)
+          console.log(typeof(event))
+          state.subscribers.forEach(subscriber => {
+            subscriber.ready = event.data[subscriber.stream.connection.connectionId]
+          })
+        }
       });
 
       // 프론트에서 방장이 직업 +- 누르면 state의 직업별 count 숫자 바꿔주기

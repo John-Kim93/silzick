@@ -67,10 +67,9 @@ public class GameService {
 
     public void gameNavigator(Participant participant, JsonObject message, Set<Participant> participants,
                               String sessionId, RpcNotificationService notice) {
-
+        System.out.println("SIGNAL CALLL!!!!!!!!");
         rpcNotificationService = notice;
         JsonObject params = new JsonObject();
-
         // data 파싱해서 다시 JSONOBJECT로 바꾸기.
         String dataString = message.get("data").toString();
         JsonObject data = (JsonObject) JsonParser.parseString(dataString);
@@ -151,7 +150,7 @@ public class GameService {
         setJobsProperty(params, data, players);
 
         //요청한 사람만 신호 보내주기.
-        notice.sendNotification(participant.getParticipantPrivateId(),
+        rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
                 ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
     }
 
@@ -195,7 +194,7 @@ public class GameService {
 
         //방 참여자들에게 바뀐 데이터 보내주기.
         for (Participant p : participants) {
-            notice.sendNotification(p.getParticipantPrivateId(),
+            rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
         }
     }
@@ -214,6 +213,7 @@ public class GameService {
      * 처음 방 접속시 접속인원들의 Ready상태를 알려줌.
      */
     private void getReadySetting(Participant participant, String sessionId, Set<Participant> participants, JsonObject params, JsonObject data, RpcNotificationService notice) {
+        System.out.println("CALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         //session에서 관리되는게 없으면 빈 배열 삽입
         readySetting.putIfAbsent(sessionId, new HashMap<>());
 
@@ -231,11 +231,12 @@ public class GameService {
         params.add("data", data);
 
         //신호 요청자에게 바뀐 데이터 보내주기.
-        notice.sendNotification(participant.getParticipantPrivateId(),
+        rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
                 ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
     }
 
     private void setReadySetting(Participant participant, String sessionId, Set<Participant> participants, JsonObject params, JsonObject data, RpcNotificationService notice) {
+        System.out.println(readySetting.size());
         //레디 상태 가져오기.
         HashMap<String, Boolean> readyState = readySetting.get(sessionId);
         //레디 값 토글
@@ -263,7 +264,7 @@ public class GameService {
 
         //방 참여자들에게 바뀐 데이터 보내주기.
         for (Participant p : participants) {
-            notice.sendNotification(p.getParticipantPrivateId(),
+            rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
         }
     }
