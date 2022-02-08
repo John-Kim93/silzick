@@ -63,7 +63,7 @@ public class GameService {
     // 데스노트 적힌사람.
     protected static ConcurrentHashMap<String, ArrayList<Characters>> deathNoteList = new ConcurrentHashMap<>();
     // Ready현황 관리
-    protected static ConcurrentHashMap<String, HashMap<Participant, Boolean>> readySetting = new ConcurrentHashMap<>();
+    protected static ConcurrentHashMap<String, HashMap<String, Boolean>> readySetting = new ConcurrentHashMap<>();
 
     public void gameNavigator(Participant participant, JsonObject message, Set<Participant> participants,
                               String sessionId, RpcNotificationService notice) {
@@ -79,7 +79,7 @@ public class GameService {
         int gameStatus = data.get("gameStatus").getAsInt();
 
         //타입은 game+gameStatus로 보내준다. 예시 : game2 or game3
-        String type = message.get("type").getAsString() + gameStatus;
+        String type = message.get("type").getAsString();
         params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_TYPE_PARAM, type);
 
         switch (gameStatus) {
@@ -218,15 +218,15 @@ public class GameService {
         readySetting.putIfAbsent(sessionId, new HashMap<>());
 
         //기존에 관리되고 있다면 세션별 관리값을 불러온다.
-        HashMap<Participant, Boolean> readyState = readySetting.get(sessionId);
+        HashMap<String, Boolean> readyState = readySetting.get(sessionId);
 
         //새로운 participant, false 기본값 넣고 바꿔준다.
-        readyState.put(participant, false);
+        readyState.put(participant.getParticipantPublicId(), false);
         readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
 
         // publicId : 레디상태(false/true) 로 보냄.
-        for (Participant p : readyState.keySet()) {
-            data.addProperty(p.getParticipantPublicId(), readyState.get(p));
+        for (String publicId : readyState.keySet()) {
+            data.addProperty(publicId, readyState.get(publicId));
         }
         params.add("data", data);
 
@@ -237,17 +237,17 @@ public class GameService {
 
     private void setReadySetting(Participant participant, String sessionId, Set<Participant> participants, JsonObject params, JsonObject data, RpcNotificationService notice) {
         //레디 상태 가져오기.
-        HashMap<Participant, Boolean> readyState = readySetting.get(sessionId);
+        HashMap<String, Boolean> readyState = readySetting.get(sessionId);
         //레디 값 토글
-        readyState.replace(participant, !readyState.get(participant));
+        readyState.replace(participant.getParticipantPublicId(), !readyState.get(participant));
         //레디값 변경.
         readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
 
         int cnt = 0;
         // publicId : true로 보냄.
-        for (Participant p : readyState.keySet()) {
-            data.addProperty(p.getParticipantPublicId(), readyState.get(p));
-            if (readyState.get(p)) {
+        for (String publicId : readyState.keySet()) {
+            data.addProperty(publicId, readyState.get(publicId));
+            if (readyState.get(publicId)) {
                 cnt++;
             }
         }
