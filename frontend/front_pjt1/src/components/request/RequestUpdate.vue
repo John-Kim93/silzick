@@ -1,20 +1,20 @@
 <template>
   <div>
     <img src="https://ifh.cc/g/7ruaO5.png" id="bg" alt="bgImg">
-    <div class="container location" style="width:70%">
+    <div class="container location " style="width:70%">
       <input
         type="text"
         v-model="title"
         style="background-color:black"
         class="my-title form-control"
       >
-      <!-- <textarea
+      <textarea
         style="background-color:black"
         class="my-content form-control my-3"
         type="text"
         v-model="content"
         cols="30" rows="10"
-      ></textarea> -->
+      ></textarea>
       <div>
         <b-button
           @click="updateRequest"
@@ -28,29 +28,18 @@
 </template>
 
 <script>
-import { updateRequest } from '@/api/board.js' 
-import { createNamespacedHelpers } from 'vuex'
-const { mapState } = createNamespacedHelpers('board')
+import { getRequest, updateRequest } from '@/api/board.js' 
 
 export default {
   name: 'RequestUpdate',
   data () {
     return {
       index: this.$route.params.id,
-      title: null,
-      content: null,
+      title: undefined,
+      content: undefined,
     }
   },
-  computed: {
-    ...mapState(['user_post']),
-  },
   methods: {
-    getTitle () {
-      return this.user_post.find(post => post.id == this.index).title
-    },
-    getContent () {
-      return this.user_post.find(post => post.id == this.index).content
-    },
     updateRequest () {
       const requestData = {
         title: this.title,
@@ -71,8 +60,17 @@ export default {
     },
   },
   created () {
-    this.title = this.getTitle()
-    this.content = this.getContent()
+    getRequest(
+      this.index,
+      (res) => {
+        console.log(res.data)
+        this.title = res.data.title
+        this.content = res.data.content
+      },
+      (err) => {
+        alert(err)
+      }
+    )
   }
 }
 </script>

@@ -15,7 +15,7 @@ function createRequest (post, success, fail) {
 }
 
 function updateRequest (post, success, fail) {
-  api.post('/board/modify', JSON.stringify(post)).then(success).catch(fail)
+  api.put('/board/modify', JSON.stringify(post)).then(success).catch(fail)
 }
 
 function deleteRequest (boardNo, success, fail) {

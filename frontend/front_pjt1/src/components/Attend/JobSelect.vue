@@ -1,9 +1,9 @@
 <template>
 	<div class="row count m-1">
 		<div class="col-8 count">
-            {{job}}
-        </div>
-		<div class="col-4 count">명</div>
+			{{job.jobName}}
+		</div>
+		<div class="col-4 count">{{job.count}}명</div>
 	</div>
 </template>
 
@@ -12,9 +12,8 @@ export default {
 	name: 'JobSelect',
 
 	props: {
-		job:String
+		job:Object
 	},
-
 };
 </script>
 <style>

@@ -34,7 +34,7 @@
             <td>{{ post.title }}</td>
             <td>{{ post.hit }}</td>
             <td>{{ post.userId }}</td>
-            <td>{{ post.createdAt.slice(0,10) }}</td>
+            <td>{{ post.modifiedAt.slice(0,10) }}</td>
           </tr>
         </tbody>
       </table>

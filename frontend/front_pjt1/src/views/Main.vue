@@ -40,7 +40,8 @@ export default {
   },
   methods: {
     ...mapActions(gameStore, ['setHostname']),
-    ...mapMutations(['RESET_USER']),
+    ...mapMutations(gameStore, ['IS_HOST']),
+    ...mapMutations(['RESET_USER',]),
     logout () {
       if (cookies.isKey('JWT-AUTHENTICATION')) {
         cookies.remove('JWT-AUTHENTICATION')
@@ -49,7 +50,7 @@ export default {
       }
     },
     createRoom () {
-      console.log(this.username)
+      this.IS_HOST()
       this.$router.push({
         name : 'Attend',
         params : {hostname : this.username},
