@@ -40,16 +40,19 @@ const gameStore = {
     IS_HOST (state) {
       state.isHost = true
     },
-    SET_SESSIONID (state, sessionId) {
-      state.sessionId = sessionId
-    },
     SET_PUBLISHER (state, res) {
       state.publisher = res
     },
     SET_OV (state, res) {
       state.OV = res
     },
+    SET_SESSIONID (state, sessionId) {
+      console.log('!!!!!!!!!!!!!!!!!')
+      state.sessionId = sessionId
+    },
     SET_SESSION (state, res) {
+      console.log(res)
+      console.log('@@@@@@@@@@@@@@@@@')
       state.session = res
     },
     SET_SUBSCRIBERS (state, res) {
@@ -97,14 +100,10 @@ const gameStore = {
       commit('NICKNAME_UPDATE', res.nickname)
       commit('SET_SESSIONID', res.sessionId)
       dispatch('joinSession')
-      router.push({
-        name: 'Attend',
-        params: { hostname: res.sessionId}
-      })
     },
     // ★★★★★★★★★★★★★★겁나 중요함★★★★★★★★★★★★★★★★★
     // 오픈바이두 연결하는 세션만드는 함수, 닉네입 입력 후 참가 누르면 동작함
-    joinSession({ commit, dispatch, state }) {
+    async joinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
       const OV = new OpenVidu();
       // --- Init a session ---
@@ -183,7 +182,7 @@ const gameStore = {
       // --- Connect to the session with a valid user token ---
       // 'getToken' method is simulating what your server-side should do.
       // 'token' parameter should be retrieved and returned by your own backend
-      dispatch("getToken", state.sessionId).then((token) => {
+      await dispatch("getToken", state.sessionId).then((token) => {
         session
         .connect(token, { clientData: state.nickname })
         .then(() => {
@@ -208,7 +207,11 @@ const gameStore = {
             // --- Publish your stream ---
           console.log('퍼블리싱 되고있다')
           session.publish(state.publisher);
+          router.push({
+            name: 'Attend',
+            params: { hostname: state.sessionId}
           })
+        })
           .catch((error) => {
             console.log(
               "There was an error connecting to the session:",
@@ -217,7 +220,7 @@ const gameStore = {
             );
           });
       });
-      // window.addEventListener("beforeunload", this.leaveSession);
+      window.addEventListener("beforeunload", this.leaveSession);
     },
     getToken({ dispatch }, mySessionId) {
       return dispatch('createSession', mySessionId).then((sessionId) =>
@@ -323,10 +326,16 @@ const gameStore = {
         to: [],
       })
     },
-    // prepareGame ({state}) {
 
-    // }
-
+    getReadyState({state}) {
+      state.session.signal({
+        type: 'game',
+        data: {
+          gameStatus: 2
+        },
+        to: [],
+      })
+    }
   },
 }
 

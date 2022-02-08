@@ -6,7 +6,6 @@
         <div class=" row">
           {{sessionId}}의 방
         </div>
-        <button @click="test2">test2</button>
         <button @click="test3">test3</button>
         <hr>
         <div class="row justify-content-center">
@@ -113,17 +112,8 @@ export default {
     ...mapState(gameStore, ['sessionId', 'subscribers', 'publisher', 'jobs', 'nickname', 'messages', 'readyCount', 'isHost', 'session']),
   },
   methods: {
-    ...mapActions(gameStore, [ 'sendMessage', 'leaveSession', 'setReady']),
+    ...mapActions(gameStore, [ 'sendMessage', 'leaveSession', 'setReady', 'getReadyState']),
     
-    test2() {
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 2
-        },
-        to: [],
-      })
-    },
     test3() {
       this.session.signal({
         type: 'game',
@@ -146,6 +136,9 @@ export default {
       subscriber.subscribeToVideo(false);  // true to enable the video, false to disable it
     },
   },
+  created () {
+    this.getReadyState
+  }
 }
 </script>
 
