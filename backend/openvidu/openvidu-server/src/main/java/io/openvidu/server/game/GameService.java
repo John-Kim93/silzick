@@ -239,7 +239,8 @@ public class GameService {
         //레디 상태 가져오기.
         HashMap<String, Boolean> readyState = readySetting.get(sessionId);
         //레디 값 토글
-        readyState.replace(participant.getParticipantPublicId(), !readyState.get(participant.getParticipantPublicId()));
+        System.out.println(readyState.keySet().size());
+        readyState.computeIfPresent(participant.getParticipantPublicId(), (k, v) -> v = !v);
         //레디값 변경.
         readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
 
