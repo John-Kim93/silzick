@@ -2,6 +2,7 @@ import axios from 'axios'
 import { OpenVidu } from "openvidu-browser";
 import { OPENVIDU_SERVER_URL, OPENVIDU_SERVER_SECRET } from '@/config/index.js'
 import { jobs } from './gameUtil.js'
+import router from '@/router/index.js'
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -11,15 +12,15 @@ const gameStore = {
   state: {
     // customed
     isHost: false,
-    hostname: undefined,
     nickname: undefined,
     isReady: false,
     readyCount: 0,
     activeGameStart: false,
-
+    
     // Ovenvidu
     OV: undefined,
     OVToken: undefined,
+    sessionId: undefined,
     session: undefined,
     publisher: undefined,
     subscribers: [],
@@ -39,8 +40,8 @@ const gameStore = {
     IS_HOST (state) {
       state.isHost = true
     },
-    SET_HOSTNAME (state, hostname) {
-      state.hostname = hostname
+    SET_SESSIONID (state, sessionId) {
+      state.sessionId = sessionId
     },
     SET_PUBLISHER (state, res) {
       state.publisher = res
@@ -79,8 +80,6 @@ const gameStore = {
 
     // 직업 정보 내 count 증감
     CHANGE_JOB_COUNT(state, jobProps) {
-      console.log('@@@@@@@@@@@@@@@@@@')
-      console.log(jobProps)
       state.jobs.forEach(job => {
         if (job.jobName === jobProps.jobName) {
           job.count = jobProps.count
@@ -91,18 +90,16 @@ const gameStore = {
   },
 
   actions: {
-    // 게임 페이지 created되면 hostname URL에서 받아서 입력
-    setHostname ({commit}, hostname) {
-      commit('SET_HOSTNAME', hostname)
-    },
-
     // Attend에서 참가 누르면 닉네임 받아옴. 닉네임 받아서 조인세션허고 직업 리스트 요청
-    async nicknameUpdate ({ state, commit, dispatch }, res) {
-      commit('NICKNAME_UPDATE', res)
-      await dispatch('joinSession')
-      state.session.signal({
-        type: 'getJobProps',
-        to: [],
+    nicknameUpdate ({ commit, dispatch }, res) {
+      console.log('세션아이디 잘 받았다')
+      console.log(res.sessionId)
+      commit('NICKNAME_UPDATE', res.nickname)
+      commit('SET_SESSIONID', res.sessionId)
+      dispatch('joinSession')
+      router.push({
+        name: 'Attend',
+        params: { hostname: res.sessionId}
       })
     },
     // ★★★★★★★★★★★★★★겁나 중요함★★★★★★★★★★★★★★★★★
@@ -121,6 +118,8 @@ const gameStore = {
       // 세션에 publisher를 등록하면 자동으로 streamCreated가 실행되고 다른사람의 subscribers에 내 stream정보를 담는 로직
       session.on("streamCreated", ({ stream }) => {
         const subscriber = session.subscribe(stream);
+        console.log('스트림 크리에이티드 섭스크라이버스 출력')
+        console.log(subscriber)
         subscriber.ready = false
         subscribers.push(subscriber);
       });
@@ -162,9 +161,19 @@ const gameStore = {
       });
 
       // 직업 리스트 백에서 받아와서 state 수정
-      session.on("signal:getJobProps", (event) => {
-        let jobProps = JSON.parse(event.data)
-        commit('GET_JOB_PROPS', jobProps)
+      session.on("signal:game", (event) => {
+        console.log('게임시그널 받았다.')
+        console.log(event)
+        if (event.data.gameStatus == 2) {
+          state.subscribers.forEach(subscriber => {
+            console.log(subscriber.stream.connection.connectionId)
+            if (Object.keys(event.data).includes(subscriber.stream.connection.connectionId)) {
+              console.log('성공!')
+            }
+          })
+        }
+        // let jobProps = JSON.parse(event.data)
+        // commit('GET_JOB_PROPS', jobProps)
       });
 
       // 프론트에서 방장이 직업 +- 누르면 state의 직업별 count 숫자 바꿔주기
@@ -180,9 +189,7 @@ const gameStore = {
       
       // 'getToken' method is simulating what your server-side should do.
       // 'token' parameter should be retrieved and returned by your own backend
-      console.log('겟토큰 전에 스테이트호스트네임')
-      console.log(state.hostname)
-      dispatch("getToken", state.hostname).then((token) => {
+      dispatch("getToken", state.sessionId).then((token) => {
         session
         .connect(token, { clientData: state.nickname })
         .then(() => {
@@ -205,6 +212,7 @@ const gameStore = {
           commit('SET_OVTOKEN', token)
 
             // --- Publish your stream ---
+          console.log('퍼블리싱 되고있다')
           session.publish(state.publisher);
           })
           .catch((error) => {
@@ -287,7 +295,7 @@ const gameStore = {
       commit('SET_OV', undefined)
       commit('SET_OVTOKEN', undefined)
       commit('SET_SUBSCRIBERS', [])
-      commit('SET_HOSTNAME', undefined)
+      commit('SET_SESSIONID', undefined)
       commit('SET_NICKNAME', undefined)
       commit('NICKNAME_UPDATE', undefined)
 

@@ -394,7 +394,7 @@ public class SessionEventsHandler {
 		}
 
 		//game으로 오는 신호만 gameService로 보내고, 나머지는 원래대로 작동시킴.
-		if(message.has("type") && message.get("type").equals("signal:game")){
+		if(message.has("type") && message.get("type").getAsString().equals("signal:game")){
 			gameService.gameNavigator(participant, message, participants, sessionId, rpcNotificationService);
 		}else{
 			String from = null;

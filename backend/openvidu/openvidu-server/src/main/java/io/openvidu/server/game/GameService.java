@@ -79,7 +79,7 @@ public class GameService {
             params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_TYPE_PARAM, type);
         }
         // data 파싱
-        String dataString = message.get("data").getAsString();
+        String dataString = message.get("data").toString();
         JsonObject data = (JsonObject) JsonParser.parseString(dataString);
 
         // data에 gameStatus로 게임 상태 분기
@@ -214,11 +214,8 @@ public class GameService {
         readyState.put(participant, false);
 
         //처음이면 더하고, 아니면 변경.
-        if (readySetting.get(sessionId).isEmpty()) {
-            readySetting.putIfAbsent(sessionId, readyState);
-        } else {
-            readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
-        }
+        readySetting.putIfAbsent(sessionId, readyState);
+        readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
 
         // publicId : true로 보냄.
         for (Participant p : readyState.keySet()) {

@@ -1,16 +1,12 @@
 <template>
   <div id="main-container" class="container d-flex">
-    <!-- 닉네임 작성전 대기방 // publisher가 발급되지 않음 = seesion이 발급되지 않음 -->
-    <div id="noenter" v-if="!publisher">
-      <entrance />
-    </div>
-
     <!-- 작성 후 세션의 대기방 -->
-    <div id="enter" v-else class="container">
+    <div id="enter" class="container">
       <div>
         <div class=" row">
-          {{hostname}}의 방
+          {{sessionId}}의 방
         </div>
+        <button @click="test">test</button>
         <hr>
         <div class="row justify-content-center">
           <!-- 참가자 리스트 -->
@@ -59,7 +55,7 @@
           </div>
           <input type="text" style="color:black;" v-model="message" @keyup.enter="clickSendMessage">
         </div>
-          <h1 id="session-title">{{ hostname }}</h1>
+          <h1 id="session-title">{{ sessionId }}</h1>
           <input
             class="btn btn-large btn-danger"
             type="button"
@@ -91,7 +87,6 @@
 
 <script>
 import UserVideo from "../components/Attend/UserVideo.vue";
-import Entrance from "@/components/Attend/Entrance.vue";
 import Ready from '@/components/Attend/Ready.vue';
 import Jobs from  '@/components/Attend/Jobs.vue';
 import JobSelect from '@/components/Attend/JobSelect.vue';
@@ -103,23 +98,31 @@ export default {
   name: "Attend",
   components: {
     UserVideo,
-    Entrance,
     Ready,
     Jobs,
     JobSelect,
   },
   data () {
     return {
-      test: this.publisher,
       message: "init",
       ready: true
     }
   },
   computed: {
-    ...mapState(gameStore, ['hostname', 'subscribers', 'publisher', 'jobs', 'nickname', 'messages', 'readyCount', 'isHost']),
+    ...mapState(gameStore, ['sessionId', 'subscribers', 'publisher', 'jobs', 'nickname', 'messages', 'readyCount', 'isHost', 'session']),
   },
   methods: {
-    ...mapActions(gameStore, ['setHostname', 'sendMessage', 'leaveSession', 'setReady']),
+    ...mapActions(gameStore, [ 'sendMessage', 'leaveSession', 'setReady']),
+    
+    test() {
+      this.session.signal({
+        type: 'game',
+        data: {
+          gameStatus: 2
+        },
+        to: [],
+      })
+    },
 
     clickSendMessage() {
       if (this.message.trim()) {
@@ -132,16 +135,6 @@ export default {
       subscriber.subscribeToAudio(false);  // true to unmute the audio track, false to mute it
       subscriber.subscribeToVideo(false);  // true to enable the video, false to disable it
     },
-  },
-  created (){
-    if (this.hostname == undefined) {
-      const hostname = this.$router.history.current.params.hostname
-      this.setHostname(hostname)
-      console.log('퍼블리셔')
-      console.log(this.publisher)
-      console.log('호스트네임 체크')
-      console.log(this.hostname)
-    }
   },
 }
 </script>

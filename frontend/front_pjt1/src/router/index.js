@@ -16,10 +16,16 @@ import Skill from '../views/Skill.vue'
 import Rule from '../views/Rule.vue'
 import Card from '../views/Card.vue'
 import Attend from '../views/Attend.vue'
+import Join from '../views/Join.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/Join',
+    name: 'Join',
+    component: Join
+  },
   {
     path: '/Attend/:hostname',
     name: 'Attend',

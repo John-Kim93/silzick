@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import cookies from 'vue-cookies'
 
 const gameStore = 'gameStore'
@@ -39,7 +39,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions(gameStore, ['setHostname']),
     ...mapMutations(gameStore, ['IS_HOST']),
     ...mapMutations(['RESET_USER',]),
     logout () {
@@ -51,10 +50,7 @@ export default {
     },
     createRoom () {
       this.IS_HOST()
-      this.$router.push({
-        name : 'Attend',
-        params : {hostname : this.username},
-      })
+      this.$router.push({ name : 'Join' })
     }
 
   },
