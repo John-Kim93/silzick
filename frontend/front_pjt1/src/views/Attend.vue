@@ -137,7 +137,7 @@ export default {
     },
   },
   created () {
-    this.getReadyState
+    this.getReadyState()
   }
 }
 </script>
