@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div
-      v-if="isLogin && !isHost"
+      v-if="isLogin && !join"
       class="d-flex mx-3 py-3 fix"
     >
       <button class="btn" style="background-color:black;">
@@ -51,7 +51,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['isHost'])
+    ...mapState(gameStore, ['join'])
   },
   updated () {
     this.isLogin = cookies.isKey("JWT-AUTHENTICATION")

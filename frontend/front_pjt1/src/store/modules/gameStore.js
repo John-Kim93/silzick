@@ -11,10 +11,10 @@ const gameStore = {
 
   state: {
     // customed
+    join: false,
     isHost: false,
     nickname: undefined,
     isReady: false,
-    readyCount: 0,
     activeGameStart: false,
     readyStatus: false,
     
@@ -34,6 +34,12 @@ const gameStore = {
   },
   
   mutations: {
+    GAME_CHECKIN (state) {
+      state.join = true
+    },
+    GAME_CHECKOUT (state) {
+      state.join = false
+    },
     NICKNAME_UPDATE (state, res) {
         state.nickname = res
     },
@@ -140,6 +146,7 @@ const gameStore = {
 
       // 게임 관련 시그널 관리
       session.on("signal:game", (event) => {
+        // 게임 접속 시 직업 데이터 현황 받기
         if (event.data.gameStatus === 0){
           for (let i=0; i<6; i++) {
             state.jobs.forEach(job => {
@@ -148,14 +155,17 @@ const gameStore = {
               }
             })
           }
+        // job.count 증감 (방장 권한)
         } else if(event.data.gameStatus === 1){
           let job = event.data
           console.log(job)
           commit('CHANGE_JOB_COUNT', job)
+        // 게임 접속 시 ready 현황 받기
         } else if (event.data.gameStatus === 2){
           state.subscribers.forEach(subscriber => {
             subscriber.ready = event.data[subscriber.stream.connection.connectionId]
           })
+        // 다른사람이 레디했을 때 정보 받아서 바꾸기 + 6명 이상 레디하면 게임시작 활성화
         } else if (event.data.gameStatus === 3){
           state.subscribers.forEach(subscriber => {
             subscriber.ready = event.data[subscriber.stream.connection.connectionId]

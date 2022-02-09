@@ -19,7 +19,6 @@
               >
                 <ready :stream-manager="sub" />
               </div>
-              <div>{{ readyCount }}</div>
             </div>
           </div>
           <!-- 직업리스트 -->
@@ -38,20 +37,55 @@
               <input type="text" class="w-auto">
             </div>
           <!-- ready / start button -->
-            <button
-              class="btn btn-success col"
-              @click="setReady"
-              v-if="!readyStatus"
+            <!-- 방장이면 스타트버튼도 있어야함 -->
+            <div
+              class="d-flex col"
+              v-if="isHost"
             >
-            Ready
-            </button>
-            <button
-              class="btn btn-success col"
-              @click="setReady"
+              <!-- 레디 토글 -->
+              <button
+                class="btn btn-success col m-1"
+                @click="setReady"
+                v-if="!publisher.ready"
+              >
+              Ready
+              </button>
+              <button
+                class="btn btn-success col m-1"
+                @click="setReady"
+                v-else
+              >
+              Ready 취소
+              </button>
+              <!-- 전원(6명 이상) 레디되면 활성화 -->
+              <button
+                class="btn btn-success col m-1"
+                @click="setReady"
+                :disabled="!readyStatus"
+              >
+              Start
+              </button>
+            </div>
+            <!-- 게스트인 경우 레디만 띄움 -->
+            <div
+              class="d-flex col"
               v-else
             >
-            Start
-            </button>
+              <button
+                class="btn btn-success col m-1"
+                @click="setReady"
+                v-if="!publisher.ready"
+              >
+              Ready
+              </button>
+              <button
+                class="btn btn-success col m-1"
+                @click="setReady"
+                v-else
+              >
+              Ready 취소
+              </button>
+            </div>
           </div>
           
         </div>
@@ -123,7 +157,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['sessionId', 'subscribers', 'publisher', 'jobs', 'nickname', 'messages', 'readyCount', 'isHost', 'session', 'readyStatus']),
+    ...mapState(gameStore, ['sessionId', 'subscribers', 'publisher', 'jobs', 'nickname', 'messages', 'isHost', 'session', 'readyStatus']),
   },
   methods: {
     ...mapActions(gameStore, [ 'sendMessage', 'leaveSession', 'setReady', 'getReadyState', 'getJobsState']),
