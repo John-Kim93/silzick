@@ -163,6 +163,10 @@ export default {
     ...mapMutations(gameStore, ['SET_MY_READY']),
     
     gameStart() {
+      let count = 0
+      this.jobs.forEach(job => {
+        count += job.count
+      })
       this.session.signal({
         type: 'game',
         data: {

@@ -2,75 +2,30 @@
   <div class="container" style="color:white">
     <img src="https://ifh.cc/g/1WPkxv.png" id="bg" alt="bgImg">
     <h1>{{myJob}}</h1>
-    <!--6명 기준_참가자 전체 CAM : total_cam-->
-    <div class="d-flex justify-content-around total_cam">
-      <!--참가자 1 CAM : private_cam-->
-      <div class="private_cam_6">
-        참가자1
+    <!--6명 이하 6분할-->
+    <div
+      v-if="subscribers.length < 6"
+      class="d-inline-flex row align-middle total_cam"
+    > 
+      <!-- 내 비디오 -->
+      <user-video
+        class="col-4 private_cam_6"
+        :stream-manager="publisher"
+      />
+      <!-- 다른 사람 비디오 -->
+      <div
+        class="col-4 private_cam_6"
+        v-for="subscriber in subscribers"
+        :key="subscriber.stream.connection.connectionId"
+      >
+        <user-video
+          :stream-manager="subscriber"
+        />
       </div>
-      <!--참가자 2 CAM : private_cam-->
-      <div class="private_cam_6">
-        참가자2
-      </div>
-      <!--참가자 3 CAM : private_cam-->
-      <div class="private_cam_6">
-        참가자3
-      </div>
-      <!--참가자 4 CAM : private_cam-->
-      <div class="private_cam_6">
-        참가자4
-      </div>
-      <!--참가자 5 CAM : private_cam-->
-      <div class="private_cam_6">
-        참가자5
-      </div>
-      <!--참가자 6 CAM : private_cam-->
-      <div class="private_cam_6">
-        참가자6
-      </div>
+     
     </div>
 
-    <!--9명 기준_참가자 전체 CAM : total_cam-->
-    <!-- 6명일때는 여기부터 -->
-    <div class="d-flex justify-content-around total_cam">
-      <!--참가자 1 CAM : private_cam-->
-      <div class="private_cam_9">
-        참가자1
-      </div>
-      <!--참가자 2 CAM : private_cam-->
-      <div class="private_cam_9">
-        참가자2
-      </div>
-      <!--참가자 3 CAM : private_cam-->
-      <div class="private_cam_9">
-        참가자3
-      </div>
-      <!--참가자 4 CAM : private_cam-->
-      <div class="private_cam_9">
-        참가자4
-      </div>
-      <!--참가자 5 CAM : private_cam-->
-      <div class="private_cam_9">
-        참가자5
-      </div>
-      <!--참가자 6 CAM : private_cam-->
-      <div class="private_cam_9">
-        참가자6
-      </div>
-            <!--참가자 7 CAM : private_cam-->
-      <div class="private_cam_9">
-        참가자7
-      </div>
-      <!--참가자 8 CAM : private_cam-->
-      <div class="private_cam_9">
-        참가자8
-      </div>
-      <!--참가자 9 CAM : private_cam-->
-      <div class="private_cam_9">
-        참가자9
-      </div>
-    </div>
-    <!-- 여기까지 지우기 -->
+    <!-- 6명 넘으면 9분할(미구현)-->
 
     <!--다음 명함 교환 까지(타이머) : timer-->
     <div class="timer d-flex">
@@ -150,9 +105,7 @@
     <!--스킬사용 및 메모팝업 버튼 : buttons-->
     <div class="d-flex justify-content-around buttons">
       <!--능력사용-->
-      <!--skill_button : 기본 / skill_button_note : 노트주인측 / skill_button_police : 경찰측으로 바꿔도 됨 -->
-      <!--disabled 사용해서 skill이 1이상일때만 사용가능하도록-->
-      <button class="skill_button">스킬 사용</button>
+      <active-skill/>
       <!--메모팝업-->
       <!--1.버튼 사용-->
       <!-- <div>
@@ -179,6 +132,8 @@
 <script>
 import { mapState } from 'vuex'
 import Doubt from '@/components/MainGame/Doubt.vue'
+import UserVideo from '@/components/Attend/UserVideo.vue'
+import ActiveSkill from '@/components/MainGame/ActiveSkill.vue'
 
 const gameStore = 'gameStore'
 
@@ -186,18 +141,20 @@ export default {
   name : 'MainGame',
   components: {
     Doubt,
+    UserVideo,
+    ActiveSkill
   },
-  data : function () {
+  data () {
     return {
       memo : false,
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers'])
+    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher'])
   },
 
   methods : {
-    openmemo : function () {
+    openmemo () {
       this.memo = true
     }
   }
@@ -205,6 +162,22 @@ export default {
 </script>
 
 <style scoped>
+/* custom css */
+  .private_cam_6 {
+    border-style: solid;
+    border-color: white;
+    width: 33%;
+    height: 50%;
+  }
+  .private_cam_9 {
+    border-style: solid;
+    border-color: white;
+    width: 33%;
+    height: 33%;
+  }
+
+
+/* braught css */
 .textarea_position {
   position: absolute;
   top: 5%;
@@ -404,18 +377,6 @@ input[id*="popup"]:checked + label + div {
   border-color: white;
   width: 50%;
   height: 50%;
-}
-.private_cam_6 {
-  border-style: solid;
-  border-color: white;
-  width: 33%;
-  height: 50%;
-}
-.private_cam_9 {
-  border-style: solid;
-  border-color: white;
-  width: 33%;
-  height: 33%;
 }
 .timer {
   position: fixed;
