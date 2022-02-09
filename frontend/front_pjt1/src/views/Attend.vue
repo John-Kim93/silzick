@@ -1,15 +1,10 @@
 <template>
   <div id="main-container" class="container d-flex">
-    <!-- 닉네임 작성전 대기방 // publisher가 발급되지 않음 = seesion이 발급되지 않음 -->
-    <div id="noenter" v-if="!publisher">
-      <entrance />
-    </div>
-
     <!-- 작성 후 세션의 대기방 -->
-    <div id="enter" v-else class="container">
+    <div id="enter" class="container">
       <div>
         <div class=" row">
-          {{hostname}}의 방
+          {{sessionId}}의 방
         </div>
         <hr>
         <div class="row justify-content-center">
@@ -23,7 +18,6 @@
               >
                 <ready :stream-manager="sub" />
               </div>
-              <div>{{ readyCount }}</div>
             </div>
           </div>
           <!-- 직업리스트 -->
@@ -41,7 +35,56 @@
               <div> chat</div>
               <input type="text" class="w-auto">
             </div>
-            <button class="btn btn-success col" @click="setReady">Ready</button>
+          <!-- ready / start button -->
+            <!-- 방장이면 스타트버튼도 있어야함 -->
+            <div
+              class="d-flex col"
+              v-if="isHost"
+            >
+              <!-- 레디 토글 -->
+              <button
+                class="btn btn-success col m-1"
+                @click="setReady"
+                v-if="!publisher.ready"
+              >
+              Ready
+              </button>
+              <button
+                class="btn btn-success col m-1"
+                @click="setReady"
+                v-else
+              >
+              Ready 취소
+              </button>
+              <!-- 전원(6명 이상) 레디되면 활성화 -->
+              <button
+                class="btn btn-success col m-1"
+                @click="gameStart"
+                :disabled="!readyStatus"
+              >
+              Start
+              </button>
+            </div>
+            <!-- 게스트인 경우 레디만 띄움 -->
+            <div
+              class="d-flex col"
+              v-else
+            >
+              <button
+                class="btn btn-success col m-1"
+                @click="setReady"
+                v-if="!publisher.ready"
+              >
+              Ready
+              </button>
+              <button
+                class="btn btn-success col m-1"
+                @click="setReady"
+                v-else
+              >
+              Ready 취소
+              </button>
+            </div>
           </div>
           
         </div>
@@ -59,7 +102,7 @@
           </div>
           <input type="text" style="color:black;" v-model="message" @keyup.enter="clickSendMessage">
         </div>
-          <h1 id="session-title">{{ hostname }}</h1>
+          <h1 id="session-title">{{ sessionId }}</h1>
           <input
             class="btn btn-large btn-danger"
             type="button"
@@ -91,11 +134,10 @@
 
 <script>
 import UserVideo from "../components/Attend/UserVideo.vue";
-import Entrance from "@/components/Attend/Entrance.vue";
 import Ready from '@/components/Attend/Ready.vue';
 import Jobs from  '@/components/Attend/Jobs.vue';
 import JobSelect from '@/components/Attend/JobSelect.vue';
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 
 const gameStore = 'gameStore';
 
@@ -103,23 +145,40 @@ export default {
   name: "Attend",
   components: {
     UserVideo,
-    Entrance,
     Ready,
     Jobs,
     JobSelect,
   },
   data () {
     return {
-      test: this.publisher,
       message: "init",
       ready: true
     }
   },
   computed: {
-    ...mapState(gameStore, ['hostname', 'subscribers', 'publisher', 'jobs', 'nickname', 'messages', 'readyCount', 'isHost']),
+    ...mapState(gameStore, ['sessionId', 'subscribers', 'publisher', 'jobs', 'nickname', 'messages', 'isHost', 'session', 'readyStatus']),
   },
   methods: {
-    ...mapActions(gameStore, ['setHostname', 'sendMessage', 'leaveSession', 'setReady']),
+    ...mapActions(gameStore, [ 'sendMessage', 'leaveSession', 'setReady', 'getReadyStatus', 'getJobsState',]),
+    ...mapMutations(gameStore, ['SET_MY_READY']),
+    
+    gameStart() {
+      let countSum = 0
+      this.jobs.forEach(job => {
+        countSum = job.count + countSum
+      })
+      if (this.subscribers.length + 1 === countSum) {
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 4
+          },
+          to: [],
+        }) 
+      } else {
+        alert('직업을 인원수에 맞게 설정해주세요.')
+      }
+    },
 
     clickSendMessage() {
       if (this.message.trim()) {
@@ -133,16 +192,10 @@ export default {
       subscriber.subscribeToVideo(false);  // true to enable the video, false to disable it
     },
   },
-  created (){
-    if (this.hostname == undefined) {
-      const hostname = this.$router.history.current.params.hostname
-      this.setHostname(hostname)
-      console.log('퍼블리셔')
-      console.log(this.publisher)
-      console.log('호스트네임 체크')
-      console.log(this.hostname)
-    }
-  },
+  created () {
+    this.getReadyStatus()
+    this.getJobsState()
+  }
 }
 </script>
 

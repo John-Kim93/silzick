@@ -24,6 +24,7 @@ export default {
 		plus () {
 			if (this.job.isChange && this.job.count < this.job.maxCount) {
 				const jobProps = {
+					gameStatus: 1,
 					jobName: this.job.jobName,
 					count: this.job.count + 1
 				}
@@ -33,6 +34,7 @@ export default {
 		minus () {
 			if (this.job.isChange && this.job.count > 0) {
 				const jobProps = {
+					gameStatus: 1,
 					jobName: this.job.jobName,
 					count: this.job.count - 1
 				}

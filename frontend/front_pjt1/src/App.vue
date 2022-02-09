@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div
-      v-if="isLogin"
+      v-if="isLogin && !join"
       class="d-flex mx-3 py-3 fix"
     >
       <button class="btn" style="background-color:black;">
@@ -39,6 +39,9 @@
 
 <script>
 import cookies from 'vue-cookies'
+import { mapState } from 'vuex'
+
+const gameStore = 'gameStore'
 
 export default {
   name: 'APP',
@@ -46,6 +49,9 @@ export default {
     return {
       isLogin : false,
     }
+  },
+  computed: {
+    ...mapState(gameStore, ['join'])
   },
   updated () {
     this.isLogin = cookies.isKey("JWT-AUTHENTICATION")

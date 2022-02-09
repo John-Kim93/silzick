@@ -21,12 +21,14 @@
       @click='logout'
     > 로그아웃
     </b-button>
+    
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import cookies from 'vue-cookies'
+
 
 const gameStore = 'gameStore'
 
@@ -39,9 +41,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(gameStore, ['setHostname']),
     ...mapMutations(gameStore, ['IS_HOST']),
-    ...mapMutations(['RESET_USER',]),
+    ...mapMutations(gameStore, ['RESET_USER', 'GAME_CHECKOUT']),
     logout () {
       if (cookies.isKey('JWT-AUTHENTICATION')) {
         cookies.remove('JWT-AUTHENTICATION')
@@ -51,13 +52,13 @@ export default {
     },
     createRoom () {
       this.IS_HOST()
-      this.$router.push({
-        name : 'Attend',
-        params : {hostname : this.username},
-      })
+      this.$router.push({ name : 'Join' })
     }
 
   },
+  created () {
+    this.GAME_CHECKOUT()
+  }
 }
 </script>
 
