@@ -67,7 +67,7 @@ public class GameService {
 
     public void gameNavigator(Participant participant, JsonObject message, Set<Participant> participants,
                               String sessionId, RpcNotificationService notice) {
-        System.out.println("SIGNAL CALLL!!!!!!!!");
+
         rpcNotificationService = notice;
         JsonObject params = new JsonObject();
         // data 파싱해서 다시 JSONOBJECT로 바꾸기.
@@ -108,8 +108,9 @@ public class GameService {
 
     /**
      * 받는 signal
-     * type : 'game0';
+     * type : 'game';
      * data :
+     * gameStatus : 0,
      * 0 : {
      * jobName : 직업이름,
      * count : 직업 수
@@ -156,9 +157,10 @@ public class GameService {
 
     /**
      * 보내는 signal
-     * type : 'game1';
+     * type : 'game';
      * data :
      * {
+     * gameStatus : 1,
      * jobName : 이름
      * count : 숫자
      * }
@@ -213,16 +215,23 @@ public class GameService {
      * 처음 방 접속시 접속인원들의 Ready상태를 알려줌.
      */
     private void getReadySetting(Participant participant, String sessionId, Set<Participant> participants, JsonObject params, JsonObject data, RpcNotificationService notice) {
-        System.out.println("CALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         //session에서 관리되는게 없으면 빈 배열 삽입
         readySetting.putIfAbsent(sessionId, new HashMap<>());
 
         //기존에 관리되고 있다면 세션별 관리값을 불러온다.
-        HashMap<String, Boolean> readyState = readySetting.get(sessionId);
+        HashMap<String, Boolean> preReadyState = readySetting.get(sessionId);
+        System.out.println(preReadyState);
+        HashMap<String, Boolean> readyState = new HashMap<>();
+
+        //현재 방에 없는 애들 다 제외 시키기
+        for (Participant p : participants) {
+            String id = p.getParticipantPublicId();
+            readyState.put(id, preReadyState.getOrDefault(id, false));
+        }
 
         //새로운 participant, false 기본값 넣고 바꿔준다.
-        readyState.put(participant.getParticipantPublicId(), false);
         readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
+
 
         // publicId : 레디상태(false/true) 로 보냄.
         for (String publicId : readyState.keySet()) {
@@ -236,18 +245,16 @@ public class GameService {
     }
 
     private void setReadySetting(Participant participant, String sessionId, Set<Participant> participants, JsonObject params, JsonObject data, RpcNotificationService notice) {
-        System.out.println(readySetting.size());
         //레디 상태 가져오기.
         HashMap<String, Boolean> readyState = readySetting.get(sessionId);
         //레디 값 토글
-        System.out.println(readyState.keySet().size());
-        readyState.computeIfPresent(participant.getParticipantPublicId(), (k, v) -> v = !v);
+        readyState.compute(participant.getParticipantPublicId(), (k, v) -> v = !v);
+        System.out.println(readyState);
+
         //레디값 변경.
         readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
 
         int cnt = 0;
-        System.out.println(readyState);
-        System.out.println(readyState.keySet().size());
         // publicId : true로 보냄.
         for (String publicId : readyState.keySet()) {
             data.addProperty(publicId, readyState.get(publicId));
@@ -257,7 +264,7 @@ public class GameService {
         }
 
         if (participants.size() >= 6 && participants.size() == cnt) {
-            data.addProperty("readyState", true);
+            data.addProperty("readyStatus", true);
         }
 
         params.add("data", data);
