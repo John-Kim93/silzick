@@ -28,6 +28,7 @@ const gameStore = {
 
     //game
     jobs: jobs,
+    myJob: undefined,
 
     //chatting
     messages: [],
@@ -170,11 +171,19 @@ const gameStore = {
           state.subscribers.forEach(subscriber => {
             subscriber.ready = event.data[subscriber.stream.connection.connectionId]
           })
-          if (event.data.readyState) {
+          if (event.data.readyStatus) {
+            console.log('여기 확인한다')
+            console.log(state.readyStatus)
             state.readyStatus = true
+            console.log(state.readyStatus)
           } else {
             state.readyStatus = false
           }
+        } else if (event.data.gameStatus === 4) {
+          state.myJob= event.data.jobName
+          router.push({
+            name: 'MainGame'
+          })
         }
       });
 
@@ -325,7 +334,7 @@ const gameStore = {
       })
     },
 
-    getReadyState({state}) {
+    getReadyStatus({state}) {
       state.session.signal({
         type: 'game',
         data: {

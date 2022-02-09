@@ -1,6 +1,7 @@
 <template>
   <div class="container" style="color:white">
     <img src="https://ifh.cc/g/1WPkxv.png" id="bg" alt="bgImg">
+    <h1>{{myJob}}</h1>
     <!--6명 기준_참가자 전체 CAM : total_cam-->
     <div class="d-flex justify-content-around total_cam">
       <!--참가자 1 CAM : private_cam-->
@@ -283,6 +284,9 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
+const gameStore = 'gameStore'
 
 export default {
   name : 'MainGame',
@@ -291,6 +295,10 @@ export default {
       memo : false,
     }
   },
+  computed: {
+    ...mapState(gameStore, ['myJob'])
+  },
+
   methods : {
     openmemo : function () {
       this.memo = true

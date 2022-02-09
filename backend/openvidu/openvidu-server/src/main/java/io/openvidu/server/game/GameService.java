@@ -263,7 +263,7 @@ public class GameService {
             }
         }
 
-        if (participants.size() >= 6 && participants.size() == cnt) {
+        if (participants.size() >= 2 && participants.size() == cnt) {
             data.addProperty("readyStatus", true);
         }
 

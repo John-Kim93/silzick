@@ -6,7 +6,6 @@
         <div class=" row">
           {{sessionId}}의 방
         </div>
-        <button @click="test1">test1</button>
         <hr>
         <div class="row justify-content-center">
           <!-- 참가자 리스트 -->
@@ -60,7 +59,7 @@
               <!-- 전원(6명 이상) 레디되면 활성화 -->
               <button
                 class="btn btn-success col m-1"
-                @click="setReady"
+                @click="gameStart"
                 :disabled="!readyStatus"
               >
               Start
@@ -160,14 +159,14 @@ export default {
     ...mapState(gameStore, ['sessionId', 'subscribers', 'publisher', 'jobs', 'nickname', 'messages', 'isHost', 'session', 'readyStatus']),
   },
   methods: {
-    ...mapActions(gameStore, [ 'sendMessage', 'leaveSession', 'setReady', 'getReadyState', 'getJobsState']),
+    ...mapActions(gameStore, [ 'sendMessage', 'leaveSession', 'setReady', 'getReadyStatus', 'getJobsState',]),
     ...mapMutations(gameStore, ['SET_MY_READY']),
     
-    test1() {
+    gameStart() {
       this.session.signal({
         type: 'game',
         data: {
-          gameStatus: 1
+          gameStatus: 4
         },
         to: [],
       })
@@ -186,7 +185,7 @@ export default {
     },
   },
   created () {
-    this.getReadyState()
+    this.getReadyStatus()
     this.getJobsState()
   }
 }
