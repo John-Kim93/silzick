@@ -284,8 +284,6 @@ public class GameService {
     private void gameStart(Participant participant, String sessionId, Set<Participant> participants,
                            JsonObject params, JsonObject data, RpcNotificationService notice) {
 
-        System.out.println(kiraAndL.get(sessionId).toString());
-
         deathNoteList.putIfAbsent(sessionId, new ArrayList<Characters>());
 
         //참여자 목록 넣기
@@ -426,6 +424,8 @@ public class GameService {
                 break;
             case "noteWrite":
                 jobName = data.get("jobName").getAsString();
+                System.out.println(jobName);
+                System.out.println(target);
                 //노트 목록 불러오기
                 ArrayList<Characters> noteList = deathNoteList.get(sessionId);
 

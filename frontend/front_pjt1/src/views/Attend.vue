@@ -163,17 +163,21 @@ export default {
     ...mapMutations(gameStore, ['SET_MY_READY']),
     
     gameStart() {
-      let count = 0
+      let countSum = 0
       this.jobs.forEach(job => {
-        count += job.count
+        countSum = job.count + countSum
       })
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 4
-        },
-        to: [],
-      })
+      if (this.subscribers.length + 1 === countSum) {
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 4
+          },
+          to: [],
+        }) 
+      } else {
+        alert('직업을 인원수에 맞게 설정해주세요.')
+      }
     },
 
     clickSendMessage() {

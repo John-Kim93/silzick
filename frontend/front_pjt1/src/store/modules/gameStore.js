@@ -170,10 +170,7 @@ const gameStore = {
           })
           state.publisher.ready = event.data[state.publisher.stream.connection.connectionId]
           if (event.data.readyStatus) {
-            console.log('여기 확인한다')
-            console.log(state.readyStatus)
             state.readyStatus = true
-            console.log(state.readyStatus)
           } else {
             state.readyStatus = false
           }
@@ -182,6 +179,13 @@ const gameStore = {
           router.push({
             name: 'MainGame'
           })
+        } else if (event.data.gameStatus === 5) {
+          switch (event.data.skillType) {
+            case 'noteWrite':
+              console.log('노트 라이트 사용')
+              console.log(event.data)
+            break
+          }
         }
       });
 

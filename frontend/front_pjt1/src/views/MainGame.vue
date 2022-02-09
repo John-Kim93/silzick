@@ -8,10 +8,16 @@
       class="d-inline-flex row align-middle total_cam"
     > 
       <!-- 내 비디오 -->
-      <user-video
+      <div
         class="col-4 private_cam_6"
-        :stream-manager="publisher"
-      />
+        v-for="subscriber in subscribers"
+        :key="subscriber.stream.connection.connectionId"
+      >
+        <user-video
+          class="m-1"
+          :stream-manager="publisher"
+        />
+      </div>
       <!-- 다른 사람 비디오 -->
       <div
         class="col-4 private_cam_6"
@@ -19,6 +25,7 @@
         :key="subscriber.stream.connection.connectionId"
       >
         <user-video
+          class="m-1"
           :stream-manager="subscriber"
         />
       </div>

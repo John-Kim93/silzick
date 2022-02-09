@@ -37,17 +37,29 @@
           누구를 죽이시겠습니까?
         </h4>
         <h5>
-          <select class="select_list">
+          <select
+            v-model="selectSubscriber"
+            class="select_list"
+          >
             <option selected disabled>참가자 목록</option>
-            <option v-for="sub in subscribers"
-            :key="sub.stream.connection.connectionId">
-              <user-list :streamManager="sub" doubt="true" />
+            <option
+              v-for="sub in subscribers"
+              :key="sub.stream.connection.connectionId"
+              :value="sub.stream.connection.connectionId"
+            >
+              {{sub.stream.connection.data.slice(15, -2)}}
             </option>
           </select>
           은/는 
-          <select class="select_list">
+          <select
+            v-model="selectJobName"
+            class="select_list"
+          >
             <option selected disabled>직업</option>
-            <option v-for="job in jobs" :key="job">
+            <option
+              v-for="job in jobs"
+              :key="job.jobName"
+            >
               {{job.jobName}}
             </option>
           </select>
@@ -59,7 +71,7 @@
           <b-button
             size="sm"
             class="skill_button_note  my-3"
-            @click="show=false"
+            @click="noteWrite"
           >
             <h5>노트에 적는다</h5>
           </b-button>
@@ -353,23 +365,37 @@
 </template>
 <script src="https://kit.fontawesome.com/ac38071ee5.js" crossorigin="anonymous"></script>
 <script>
-import UserList from './UserList.vue'
 import {mapState} from 'vuex'
 
 const gameStore = 'gameStore'
 
 export default {
   name: 'ActiveSkill',
-  components:{
-    UserList
-  },
   data(){
     return {
       show: false,
+      selectSubscriber: '참가자 목록',
+      selectJobName: '직업',
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'jobs', 'subscribers'])
+    ...mapState(gameStore, ['myJob', 'jobs', 'subscribers', 'session'])
+  },
+  methods: {
+    noteWrite () {
+      this.show = false
+      console.log(this.selectSubscriber)
+      this.session.signal({
+        type: 'game',
+        data: {
+          gameStatus: 5,
+          skillType: 'noteWrite',
+          target: this.selectSubscriber,
+          jobName: this.selectJobName
+        },
+        to: [],
+      })
+    }
   },
 }
 </script>
