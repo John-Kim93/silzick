@@ -341,11 +341,11 @@ public class GameService {
      * type : 'game';
      * data :
      * {
-     *   gameStatus : 2,
-     *   skillType : kill / protect / announce / note / noteUse
+     *   gameStatus : 5,
+     *   skillType : kill / protect / announce / noteWrite / noteUse
      *   target : connectionId
      *   (kill, note에만 필요) jobName : 'L', 'KIRA', 'GUARD', 'BROADCASTER', 'CRIMINAL', 'POLICE' 중 하나.
-     *   (announce에만 필요) announceMessage : "으아아아아 테스트!!"
+     *   (announce에만 필요) announce : "으아아아아 테스트!!"
      * }
      */
     //스킬 사용 메소드
@@ -414,7 +414,7 @@ public class GameService {
                 target.setProtected(true);
                 break;
             case "announce":
-                
+
                 params.add("data", data);
 
                 for (Participant p : participants) {
@@ -433,12 +433,12 @@ public class GameService {
                 if (target.getRoles().getJobName().equals(jobName)) {
                     //노트에 사람 적기
                     noteList.add(target);
-                    data.addProperty("writeName", target.getParticipant().getParticipantPublicId());
+                    data.addProperty("writeName", true);
                     params.add("data", data);
                     //노트 목록 갱신
                     deathNoteList.compute(sessionId, (k, v) -> v = noteList);
                 } else {
-                    data.addProperty("writeName", "the name isn't matched");
+                    data.addProperty("writeName", false);
                     params.add("data", data);
                 }
                 //스킬 사용 결과 키라에게 알리기.
