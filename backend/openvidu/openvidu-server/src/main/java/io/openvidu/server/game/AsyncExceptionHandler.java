@@ -5,7 +5,7 @@ import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import java.lang.reflect.Method;
 
 public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
-	
+
 	@Override
 	public void handleUncaughtException(Throwable throwable, Method method, Object... obj) {
 		System.out.println("Thread Error Exception");
@@ -15,5 +15,4 @@ public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
 			System.out.println("param Val ::: " + param);
 		}
 	}
-		
 }

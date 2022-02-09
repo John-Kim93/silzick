@@ -52,8 +52,6 @@ public class GameService {
     protected static ConcurrentHashMap<String, ArrayList<Roles>> gameRoles = new ConcurrentHashMap<>();
     // 역할 - player 매칭 정보 관리
     protected static ConcurrentHashMap<String, ArrayList<Characters>> roleMatching = new ConcurrentHashMap<>();
-    // 미션 대상 관리
-    protected static ConcurrentHashMap<String, ArrayList<Participant>> missionCandidates = new ConcurrentHashMap<>();
     // 참가자 목록 관리
     protected static ConcurrentHashMap<String, ArrayList<Participant>> participantsList = new ConcurrentHashMap<>();
     // 살아있는 경찰 수 관리
@@ -220,7 +218,6 @@ public class GameService {
 
         //기존에 관리되고 있다면 세션별 관리값을 불러온다.
         HashMap<String, Boolean> preReadyState = readySetting.get(sessionId);
-        System.out.println(preReadyState);
         HashMap<String, Boolean> readyState = new HashMap<>();
 
         //현재 방에 없는 애들 다 제외 시키기
@@ -249,7 +246,6 @@ public class GameService {
         HashMap<String, Boolean> readyState = readySetting.get(sessionId);
         //레디 값 토글
         readyState.compute(participant.getParticipantPublicId(), (k, v) -> v = !v);
-        System.out.println(readyState);
 
         //레디값 변경.
         readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
@@ -288,6 +284,10 @@ public class GameService {
     private void gameStart(Participant participant, String sessionId, Set<Participant> participants,
                            JsonObject params, JsonObject data, RpcNotificationService notice) {
 
+        //참여자 목록 넣기
+        ArrayList<Participant> gameParticipants = new ArrayList<>(participants);
+        participantsList.putIfAbsent(sessionId, gameParticipants);
+
         //참가자 목록 가져와서 shuffle
         ArrayList<Participant> players = new ArrayList<>(participants);
         Collections.shuffle(players);
@@ -305,20 +305,13 @@ public class GameService {
                 userRoles.add(new Characters(r, players.get(cnt++)));
             }
         }
-        //매칭 정보 세션별로 관리
-        roleMatching.computeIfPresent(sessionId, (k, v) -> v = userRoles);
+        //역할 분배된 것 넣기.
+        roleMatching.putIfAbsent(sessionId, userRoles);
 
         ArrayList<Participant> KIRAandL = new ArrayList<>(players.subList(0, 2));
 
         //중요 역할들 목록에 담기
         kiraAndL.putIfAbsent(sessionId, KIRAandL);
-
-        //미션 수행할 사람 목록.
-        ArrayList<Participant> mCandidates = new ArrayList<>(players.subList(2, userRoles.size()));
-
-        //키라랑 L빼고 미션 수행 대기자로 등록
-        // 미션 수행자 목록 넣어서 관리.
-        missionCandidates.putIfAbsent(sessionId, mCandidates);
 
         //각자에게 역할 알려주기.
         for (int i = 0; i < userRoles.size(); i++) {
@@ -329,7 +322,7 @@ public class GameService {
         }
 
         //쓰래드 생성 및 등록.
-        GameRunnable gameRunnable = new GameRunnable(sessionId, roleMatching.get(sessionId), participantsList.get(sessionId), missionCandidates.get(sessionId), notice);
+        GameRunnable gameRunnable = new GameRunnable(sessionId, roleMatching.get(sessionId), participantsList.get(sessionId), notice);
         Thread deathNoteThread = new Thread(gameRunnable);
 
         //스래드 시작.(명교, 미션 쓰레드 두개 다 시작)
@@ -555,8 +548,6 @@ public class GameService {
         gameRoles.remove(sessionId);
         //유저 직업 매칭 자원 반납
         gameRoles.remove(sessionId);
-        //미션 수행자 목록 자원 반납.
-        missionCandidates.remove(sessionId);
         //참여자 목록 자원 반납.
         participantsList.remove(sessionId);
         //살아있는 경찰 수 자원 반납.

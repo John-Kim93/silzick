@@ -66,9 +66,6 @@ const gameStore = {
     SET_OVTOKEN (state, res) {
       state.OVToken = res
     },
-    SET_MY_READY (state) {
-      state.publisher.ready = !state.publisher.ready
-    },
 
     // 채팅 관련 기능
     SET_MESSAGES(state, res) {
@@ -171,6 +168,7 @@ const gameStore = {
           state.subscribers.forEach(subscriber => {
             subscriber.ready = event.data[subscriber.stream.connection.connectionId]
           })
+          state.publisher.ready = event.data[state.publisher.stream.connection.connectionId]
           if (event.data.readyStatus) {
             console.log('여기 확인한다')
             console.log(state.readyStatus)
@@ -219,6 +217,8 @@ const gameStore = {
             name: 'Attend',
             params: { hostname: state.sessionId}
           })
+          console.log("닉네임 확인")
+          console.log(state.nickname)
         })
           .catch((error) => {
             console.log(
@@ -314,8 +314,7 @@ const gameStore = {
         to: [],
       })
     },
-    setReady ({commit, state}) {
-      commit('SET_MY_READY')
+    setReady ({state}) {
       state.session.signal({
         type: 'game',
         data: {
