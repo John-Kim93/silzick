@@ -115,121 +115,14 @@
     <!--의심 직업 : doubt-->
     <div class="doubt">
       <p>추측 현황</p>
-      <div class="d-flex justify-content-around align-items-center">
-        <div class="d-inline">
-          <p class="d-inline">참가자 1 : </p>
-          <select class="doubt_select">
-            <option selected disabled>------------</option>
-            <option>노트주인</option>
-            <option>추종자</option>
-            <option>경찰총장</option>
-            <option>보디가드</option>
-            <option>방송인</option>
-            <option>경찰</option>
-          </select>
-        </div>
-        <div class="d-inline">
-          <p class="d-inline">참가자 2 : </p>
-          <select class="doubt_select">
-            <option selected disabled>------------</option>
-            <option>노트주인</option>
-            <option>추종자</option>
-            <option>경찰총장</option>
-            <option>보디가드</option>
-            <option>방송인</option>
-            <option>경찰</option>
-          </select>
-        </div>
-        <div class="d-inline">
-          <p class="d-inline">참가자 3 : </p>
-          <select class="doubt_select">
-            <option selected disabled>------------</option>
-            <option>노트주인</option>
-            <option>추종자</option>
-            <option>경찰총장</option>
-            <option>보디가드</option>
-            <option>방송인</option>
-            <option>경찰</option>
-          </select>
-        </div>
+      <div
+        class="d-flex justify-content-around align-items-center"
+        v-for="subscriber, idx in subscribers"
+        :key="idx"
+      >
+        <doubt :subscriber="subscriber"/>
+
       </div>
-      <div class="d-flex justify-content-around">
-        <div class="d-inline">
-          <p class="d-inline">참가자 4 : </p>
-          <select class="doubt_select">
-            <option selected disabled>------------</option>
-            <option>노트주인</option>
-            <option>추종자</option>
-            <option>경찰총장</option>
-            <option>보디가드</option>
-            <option>방송인</option>
-            <option>경찰</option>
-          </select>
-        </div>
-        <div class="d-inline">
-          <p class="d-inline">참가자 5 : </p>
-          <select class="doubt_select">
-            <option selected disabled>------------</option>
-            <option>노트주인</option>
-            <option>추종자</option>
-            <option>경찰총장</option>
-            <option>보디가드</option>
-            <option>방송인</option>
-            <option>경찰</option>
-          </select>
-        </div>
-        <div class="d-inline">
-          <p class="d-inline">참가자 6 : </p>
-          <select class="doubt_select">
-            <option selected disabled>------------</option>
-            <option>노트주인</option>
-            <option>추종자</option>
-            <option>경찰총장</option>
-            <option>보디가드</option>
-            <option>방송인</option>
-            <option>경찰</option>
-          </select>
-        </div>
-      </div>
-      <!--9인 일때-->
-      <!-- <div class="d-flex justify-content-around">
-        <div class="d-inline">
-          <p class="d-inline">참가자 7 : </p>
-          <select class="doubt_select">
-            <option selected disabled>------------</option>
-            <option>노트주인</option>
-            <option>추종자</option>
-            <option>경찰총장</option>
-            <option>보디가드</option>
-            <option>방송인</option>
-            <option>경찰</option>
-          </select>
-        </div>
-        <div class="d-inline">
-          <p class="d-inline">참가자 8 : </p>
-          <select class="doubt_select">
-            <option selected disabled>------------</option>
-            <option>노트주인</option>
-            <option>추종자</option>
-            <option>경찰총장</option>
-            <option>보디가드</option>
-            <option>방송인</option>
-            <option>경찰</option>
-          </select>
-        </div>
-        <div class="d-inline">
-          <p class="d-inline">참가자 9 : </p>
-          <select class="doubt_select">
-            <option selected disabled>------------</option>
-            <option>노트주인</option>
-            <option>추종자</option>
-            <option>경찰총장</option>
-            <option>보디가드</option>
-            <option>방송인</option>
-            <option>경찰</option>
-          </select>
-        </div>
-      </div> -->
     </div>
 
     <!--정체 숨기기 횟수 / 스킬 횟수 / 검거권 수-->
@@ -285,18 +178,22 @@
 
 <script>
 import { mapState } from 'vuex'
+import Doubt from '@/components/MainGame/Doubt.vue'
 
 const gameStore = 'gameStore'
 
 export default {
   name : 'MainGame',
+  components: {
+    Doubt,
+  },
   data : function () {
     return {
       memo : false,
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob'])
+    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers'])
   },
 
   methods : {
@@ -594,13 +491,7 @@ input[id*="popup"]:checked + label + div {
   height: 15%;
   flex-wrap: wrap;
 }
-.doubt_select {
-  background-color: transparent;
-  background: black;
-  color: white;
-  border-radius: 8px;
-  text-align: center;
-}
+
 .counts {
   position: fixed;
   top: 72%;

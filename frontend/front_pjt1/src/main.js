@@ -8,12 +8,14 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import axios from 'axios'
 import VueCookies from "vue-cookies"
+import CircularCountDownTimer from "vue-circular-count-down-timer"
 
 Vue.prototype.$axios = axios
 
 Vue.use(VueCookies)
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
+Vue.use(CircularCountDownTimer)
 Vue.config.productionTip = false
 Vue.$cookies.config("1d")
 // axios.defaults.withCredentials = true

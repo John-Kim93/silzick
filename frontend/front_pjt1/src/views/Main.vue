@@ -21,12 +21,14 @@
       @click='logout'
     > 로그아웃
     </b-button>
+    
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations } from 'vuex'
 import cookies from 'vue-cookies'
+
 
 const gameStore = 'gameStore'
 
