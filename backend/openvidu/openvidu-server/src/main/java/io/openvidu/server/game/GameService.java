@@ -93,7 +93,7 @@ public class GameService {
                 setReadySetting(participant, sessionId, participants, params, data, notice);
                 return;
             case GAMESTART: // 게임 시작
-                gameStart(participant, sessionId, participants, params, data, notice);
+                gameStart(participant, message, sessionId, participants, params, data, notice);
                 return;
             case USESKILL: // 스킬 사용
                 useSkill(participant, sessionId, participants, params, data, notice);
@@ -281,7 +281,7 @@ public class GameService {
      * }
      * 게임 시작 메소드
      */
-    private void gameStart(Participant participant, String sessionId, Set<Participant> participants,
+    private void gameStart(Participant participant, JsonObject message, String sessionId, Set<Participant> participants,
                            JsonObject params, JsonObject data, RpcNotificationService notice) {
 
         deathNoteList.putIfAbsent(sessionId, new ArrayList<Characters>());
