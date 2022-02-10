@@ -220,6 +220,8 @@ public class GameService {
         HashMap<String, Boolean> preReadyState = readySetting.get(sessionId);
         HashMap<String, Boolean> readyState = new HashMap<>();
 
+        System.out.println(participant.getClientMetadata());
+
         //현재 방에 없는 애들 다 제외 시키기
         for (Participant p : participants) {
             String id = p.getParticipantPublicId();
@@ -342,7 +344,8 @@ public class GameService {
      * data :
      * {
      *   gameStatus : 5,
-     *   skillType : kill / protect / announce / noteWrite / noteUse
+     *   skillType : kill / protect / announce / noteWrite / noteUse / announceToL
+     *   result : true / false
      *   target : connectionId
      *   (kill, note에만 필요) jobName : 'L', 'KIRA', 'GUARD', 'BROADCASTER', 'CRIMINAL', 'POLICE' 중 하나.
      *   (announce에만 필요) announce : "으아아아아 테스트!!"
@@ -481,6 +484,10 @@ public class GameService {
 
                 //사용후 데스노트 목록 비우기.
                 deathNoteList.compute(sessionId, (k, v) -> v = new ArrayList<Characters>());
+                break;
+            case "announceToL" :
+                boolean result = data.get("result").getAsBoolean();
+
                 break;
         }
 
