@@ -24,9 +24,6 @@ public class GameRunnable implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("명함교환 하기전 세션아이디 확인");
-        System.out.println(sessionId);
-        System.out.println(participantsList);
         try {
             JsonObject data = new JsonObject();
             JsonObject params = new JsonObject();

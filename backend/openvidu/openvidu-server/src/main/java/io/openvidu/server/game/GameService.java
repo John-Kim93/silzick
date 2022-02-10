@@ -343,12 +343,12 @@ public class GameService {
      * type : 'game';
      * data :
      * {
-     *   gameStatus : 5,
-     *   skillType : kill / protect / announce / noteWrite / noteUse / announceToL
-     *   result : true / false
-     *   target : connectionId
-     *   (kill, note에만 필요) jobName : 'L', 'KIRA', 'GUARD', 'BROADCASTER', 'CRIMINAL', 'POLICE' 중 하나.
-     *   (announce에만 필요) announce : "으아아아아 테스트!!"
+     * gameStatus : 5,
+     * skillType : kill / protect / announce / noteWrite / noteUse / announceToL
+     * result : true / false
+     * target : connectionId
+     * (kill, note에만 필요) jobName : 'L', 'KIRA', 'GUARD', 'BROADCASTER', 'CRIMINAL', 'POLICE' 중 하나.
+     * (announce에만 필요) announce : "으아아아아 테스트!!"
      * }
      */
     //스킬 사용 메소드
@@ -376,6 +376,8 @@ public class GameService {
 
         //중요인물 리스트의 0번 = 키라, 1번 = 경찰총장
         Participant KIRA = kiraAndL.get(sessionId).get(0);
+        //경찰총장
+        Participant L = kiraAndL.get(sessionId).get(1);
 
         switch (skillType) {
             case "kill":
@@ -407,8 +409,8 @@ public class GameService {
                         params.add("data", data);
 
                         //스킬 쓴사람에게만 보호 소식 알리기.
-                            rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
-                                    ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+                        rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
+                                ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                     }
                 }
                 break;
@@ -485,9 +487,16 @@ public class GameService {
                 //사용후 데스노트 목록 비우기.
                 deathNoteList.compute(sessionId, (k, v) -> v = new ArrayList<Characters>());
                 break;
-            case "announceToL" :
-                boolean result = data.get("result").getAsBoolean();
 
+            case "announceToL":
+                boolean result = data.get("result").getAsBoolean();
+                String userId = participant.getClientMetadata();
+
+                data.addProperty("result", result);
+                data.addProperty("userId", userId);
+                params.add("data", data);
+                rpcNotificationService.sendNotification(L.getParticipantPrivateId(),
+                        ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                 break;
         }
 
@@ -540,7 +549,7 @@ public class GameService {
      * type : 'game';
      * data :
      * {
-     *   gameStatus : 4,
+     * gameStatus : 4,
      * }
      */
     //게임 종료 메소드
