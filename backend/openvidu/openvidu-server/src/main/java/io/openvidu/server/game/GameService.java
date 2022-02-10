@@ -485,10 +485,8 @@ public class GameService {
                         data.add(String.valueOf(cnt), list);
                         params.add("data", data);
 
-                        for (Participant p : participants) {
-                            rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
-                                    ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
-                        }
+                        rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
+                                ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                     }
                     cnt++;
                 }
