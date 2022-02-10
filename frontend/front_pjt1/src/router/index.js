@@ -14,7 +14,7 @@ import RequestUpdate from '@/components/request/RequestUpdate.vue'
 import MainGame from '../views/MainGame.vue'
 import Skill from '../views/Skill.vue'
 import Rule from '../views/Rule.vue'
-import Card from '../views/Card.vue'
+import CardExchange from '../views/CardExchange.vue'
 import Attend from '../views/Attend.vue'
 import Join from '../views/Join.vue'
 
@@ -47,9 +47,9 @@ const routes = [
     component: Rule,
   },
   {
-    path: '/Card',
-    name : 'Card',
-    component : Card,
+    path: '/CardExchange',
+    name : 'CardExchange',
+    component : CardExchange,
   },
   {
     path: '/',

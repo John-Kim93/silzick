@@ -10,8 +10,6 @@
       <!-- 내 비디오 -->
       <div
         class="col-4 private_cam_6"
-        v-for="subscriber in subscribers"
-        :key="subscriber.stream.connection.connectionId"
       >
         <user-video
           class="m-1"
@@ -133,6 +131,7 @@
       </div>
       <!-- <label for="popup"></label> -->
     </div>
+    <button @click="enterCard">test</button>
   </div>
 </template>
 
@@ -157,14 +156,23 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher'])
+    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session'])
   },
 
   methods : {
+    enterCard () {
+      console.log(this.publisher.stream.connection.connectionId)
+      console.log(this.subscribers[0].stream.connection.connectionId)
+      this.session.signal({
+        type: 'autoSystem',
+        data: JSON.stringify({ action: 'exchangeNameStart' }),
+        target: [this.publisher.stream.connection.connectionId, this.subscribers[0].stream.connection.connectionId]
+      })
+    },
     openmemo () {
       this.memo = true
     }
-  }
+  },
 }
 </script>
 
