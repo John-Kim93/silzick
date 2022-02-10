@@ -360,19 +360,7 @@ public class GameService {
         //역할 리스트 가져오기.
         ArrayList<Characters> cList = roleMatching.get(sessionId);
 
-        String skillTarget = data.get("target").getAsString();
-
-        Characters target = null;
         String jobName = null;
-
-        //connectionId로 Character 찾아옴.
-        //connectionId 자원관리 필수!!!! 나중에 숫자로 관리 된다면 편하게 구현 가능.
-        for (int i = 0; i < cList.size(); i++) {
-            if (cList.get(i).getParticipant().getParticipantPublicId().equals(skillTarget)) {
-                target = cList.get(i);
-                break;
-            }
-        }
 
         //중요인물 리스트의 0번 = 키라, 1번 = 경찰총장
         Participant KIRA = kiraAndL.get(sessionId).get(0);
@@ -381,6 +369,8 @@ public class GameService {
 
         switch (skillType) {
             case "kill":
+                Characters target = getTarget(data, cList);
+
                 jobName = data.get("jobName").getAsString();
                 //skill대상의 직업이 jobName과 일치하는지 체크
                 if (target.getRoles().getJobName().equals(jobName)) {
@@ -415,6 +405,8 @@ public class GameService {
                 }
                 break;
             case "protect":
+                target = getTarget(data, cList);
+                
                 //스킬 타겟 보호 설정
                 target.setProtected(true);
                 break;
@@ -428,6 +420,8 @@ public class GameService {
                 }
                 break;
             case "noteWrite":
+                target = getTarget(data, cList);
+
                 jobName = data.get("jobName").getAsString();
                 System.out.println(jobName);
                 System.out.println(target);
@@ -500,11 +494,28 @@ public class GameService {
                 break;
         }
 
-
         //키라 사망 or 경찰 수 0명시 게임 종료
-        if ((target.getRoles() == Roles.KIRA && !target.isAlive()) || alivePolices.get(sessionId) < 1) {
-            finishGame(participant, sessionId, participants, params, data);
+        for (Characters c : cList) {
+            if ((c.getRoles() == Roles.KIRA && !c.isAlive()) || alivePolices.get(sessionId) < 1) {
+                finishGame(participant, sessionId, participants, params, data);
+            }
         }
+    }
+
+    private Characters getTarget(JsonObject data, ArrayList<Characters> cList) {
+        String skillTarget = data.get("target").getAsString();
+
+        Characters target = null;
+
+        //connectionId로 Character 찾아옴.
+        //connectionId 자원관리 필수!!!! 나중에 숫자로 관리 된다면 편하게 구현 가능.
+        for (int i = 0; i < cList.size(); i++) {
+            if (cList.get(i).getParticipant().getParticipantPublicId().equals(skillTarget)) {
+                target = cList.get(i);
+                break;
+            }
+        }
+        return target;
     }
 
     //명교 결과 보내주기.
