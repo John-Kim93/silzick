@@ -34,26 +34,43 @@ public class GameRunnable implements Runnable {
             String type = "signal:autoSystem";
             params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_TYPE_PARAM, type);
 
-            //모든 참가자 목록 가져오기(랜덤 2명)
-            ArrayList<Participant> pList = participantsList;
+//            //모든 참가자 목록 가져오기(랜덤 2명)
+//            ArrayList<Participant> pList = participantsList;
 
             //역할 목록 가져오기
             ArrayList<Characters> roles = roleMatching;
 
             while (true) {
+
+                //살아있는 대상자만
+                ArrayList<Characters> list = new ArrayList<>();
+                for (Characters c : roles) {
+                    if (c.isAlive()) {
+                        list.add(c);
+                    }
+                }
+
                 /**
                  * 명교 시작.
                  */
-                ExchangeName(pList, data, exchangeCnt, params);
+                ExchangeName(list, data, exchangeCnt, params);
                 exchangeCnt++;
                 /**
                  * 명교 끝
                  */
 
+                //살아있는 대상자만
+                list = new ArrayList<>();
+                for (Characters c : roles) {
+                    if (c.isAlive()) {
+                        list.add(c);
+                    }
+                }
+
                 /**
                  * 명교 시작.
                  */
-                ExchangeName(pList, data, exchangeCnt, params);
+                ExchangeName(list, data, exchangeCnt, params);
                 exchangeCnt++;
                 /**
                  * 명교 끝
@@ -63,7 +80,7 @@ public class GameRunnable implements Runnable {
                  * 미션 시작.
                  */
                 //미션 시작할 사람 목록
-                ArrayList<Participant> missionCandidates = new ArrayList<>(pList);
+                ArrayList<Characters> missionCandidates = new ArrayList<>(list);
                 //0,1번은 명교하러 갔으니 제외
                 missionCandidates.remove(1);
                 missionCandidates.remove(0);
@@ -78,15 +95,15 @@ public class GameRunnable implements Runnable {
 
                 //2명만 미션 시작.
                 for (int i = 0; i < 2; i++) {
-                    rpcNotificationService.sendNotification(missionCandidates.get(i).getParticipantPrivateId(),
+                    rpcNotificationService.sendNotification(missionCandidates.get(i).getParticipant().getParticipantPrivateId(),
                             ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                 }
 
                 boolean isPolice = false;
                 //미션 수행중인 사람이 police면 추종자에게 알리기.
-                for (int i = 0; i < roles.size(); i++) {
-                    if (roles.get(i).getRoles() == Roles.POLICE &&
-                            (roles.get(i).getParticipant() == missionCandidates.get(0) || roles.get(i).getParticipant() == missionCandidates.get(1))) {
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).getRoles() == Roles.POLICE &&
+                            (list.get(i) == missionCandidates.get(0) || list.get(i) == missionCandidates.get(1))) {
                         isPolice = true;
                         break;
                     }
@@ -115,7 +132,7 @@ public class GameRunnable implements Runnable {
 
     }
 
-    private void ExchangeName(ArrayList<Participant> pList, JsonObject data, int exchangeCnt, JsonObject params) throws InterruptedException {
+    private void ExchangeName(ArrayList<Characters> roles, JsonObject data, int exchangeCnt, JsonObject params) throws InterruptedException {
         /**
          * 명교 시작.
          */
@@ -123,7 +140,7 @@ public class GameRunnable implements Runnable {
         Thread.sleep(30000);
 
         //참가자 목록 섞기
-        Collections.shuffle(pList);
+        Collections.shuffle(roles);
 
         //data에 담을 정보
         data.addProperty("action", "exchangeNameStart");
@@ -132,7 +149,7 @@ public class GameRunnable implements Runnable {
 
         //2명만 명교 시작.
         for (int i = 0; i < 2; i++) {
-            rpcNotificationService.sendNotification(pList.get(i).getParticipantPrivateId(),
+            rpcNotificationService.sendNotification(roles.get(i).getParticipant().getParticipantPrivateId(),
                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
         }
         /**

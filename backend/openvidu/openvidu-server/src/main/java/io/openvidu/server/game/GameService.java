@@ -406,7 +406,7 @@ public class GameService {
                 break;
             case "protect":
                 target = getTarget(data, cList);
-                
+
                 //스킬 타겟 보호 설정
                 target.setProtected(true);
                 break;
@@ -440,16 +440,21 @@ public class GameService {
                     data.addProperty("writeName", false);
                     params.add("data", data);
                 }
-                //스킬 사용 결과 키라에게 알리기.
-                rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
-                        ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+
+                for (Participant p : participants) {
+                    rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
+                            ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+                }
                 break;
             case "noteUse":
                 noteList = deathNoteList.get(sessionId);
                 data = new JsonObject();
 
+                int cnt = 0;
                 // 노트에 적힌 사람들 죄다 죽이기.
                 for (Characters c : noteList) {
+                    JsonObject list = new JsonObject();
+
                     //보호되는 상태가 아니면
                     if (!c.isProtected()) {
                         //사망처리
@@ -461,21 +466,31 @@ public class GameService {
                         }
 
                         //사망 소식 전하기
-                        data.addProperty(c.getParticipant().getParticipantPublicId(), "isDead");
+                        list.addProperty("isDead", true);
+                        list.addProperty("userId", c.getParticipant().getClientMetadata());
+                        list.addProperty("connectionId", c.getParticipant().getParticipantPublicId());
+                        data.add(String.valueOf(cnt), list);
                         params.add("data", data);
+
                         for (Participant p : participants) {
                             rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
-
                         }
                         //보호 중이면.
                     } else {
                         //방어됨 소식 알리기.
-                        data.addProperty(c.getParticipant().getParticipantPublicId(), "isProtected");
+                        list.addProperty("isDead", true);
+                        list.addProperty("userId", c.getParticipant().getClientMetadata());
+                        list.addProperty("connectionId", c.getParticipant().getParticipantPublicId());
+                        data.add(String.valueOf(cnt), list);
                         params.add("data", data);
-                        rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
-                                ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+
+                        for (Participant p : participants) {
+                            rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+                                    ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+                        }
                     }
+                    cnt++;
                 }
 
                 //사용후 데스노트 목록 비우기.
