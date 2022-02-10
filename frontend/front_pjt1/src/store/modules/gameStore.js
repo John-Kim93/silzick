@@ -133,8 +133,6 @@ const gameStore = {
   actions: {
     // Attend에서 참가 누르면 닉네임 받아옴. 닉네임 받아서 조인세션허고 직업 리스트 요청
     nicknameUpdate ({ commit, dispatch }, res) {
-      console.log('세션아이디 잘 받았다')
-      console.log(res.sessionId)
       commit('NICKNAME_UPDATE', res.nickname)
       commit('SET_SESSIONID', res.sessionId)
       dispatch('subJoinSession')
@@ -156,8 +154,6 @@ const gameStore = {
       // 세션에 publisher를 등록하면 자동으로 streamCreated가 실행되고 다른사람의 subscribers에 내 stream정보를 담는 로직
       session.on("streamCreated", ({ stream }) => {
         const subscriber = session.subscribe(stream);
-        console.log('스트림 크리에이티드 섭스크라이버스 출력')
-        console.log(subscriber)
         subscriber.ready = false
         subscribers.push(subscriber);
       });
@@ -168,7 +164,6 @@ const gameStore = {
         if (index >= 0) {
           subscribers.splice(index, 1);
         }
-        console.log(subscribers)
       });
       
       // On every asynchronous exception...
@@ -199,7 +194,6 @@ const gameStore = {
         // job.count 증감 (방장 권한)
         } else if(event.data.gameStatus === 1){
           let job = event.data
-          console.log(job)
           commit('CHANGE_JOB_COUNT', job)
         // 게임 접속 시 ready 현황 받기
         } else if (event.data.gameStatus === 2){
@@ -224,13 +218,35 @@ const gameStore = {
           })
         } else if (event.data.gameStatus === 5) {
           switch (event.data.skillType) {
-            case 'noteWrite':
-              console.log('노트 라이트 사용')
-              console.log(event.data)
-            break
-            case 'announceToL':
-              console.log(event.data)
-            break
+            case 'noteWrite':{
+              const {writeName} = event.data
+              if (writeName) {
+                state.messages.push('System : 누군가의 이름이 노트에 적혔습니다.')
+              }
+              break
+            }
+            case 'noteUse':{
+              const results = event.data
+              results.forEach(result => {
+                const {isDead, userId} = result
+                if (!isDead) {
+                  state.messages.push('System : ' + userId + '가 보디가드에 의해 죽지 않았습니다.')
+                } else {
+                  state.messages.push('System : ' + userId + '가 심장마비로 사망하였습니다.')
+                }
+              })
+              break
+            }
+            case 'announceToL':{
+              let TF = '거짓'
+              if (event.data.result) {
+                TF = '진실'
+              }
+              const {clientData} = JSON.parse(event.data.userId)
+              const message = "System : " + clientData + "는" + TF + '인 명함을 냈습니다.'
+              state.messages.push(message)
+              break
+            }
           }
         }
       });
@@ -285,14 +301,10 @@ const gameStore = {
           commit('SET_OVTOKEN', token)
 
             // --- Publish your stream ---
-          console.log('퍼블리싱 되고있다')
-          session.publish(state.publisher);
           router.push({
             name: 'Attend',
             params: { hostname: state.sessionId}
           })
-          console.log("닉네임 확인")
-          console.log(state.nickname)
         })
           .catch((error) => {
             console.log(
@@ -420,16 +432,12 @@ const gameStore = {
       subSession.on("signal:exchangeCard", (event) => {
         const receivedCard = JSON.parse(event.data).jobName
         dispatch('receiveCard', receivedCard)
-        console.log('명교 성공 이벤트 확인')
-        console.log(event)
       })
       
       // --- Connect to the session with a valid user token ---
       
       // 'getToken' method is simulating what your server-side should do.
       // 'token' parameter should be retrieved and returned by your own backend
-      console.log('겟토큰 전에 sub-스테이트호스트네임')
-      console.log('sub' + state.sessionId)
       dispatch("getToken", 'sub' + state.sessionId).then((subToken) => {
         subSession
         .connect(subToken, { clientData: state.nickname })

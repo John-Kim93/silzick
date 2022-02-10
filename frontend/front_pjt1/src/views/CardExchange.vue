@@ -48,11 +48,21 @@
     <input type="text"> -->
     <div class="d-flex chat">
       <!--채팅 내역 : chat_list-->
-      <div class="chat_list">
-        채팅
-      </div>
+      <p
+        v-for="message, idx in messages"
+        :key="idx"
+      >
+        {{message}}
+      </p>
       <!--채팅 입력 : chat_input-->
-      <input class="chat_input form-control" style="background-color:black" type="text" placeholder="메세지를 입력하세요">
+      <input
+        class="chat_input"
+        type="text"
+        placeholder="메세지를 입력하세요"
+        v-model="chatMessage"
+        style="color:white;"
+        @keyup.enter="enterMessage"
+      >
     </div>
   </div>
 </template>
@@ -68,6 +78,7 @@ export default {
   components: { UserVideo },
   data() {
     return {
+      chatMessage: '',
       timerCount:20,
       timerExit:23,
       text: '',
@@ -85,7 +96,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['subPublisher', 'subSubscribers', 'myJob', 'subSession', 'receivedCard'])
+    ...mapState(gameStore, ['subPublisher', 'subSubscribers', 'myJob', 'subSession', 'receivedCard', 'session', 'messages'])
   },
   watch: {
     timerCount: {

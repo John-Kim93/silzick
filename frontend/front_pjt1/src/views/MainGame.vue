@@ -66,10 +66,22 @@
     <div class="d-flex chat">
       <!--채팅 내역 : chat_list-->
       <div class="chat_list">
-        채팅
+        <p
+          v-for="message, idx in messages"
+          :key="idx"
+        >
+        {{ message }}
+        </p>
       </div>
       <!--채팅 입력 : chat_input-->
-      <input class="chat_input" type="text" placeholder="메세지를 입력하세요">
+      <input
+        class="chat_input"
+        type="text"
+        placeholder="메세지를 입력하세요"
+        v-model="chatMessage"
+        style="color:white;"
+        @keyup.enter="enterMessage"
+      >
     </div>
 
     <!--의심 직업 : doubt-->
@@ -136,7 +148,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import Doubt from '@/components/MainGame/Doubt.vue'
 import UserVideo from '@/components/Attend/UserVideo.vue'
 import ActiveSkill from '@/components/MainGame/ActiveSkill.vue'
@@ -152,14 +164,16 @@ export default {
   },
   data () {
     return {
+      chatMessage: '',
       memo : false,
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session'])
+    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages'])
   },
 
   methods : {
+    ...mapActions(gameStore, ['sendMessage']),
     enterCard () {
       console.log(this.publisher.stream.connection.connectionId)
       console.log(this.subscribers[0].stream.connection.connectionId)
@@ -171,7 +185,13 @@ export default {
     },
     openmemo () {
       this.memo = true
-    }
+    },
+    enterMessage() {
+      if (this.chatMessage.trim()) {
+        this.sendMessage(this.chatMessage)
+        this.chatMessage=""
+      }
+    },
   },
 }
 </script>

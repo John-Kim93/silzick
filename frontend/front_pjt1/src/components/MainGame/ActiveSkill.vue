@@ -395,7 +395,20 @@ export default {
         },
         to: [],
       })
-    }
+    },
+    noteUse () {
+      this.show = false
+      console.log(this.selectSubscriber)
+      this.session.signal({
+        type: 'game',
+        data: {
+          gameStatus: 5,
+          skillType: 'noteUse',
+        },
+        to: [],
+      })
+    },
+    
   },
 }
 </script>
