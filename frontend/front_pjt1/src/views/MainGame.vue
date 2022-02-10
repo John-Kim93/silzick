@@ -10,8 +10,6 @@
       <!-- 내 비디오 -->
       <div
         class="col-4 private_cam_6"
-        v-for="subscriber in subscribers"
-        :key="subscriber.stream.connection.connectionId"
       >
         <user-video
           class="m-1"

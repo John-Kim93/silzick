@@ -167,6 +167,10 @@ export default {
       this.jobs.forEach(job => {
         countSum = job.count + countSum
       })
+      // 경찰이 한명이상 있어야 함
+      // if (this.jobs[3].count < 1) {
+      //   alert('경찰이 없습니다')
+      // } else
       if (this.subscribers.length + 1 === countSum) {
         this.session.signal({
           type: 'game',

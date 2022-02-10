@@ -26,6 +26,14 @@ const gameStore = {
     publisher: undefined,
     subscribers: [],
 
+    // 명교방
+    sub_OV: undefined,
+    sub_OVToken: undefined,
+    sub_session: undefined,
+    sub_publisher: undefined,
+    sub_subscribers: [],
+
+
     //game
     jobs: jobs,
     myJob: undefined,
@@ -66,6 +74,33 @@ const gameStore = {
     SET_OVTOKEN (state, res) {
       state.OVToken = res
     },
+
+    // 명교방 state 설정하기
+    SET_SUB_PUBLISHER (state, res) {
+      state.sub_publisher = res
+    },
+    SET_SUB_OV (state, res) {
+      state.sub_OV = res
+    },
+    SET_SUB_SESSION (state, res) {
+      state.sub_session = res
+    },
+    SET_SUB_SUBSCRIBERS (state, res) {
+      state.sub_subscribers = res
+    },
+    SET_SUB_OVTOKEN (state, res) {
+      state.sub_OVToken = res
+    },
+    EXCHANGE_OFF (state) {
+      state.sub_OV = undefined
+      state.sub_publisher = undefined
+      state.sub_session = undefined
+      state.sub_subscribers = []
+      state.sub_OVToken = undefined
+      state.is_1on1 = false
+    },
+
+
 
     // 채팅 관련 기능
     SET_MESSAGES(state, res) {
@@ -188,6 +223,11 @@ const gameStore = {
           }
         }
       });
+      // 명함교환 방 자동 이동 & 미션 할당
+      // session.on("signal:autoSystem", (event) => {
+        // 두명 골라서 섭스크라이버에 있으면 지우기?
+        // 두명 중 하나가 퍼블리셔면 언퍼블리시하고 라우터푸시 조인세션?
+      // })
 
       // --- Connect to the session with a valid user token ---
       // 'getToken' method is simulating what your server-side should do.
@@ -310,6 +350,90 @@ const gameStore = {
 
       // window.removeEventListener("beforeunload", this.leaveSession);
     },
+    // 명교방 관련 기능
+    exchange ({dispatch, state}) {
+      state.session.unpublish(state.publisher)
+      dispatch('sub_joinSession')
+      router.push({
+        name: "CardExchange"
+      })
+    },
+    exchangeOff ({commit, state}) {
+      commit('EXCHANGE_OFF')
+      state.session.publish(state.publisher)
+    },
+    sub_joinSession({ commit, dispatch, state }) {
+      // --- Get an OpenVidu object ---
+      const sub_OV = new OpenVidu();
+      // --- Init a session ---
+      const sub_session = sub_OV.initSession();
+      const sub_subscribers = [];
+      
+      // --- Specify the actions when events take place in the session ---
+      
+      // On every new Stream received...
+      sub_session.on("streamCreated", ({ stream }) => {
+        const sub_subscriber = sub_session.subscribe(stream);
+        sub_subscribers.push(sub_subscriber);
+      });
+      // On every Stream destroyed...
+      sub_session.on("streamDestroyed", ({ stream }) => {
+        const sub_index = sub_subscribers.indexOf(stream.streamManager, 0);
+        if (sub_index >= 0) {
+          sub_subscribers.splice(sub_index, 1);
+        }
+      });
+      // On every asynchronous exception...
+      sub_session.on("exception", ({ exception }) => {
+        console.warn(exception);
+      });
+      
+      // --- Connect to the session with a valid user token ---
+      
+      // 'getToken' method is simulating what your server-side should do.
+      // 'token' parameter should be retrieved and returned by your own backend
+      console.log('겟토큰 전에 sub-스테이트호스트네임')
+      console.log('sub' + state.hostname)
+      dispatch("getToken", 'sub' + state.hostname).then((sub_token) => {
+        sub_session
+        .connect(sub_token, { clientData: state.nickname })
+        .then(() => {
+          // --- Get your own camera stream with the desired properties ---
+          let sub_publisher = sub_OV.initPublisher(undefined, {
+            audioSource: undefined, // The source of audio. If undefined default microphone
+            videoSource: undefined, // The source of video. If undefined default webcam
+            publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+            publishVideo: true, // Whether you want to start publishing with your video enabled or not
+            resolution: "300x300", // The resolution of your video
+            frameRate: 30, // The frame rate of your video
+            insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+            mirror: false, // Whether to mirror your local video or not
+          });
+          commit('SET_SUB_OV', sub_OV)
+          commit('SET_SUB_PUBLISHER', sub_publisher)
+          commit('SET_SUB_SESSION', sub_session)
+          commit('SET_SUB_SUBSCRIBERS', sub_subscribers)
+          commit('SET_SUB_OVTOKEN', sub_token)
+
+            // --- Publish your stream ---
+            sub_session.publish(state.sub_publisher);
+
+          })
+          .catch((error) => {
+            console.log(
+              "There was an error connecting to the session:",
+              error.code,
+              error.message
+            );
+          });
+      });
+      // window.addEventListener("beforeunload", this.leaveSession);
+    },
+
+
+
+
+
     // 채팅 관련 통신
     sendMessage ({ state }, message) {
       state.session.signal({
