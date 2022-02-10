@@ -28,9 +28,12 @@ public class GameRunnable implements Runnable {
         try {
             JsonObject data = new JsonObject();
             JsonObject params = new JsonObject();
-
             int exchangeCnt = 1;
             int misssionCnt = 1;
+
+            //타입 지정
+            String type = "autoSystem";
+            params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_TYPE_PARAM, type);
 
             //모든 참가자 목록 가져오기(랜덤 2명)
             ArrayList<Participant> pList = participantsList;
@@ -83,8 +86,8 @@ public class GameRunnable implements Runnable {
                 boolean isPolice = false;
                 //미션 수행중인 사람이 police면 추종자에게 알리기.
                 for (int i = 0; i < roles.size(); i++) {
-                    if(roles.get(i).getRoles() == Roles.POLICE &&
-                            (roles.get(i).getParticipant() == missionCandidates.get(0) || roles.get(i).getParticipant() == missionCandidates.get(1))){
+                    if (roles.get(i).getRoles() == Roles.POLICE &&
+                            (roles.get(i).getParticipant() == missionCandidates.get(0) || roles.get(i).getParticipant() == missionCandidates.get(1))) {
                         isPolice = true;
                         break;
                     }
