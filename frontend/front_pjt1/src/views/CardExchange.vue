@@ -2,28 +2,28 @@
   <div style="color:white" class="container">
   <img src="https://ifh.cc/g/N2y3IK.png" id="bg" alt="bgImg">
     <div class="my_cam">
-      <img src="https://ifh.cc/g/NwiNN7.png" width="150%" height="100%" alt="본인">
+      <user-video :streamManager="subPublisher"/>
     </div>
       <div class="my_after_offer">
         나의 명함
-        <h1>{{ selected }}</h1>
+        <h3>{{ selected }}</h3>
       </div>
     <div class="my_before_offer">
       <h3>명함 제시</h3>
       <div>
         <h5>
-        <b-form-select v-model="selected" :options="options" class="card_select mx-2"></b-form-select>
-        <b-button variant="outline-light" class="mx-2">제시!</b-button>
+        <b-form-select v-model="selected" :options="options" class="card_select mx-2" :disabled="confirm"></b-form-select>
+        <b-button variant="outline-light" class="mx-2" @click="confirm=true">확정!</b-button>
         </h5>
       </div>
     </div>
     <b-icon icon="arrow-left-right" font-scale="3" animation="fade" class="icon_location"></b-icon>
     <div class="opp_cam">
-      <img src="https://ifh.cc/g/NwiNN7.png" width="150%" height="100%" alt="상대">
+      <user-video :streamManager="subSubscribers[0]"/>
     </div>
     <div class="opp_after_offer">
       상대방의 명함
-      <h1>{{ selected }}</h1>
+      <h3>{{ receivedCard }}</h3>
     </div>
     <!-- 상대방의 명함 제시는 필요없다 -->
     <!-- <div class="opp_offer">
@@ -35,7 +35,8 @@
       <p>명함 교환 종료까지...</p>
       <h2>{{ timerCount }}초</h2>
     </div>
-    <button class="skill_button">스킬 사용</button>
+    <!-- <button class="skill_button">스킬 사용</button> -->
+    <button @click="exitCard">명교 나가기(임시)</button>
     <!-- <b-form-textarea
       id="textarea"
       v-model="text"
@@ -57,33 +58,96 @@
 </template>
 
 <script>
-    export default {
-        data() {
-            return {
-                timerCount:30,
-                text: '',
-                selected: null,
-                options: [
-                    { value: null, text: '노트주인' },
-                    { value: 'a', text: '추종자' },
-                    { value: 'b', text: '경찰' },
-                ]
-            }
-        },
-        watch: {
-            timerCount: {
-                handler(value) {
-                    if (value > 0) {
-                        setTimeout(() => {
-                            this.timerCount--;
-                        }, 1000);
-                    }
-                },
-                immediate: true
-            }
+import UserVideo from '../components/Attend/UserVideo.vue';
+import {mapState, mapActions, mapMutations} from 'vuex'
 
-        }
+const gameStore = 'gameStore'
+
+export default {
+  name:'CardExchange',
+  components: { UserVideo },
+  data() {
+    return {
+      timerCount:20,
+      timerExit:23,
+      text: '',
+      selected: '선택 중',
+      options: [
+        { value: '선택 중', text: '직업 선택', disabled: true },
+        { value: 'KIRA', text: '노트주인' },
+        { value: 'CRIMINAL', text: '추종자' },
+        { value: 'L', text: '경찰총장' },
+        { value: 'POLICE', text: '경찰' },
+        { value: 'GUARD', text: '보디가드' },
+        { value: 'BROADCASTER', text: '방송인' },
+      ],
+      confirm: false,
     }
+  },
+  computed: {
+    ...mapState(gameStore, ['subPublisher', 'subSubscribers', 'myJob', 'subSession', 'receivedCard'])
+  },
+  watch: {
+    timerCount: {
+      handler(value) {
+        if (value > 0) {
+          setTimeout(() => {
+            this.timerCount--;
+          }, 1000);
+        } else {
+          if (!this.confirm) {
+            this.selected = this.myJob
+            this.confirm = true
+          }
+        }
+      },
+    immediate: true
+    },
+    timerExit: {
+      handler(val) {
+        if (val > 0) {
+          setTimeout(() => {
+            this.timerExit--;
+          }, 1000);
+        } else {
+          this.RECEIVE_CARD('선택 중')
+          this.exitCard()
+        }
+      },
+    immediate: true
+    },
+    confirm (cur) {
+      const selectedCard = {jobName : this.selected}
+      if (cur == true) {
+        console.log('왓치드 잘 되고 있냐')
+        console.log(typeof(this.subSubscribers[0].stream.connection))
+        this.subSession.signal({
+          type: 'exchangeCard',
+          data: JSON.stringify(selectedCard),
+          to: [this.subSubscribers[0].stream.connection],
+        })
+        let checkCardAndJob = false
+        if (this.selected == this.myJob) {
+          checkCardAndJob = true
+        }
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 5,
+            skillType: 'announceToL',
+            result: checkCardAndJob
+          },
+          to: [],
+        })
+      }
+    }
+
+  },
+  methods: {
+    ...mapActions(gameStore, ['exitCard']),
+    ...mapMutations(gameStore, ['RECEIVE_CARD']),
+  }
+}
 </script>
 
 <style scoped>

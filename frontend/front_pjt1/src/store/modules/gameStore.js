@@ -27,11 +27,12 @@ const gameStore = {
     subscribers: [],
 
     // 명교방
-    sub_OV: undefined,
-    sub_OVToken: undefined,
-    sub_session: undefined,
-    sub_publisher: undefined,
-    sub_subscribers: [],
+    subOV: undefined,
+    subOVToken: undefined,
+    subSession: undefined,
+    subPublisher: undefined,
+    subSubscribers: [],
+    receivedCard: '선택 중',
 
 
     //game
@@ -77,27 +78,27 @@ const gameStore = {
 
     // 명교방 state 설정하기
     SET_SUB_PUBLISHER (state, res) {
-      state.sub_publisher = res
+      state.subPublisher = res
     },
     SET_SUB_OV (state, res) {
-      state.sub_OV = res
+      state.subOV = res
     },
     SET_SUB_SESSION (state, res) {
-      state.sub_session = res
+      state.subSession = res
     },
     SET_SUB_SUBSCRIBERS (state, res) {
-      state.sub_subscribers = res
+      state.subSubscribers = res
     },
     SET_SUB_OVTOKEN (state, res) {
-      state.sub_OVToken = res
+      state.subOVToken = res
     },
     EXCHANGE_OFF (state) {
-      state.sub_OV = undefined
-      state.sub_publisher = undefined
-      state.sub_session = undefined
-      state.sub_subscribers = []
-      state.sub_OVToken = undefined
-      state.is_1on1 = false
+      state.subOV = undefined
+      state.subPublisher = undefined
+      state.subSession = undefined
+      state.subSubscribers = []
+      state.subOVToken = undefined
+      // state.is1on1 = false
     },
 
 
@@ -121,6 +122,11 @@ const gameStore = {
         }
       })
     },
+
+    // 명함교환 시 상대방 확정 카드 자원 관리
+    RECEIVE_CARD(state, card) {
+      state.receivedCard = card
+    }
     
   },
 
@@ -131,6 +137,7 @@ const gameStore = {
       console.log(res.sessionId)
       commit('NICKNAME_UPDATE', res.nickname)
       commit('SET_SESSIONID', res.sessionId)
+      dispatch('subJoinSession')
       dispatch('joinSession')
     },
     // ★★★★★★★★★★★★★★겁나 중요함★★★★★★★★★★★★★★★★★
@@ -161,6 +168,7 @@ const gameStore = {
         if (index >= 0) {
           subscribers.splice(index, 1);
         }
+        console.log(subscribers)
       });
       
       // On every asynchronous exception...
@@ -220,14 +228,36 @@ const gameStore = {
               console.log('노트 라이트 사용')
               console.log(event.data)
             break
+            case 'announceToL':
+              console.log(event.data)
+            break
           }
         }
       });
       // 명함교환 방 자동 이동 & 미션 할당
-      // session.on("signal:autoSystem", (event) => {
-        // 두명 골라서 섭스크라이버에 있으면 지우기?
+      session.on("signal:autoSystem", (event) => {
+        // const action = JSON.parse(event.data).action
+        if (event.data.action == "exchangeNameStart") {
+          state.session.unpublish(state.publisher)
+          commit('SET_PUBLISHER', undefined)
+          let subPublisher = OV.initPublisher(undefined, {
+            audioSource: undefined, // The source of audio. If undefined default microphone
+            videoSource: undefined, // The source of video. If undefined default webcam
+            publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+            publishVideo: true, // Whether you want to start publishing with your video enabled or not
+            resolution: "480x360", // The resolution of your video
+            frameRate: 30, // The frame rate of your video
+            insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+            mirror: false, // Whether to mirror your local video or not
+          });
+          commit('SET_SUB_PUBLISHER', subPublisher)
+          state.subSession.publish(state.subPublisher);
+          router.push({
+            name: 'CardExchange',
+          })
+        }
         // 두명 중 하나가 퍼블리셔면 언퍼블리시하고 라우터푸시 조인세션?
-      // })
+      })
 
       // --- Connect to the session with a valid user token ---
       // 'getToken' method is simulating what your server-side should do.
@@ -351,9 +381,8 @@ const gameStore = {
       // window.removeEventListener("beforeunload", this.leaveSession);
     },
     // 명교방 관련 기능
-    exchange ({dispatch, state}) {
-      state.session.unpublish(state.publisher)
-      dispatch('sub_joinSession')
+    exchange ({dispatch}) {
+      dispatch('subJoinSession')
       router.push({
         name: "CardExchange"
       })
@@ -362,62 +391,54 @@ const gameStore = {
       commit('EXCHANGE_OFF')
       state.session.publish(state.publisher)
     },
-    sub_joinSession({ commit, dispatch, state }) {
+    subJoinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
-      const sub_OV = new OpenVidu();
+      const subOV = new OpenVidu();
       // --- Init a session ---
-      const sub_session = sub_OV.initSession();
-      const sub_subscribers = [];
+      const subSession = subOV.initSession();
+      const subSubscribers = [];
       
       // --- Specify the actions when events take place in the session ---
       
       // On every new Stream received...
-      sub_session.on("streamCreated", ({ stream }) => {
-        const sub_subscriber = sub_session.subscribe(stream);
-        sub_subscribers.push(sub_subscriber);
+      subSession.on("streamCreated", ({ stream }) => {
+        const subSubscriber = subSession.subscribe(stream);
+        subSubscribers.push(subSubscriber);
       });
       // On every Stream destroyed...
-      sub_session.on("streamDestroyed", ({ stream }) => {
-        const sub_index = sub_subscribers.indexOf(stream.streamManager, 0);
-        if (sub_index >= 0) {
-          sub_subscribers.splice(sub_index, 1);
+      subSession.on("streamDestroyed", ({ stream }) => {
+        const subIndex = subSubscribers.indexOf(stream.streamManager, 0);
+        if (subIndex >= 0) {
+          subSubscribers.splice(subIndex, 1);
         }
       });
       // On every asynchronous exception...
-      sub_session.on("exception", ({ exception }) => {
+      subSession.on("exception", ({ exception }) => {
         console.warn(exception);
       });
+
+      subSession.on("signal:exchangeCard", (event) => {
+        const receivedCard = JSON.parse(event.data).jobName
+        dispatch('receiveCard', receivedCard)
+        console.log('명교 성공 이벤트 확인')
+        console.log(event)
+      })
       
       // --- Connect to the session with a valid user token ---
       
       // 'getToken' method is simulating what your server-side should do.
       // 'token' parameter should be retrieved and returned by your own backend
       console.log('겟토큰 전에 sub-스테이트호스트네임')
-      console.log('sub' + state.hostname)
-      dispatch("getToken", 'sub' + state.hostname).then((sub_token) => {
-        sub_session
-        .connect(sub_token, { clientData: state.nickname })
+      console.log('sub' + state.sessionId)
+      dispatch("getToken", 'sub' + state.sessionId).then((subToken) => {
+        subSession
+        .connect(subToken, { clientData: state.nickname })
         .then(() => {
           // --- Get your own camera stream with the desired properties ---
-          let sub_publisher = sub_OV.initPublisher(undefined, {
-            audioSource: undefined, // The source of audio. If undefined default microphone
-            videoSource: undefined, // The source of video. If undefined default webcam
-            publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-            publishVideo: true, // Whether you want to start publishing with your video enabled or not
-            resolution: "300x300", // The resolution of your video
-            frameRate: 30, // The frame rate of your video
-            insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
-            mirror: false, // Whether to mirror your local video or not
-          });
-          commit('SET_SUB_OV', sub_OV)
-          commit('SET_SUB_PUBLISHER', sub_publisher)
-          commit('SET_SUB_SESSION', sub_session)
-          commit('SET_SUB_SUBSCRIBERS', sub_subscribers)
-          commit('SET_SUB_OVTOKEN', sub_token)
-
-            // --- Publish your stream ---
-            sub_session.publish(state.sub_publisher);
-
+          commit('SET_SUB_OV', subOV)
+          commit('SET_SUB_SESSION', subSession)
+          commit('SET_SUB_OVTOKEN', subToken)
+          commit('SET_SUB_SUBSCRIBERS', subSubscribers)
           })
           .catch((error) => {
             console.log(
@@ -429,9 +450,6 @@ const gameStore = {
       });
       // window.addEventListener("beforeunload", this.leaveSession);
     },
-
-
-
 
 
     // 채팅 관련 통신
@@ -478,6 +496,28 @@ const gameStore = {
         },
         to: [],
       })
+    },
+    exitCard({state, commit}) {
+      state.subSession.unpublish(state.subPublisher)
+      commit('SET_SUB_PUBLISHER', undefined)
+      let publisher = state.OV.initPublisher(undefined, {
+        audioSource: undefined, // The source of audio. If undefined default microphone
+        videoSource: undefined, // The source of video. If undefined default webcam
+        publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+        publishVideo: true, // Whether you want to start publishing with your video enabled or not
+        resolution: "480x360", // The resolution of your video
+        frameRate: 30, // The frame rate of your video
+        insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+        mirror: false, // Whether to mirror your local video or not
+      });
+      commit('SET_PUBLISHER', publisher)
+      state.session.publish(state.publisher)
+      router.push({
+        name: 'MainGame'
+      })
+    },
+    receiveCard({commit}, card) {
+      commit('RECEIVE_CARD', card)
     }
   },
 

@@ -24,7 +24,9 @@ public class GameRunnable implements Runnable {
 
     @Override
     public void run() {
-
+        System.out.println("명함교환 하기전 세션아이디 확인");
+        System.out.println(sessionId);
+        System.out.println(participantsList);
         try {
             JsonObject data = new JsonObject();
             JsonObject params = new JsonObject();
@@ -32,7 +34,7 @@ public class GameRunnable implements Runnable {
             int misssionCnt = 1;
 
             //타입 지정
-            String type = "autoSystem";
+            String type = "signal:autoSystem";
             params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_TYPE_PARAM, type);
 
             //모든 참가자 목록 가져오기(랜덤 2명)
