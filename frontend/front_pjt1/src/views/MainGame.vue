@@ -169,7 +169,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages'])
+    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages',])
   },
 
   methods : {

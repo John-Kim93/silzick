@@ -452,7 +452,6 @@ public class GameService {
                 break;
             case "noteUse":
                 noteList = deathNoteList.get(sessionId);
-                data = new JsonObject();
 
                 int cnt = 0;
                 // 노트에 적힌 사람들 죄다 죽이기.

@@ -158,7 +158,6 @@ const gameStore = {
         subscriber.ready = false
         subscribers.push(subscriber);
       });
-      
       // On every Stream destroyed...
       session.on("streamDestroyed", ({ stream }) => {
         const index = subscribers.indexOf(stream.streamManager, 0);
@@ -212,13 +211,16 @@ const gameStore = {
           } else {
             state.readyStatus = false
           }
+        // 내 직업 받고 게임 스타트
         } else if (event.data.gameStatus === 4) {
-          state.myJob= event.data.jobName
+          state.myJob = event.data.jobName
           router.push({
             name: 'MainGame'
           })
+        // 직업별 스킬 사용
         } else if (event.data.gameStatus === 5) {
           switch (event.data.skillType) {
+            // 키라가 노트에 이름을 적음
             case 'noteWrite':{
               const {writeName} = event.data
               if (writeName) {
@@ -228,15 +230,22 @@ const gameStore = {
               }
               break
             }
+            // 키라가 노트에 적힌 사람을 모두 죽임
             case 'noteUse':{
               const results = event.data
-              results.forEach(result => {
-                const {isAlive, userId, connectionId} = result
+              console.log('@@@@@@@@@@@@@@@@@@@@')
+              console.log(results[0])
+              console.log(results.length)
+              for (let i = 0; i < results.length; i++) {
+                const {isAlive, userId, connectionId} = results[i]
                 const { clientData } = JSON.parse(userId)
+                console.log('for문 들어왔다@@@@@@@')
+                console.log(connectionId)
+                console.log(state.publisher.stream.connection.connectionId)
                 if (isAlive) {
                   state.messages.push('System : ' + clientData + '가 보디가드에 의해 보호되었습니다.')
                 } else {
-                  if (state.session.connection.connectionId == connectionId){
+                  if (state.publisher.stream.connection.connectionId == connectionId){
                     console.log('심장마비 발동@@@@@@@@@@@@@@')
                     state.session.unpublish(state.publisher)
                     commit('SET_PUBLISHER', undefined)
@@ -244,7 +253,7 @@ const gameStore = {
                   }
                   state.messages.push('System : ' + clientData + '가 심장마비로 사망하였습니다.')
                 }
-              })
+              }
               break
             }
             case 'announceToL':{
