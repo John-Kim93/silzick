@@ -378,7 +378,6 @@ public class GameService {
 
                 //skill대상의 직업이 jobName과 일치하는지 체크
                 if (target.getJobName().equals(jobName)) {
-                    data = new JsonObject();
                     //보호되는 상태가 아니면
                     if (!target.isProtected()) {
 
@@ -396,7 +395,7 @@ public class GameService {
                         }
 
                         //사망 소식 전하기
-                        data.addProperty("isAlive", false);
+                        data.addProperty("isAlive", 2);
                         data.addProperty("userId", target.getParticipant().getClientMetadata());
                         data.addProperty("connectionId", target.getParticipant().getParticipantPublicId());
                         params.add("data", data);
@@ -408,7 +407,7 @@ public class GameService {
                         //보호 중이면.
                     } else {
                         //방어됨 소식 알리기.
-                        data.addProperty("isAlive", true);
+                        data.addProperty("isAlive", 0);
                         data.addProperty("userId", target.getParticipant().getClientMetadata());
                         data.addProperty("connectionId", target.getParticipant().getParticipantPublicId());
                         params.add("data", data);
@@ -417,6 +416,16 @@ public class GameService {
                         rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
                                 ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                     }
+                }else{
+                    //방어됨 소식 알리기.
+                    data.addProperty("isAlive", 1);
+                    data.addProperty("userId", target.getParticipant().getClientMetadata());
+                    data.addProperty("connectionId", target.getParticipant().getParticipantPublicId());
+                    params.add("data", data);
+
+                    //스킬 쓴사람에게만 보호 소식 알리기.
+                    rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
+                            ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                 }
                 break;
             case "arrest":
@@ -636,8 +645,6 @@ public class GameService {
     }
 
     private Characters getTarget(JsonObject data, ArrayList<Characters> cList) {
-        System.out.println("참여자 리스트 크기 확인.");
-        System.out.println(cList.size());
 
         String skillTarget = data.get("target").getAsString();
 
