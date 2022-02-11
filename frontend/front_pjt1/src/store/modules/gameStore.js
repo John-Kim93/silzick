@@ -282,6 +282,11 @@ const gameStore = {
             case 'arrest': {
               const { isCriminal, userId, connectionId } = event.data
               const { clientData } = JSON.parse(userId)
+              if (isCriminal == true) {
+                state.messages.push('System : 추종자 ' + clientData + '가 검거되었습니다.')
+              } else {
+                state.messages.push('System : 경찰 ' + clientData + '가 경찰측 체포를 시도하여 해고당했습니다.')
+              }
               if (state.publisher.stream.connection.connectionId == connectionId){
                 state.session.unpublish(state.publisher)
                 commit('SET_PUBLISHER', undefined)
@@ -290,11 +295,6 @@ const gameStore = {
                 state.subSession.unpublish(state.subPublisher)
                 commit('SET_SUB_PUBLISHER', undefined)
                 state.isAlive = false
-              }
-              if (isCriminal == true) {
-                state.messages.push('System : 추종자 ' + clientData + '가 검거되었습니다.')
-              } else {
-                state.messages.push('System : 경찰 ' + clientData + '가 경찰측 체포를 시도하여 해고당했습니다.')
               }
               break
             }
@@ -344,7 +344,10 @@ const gameStore = {
           router.push({
             name: 'CardExchange',
           })
-        }
+        } else if (event.data.action == "meetKIRA") {
+          const message = "System : 키라측 접선에 성공했습니다."
+          state.messages.push(message)
+        } 
         // 두명 중 하나가 퍼블리셔면 언퍼블리시하고 라우터푸시 조인세션?
       })
 
