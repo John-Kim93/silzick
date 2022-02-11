@@ -1,13 +1,6 @@
 package io.openvidu.server.game;
 
-public enum Roles {
-
-    L("L",false,1,1),
-    KIRA("KIRA",false,1,1),
-    GUARD("GUARD",true,1,1),
-    BROADCASTER("BROADCASTER",true,1,1),
-    CRIMINAL("CRIMINAL",true,1,2),
-    POLICE("POLICE",true,1,3);
+public class Roles {
 
     private String jobName;
     private boolean isChange;
@@ -25,7 +18,6 @@ public enum Roles {
         return jobName;
     }
 
-
     public Integer getCount() {
         return count;
     }
@@ -41,4 +33,6 @@ public enum Roles {
     public boolean isChange() {
         return isChange;
     }
+
+
 }
