@@ -221,8 +221,6 @@ public class GameService {
         HashMap<String, Boolean> preReadyState = readySetting.get(sessionId);
         HashMap<String, Boolean> readyState = new HashMap<>();
 
-        System.out.println(participant.getClientMetadata());
-
         //현재 방에 없는 애들 다 제외 시키기
         for (Participant p : participants) {
             String id = p.getParticipantPublicId();
@@ -425,8 +423,6 @@ public class GameService {
                 target = getTarget(data, cList);
 
                 jobName = data.get("jobName").getAsString();
-                System.out.println(jobName);
-                System.out.println(target);
                 //노트 목록 불러오기
                 ArrayList<Characters> noteList = deathNoteList.get(sessionId);
 
@@ -501,6 +497,13 @@ public class GameService {
                             alivePolices.compute(sessionId, (k, v) -> v - 1);
                         }
 
+                        for (Characters player : cList) {
+                            if (player.getParticipant().getParticipantPublicId().equals(c.getParticipant().getParticipantPublicId())) {
+                                player.setAlive(false);
+                                break;
+                            }
+                        }
+
                         //사망 소식 전하기
                         list.addProperty("isAlive", false);
                         list.addProperty("userId", c.getParticipant().getClientMetadata());
@@ -519,7 +522,7 @@ public class GameService {
                     }
                 }
 
-                deathNoteList.compute(sessionId, (k, v) -> v = noteList);
+                roleMatching.compute(sessionId, (k, v) -> v = cList);
 
                 //죽은 사람 정보는 모든 유저에게 보낸다.
                 data.addProperty("cnt", aliveCnt);
