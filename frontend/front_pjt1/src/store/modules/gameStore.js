@@ -267,7 +267,7 @@ const gameStore = {
             }
             // 방송인의 방송 기능
             case 'announce':{
-              const message = event.data.broadcastMessage
+              const message = '경찰측 방송 : ' + event.data.announce
               state.messages.push(message)
               break
             }
@@ -282,10 +282,6 @@ const gameStore = {
             case 'arrest': {
               const { isCriminal, userId, connectionId } = event.data
               const { clientData } = JSON.parse(userId)
-              console.log("어레스트 확인@@@@@@@@@@")
-              console.log(userId)
-              console.log(connectionId)
-              console.log(clientData)
               if (state.publisher.stream.connection.connectionId == connectionId){
                 state.session.unpublish(state.publisher)
                 commit('SET_PUBLISHER', undefined)
@@ -300,6 +296,29 @@ const gameStore = {
               } else {
                 state.messages.push('System : 경찰 ' + clientData + '가 경찰측 체포를 시도하여 해고당했습니다.')
               }
+              break
+            }
+            case 'kill': {
+              const result = event.data
+              const { isAlive, userId, connectionId } = result
+              const { clientData } = JSON.parse(userId)
+              if (isAlive == 0) {
+                state.messages.push('System : ' + clientData + '가 보디가드에 의해 보호되었습니다.')
+              } else if (isAlive == 1) {
+                state.messages.push('System : ' + clientData + '의 직업 정보가 일치하지 않습니다.')
+              } else {
+                if (state.publisher.stream.connection.connectionId == connectionId){
+                  state.session.unpublish(state.publisher)
+                  commit('SET_PUBLISHER', undefined)
+                  state.isAlive = false
+                } else if (state.subPublisher.stream.connection.connectionId == connectionId){
+                  state.subSession.unpublish(state.subPublisher)
+                  commit('SET_SUB_PUBLISHER', undefined)
+                  state.isAlive = false
+                } 
+                state.messages.push('System : ' + clientData + '가 심장마비로 사망하였습니다.')
+              }
+              break
             }
           }
         }

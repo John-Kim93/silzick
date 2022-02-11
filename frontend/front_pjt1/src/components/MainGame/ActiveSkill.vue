@@ -169,7 +169,7 @@
           <b-button
             size="sm"
             class="skill_button_note my-3"
-            @click="noteUse"
+            @click="kill"
           >
             Kill
           </b-button>
@@ -268,9 +268,12 @@
             class="select_list"
           >
             <option selected disabled>참가자 목록</option>
-            <option v-for="sub in subscribers"
-            :key="sub.stream.connection.connectionId">
-              <user-list :streamManager="sub" doubt="true" />
+            <option
+              v-for="sub in subscribers"
+              :key="sub.stream.connection.connectionId"
+              :value="sub.stream.connection.connectionId"
+            >
+              {{sub.stream.connection.data.slice(15, -2)}}
             </option>
             <option
               v-for="sub in subSubscribers"
@@ -451,6 +454,8 @@ export default {
         },
         to: [],
       })
+      this.selectSubscriber = '참가자 목록'
+      this.selectJobName = '직업'
     },
     noteUse () {
       this.show = false
@@ -470,10 +475,11 @@ export default {
         data: {
           gameStatus: 5,
           skillType: 'announce',
-          announce: 'broadcastMessage',
+          announce: this.broadcastMessage,
         },
         to: [],
       })
+      this.broadcastMessage = ''
     },
     arrest () {
       this.show = false
@@ -486,6 +492,7 @@ export default {
         },
         to: [],
       })
+      this.selectSubscriber = '참가자 목록'
     },
     protect () {
       this.show = false
@@ -498,6 +505,22 @@ export default {
         },
         to: [],
       })
+      this.selectSubscriber = '참가자 목록'
+    },
+    kill () {
+      this.show = false
+      this.session.signal({
+        type: 'game',
+        data: {
+          gameStatus: 5,
+          skillType: 'kill',
+          target: this.selectSubscriber,
+          jobName: this.selectJobName
+        },
+        to: [],
+      })
+      this.selectSubscriber = '참가자 목록'
+      this.selectJobName = '직업'
     }
   },
 }

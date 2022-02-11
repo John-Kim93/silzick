@@ -163,6 +163,9 @@ export default {
   methods: {
     ...mapActions(gameStore, ['exitCard']),
     ...mapMutations(gameStore, ['RECEIVE_CARD', 'SET_SUB_PUBLISHER']),
+  },
+  created: {
+    if (this.myJob == "CRIMINAL" || this.myJob == "KIRA")
   }
 }
 </script>

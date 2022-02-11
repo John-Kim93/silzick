@@ -650,6 +650,7 @@ public class GameService {
                 break;
             }
         }
+        System.out.println(skillTarget);
         System.out.println("타겟 직업이름");
         System.out.println(target.getJobName());
         return target;
