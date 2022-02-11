@@ -174,6 +174,24 @@ public class GameRunnable implements Runnable {
         //참가자 목록 섞기
         Collections.shuffle(roles);
 
+        if(roles.get(0).getJobName().equals("KIRA") && roles.get(1).getJobName().equals("CRIMINAL")){
+            data.addProperty("action", "meetKIRA");
+            params.add("data", data);
+
+            for (int i = 0; i < 2; i++) {
+                rpcNotificationService.sendNotification(roles.get(i).getParticipant().getParticipantPrivateId(),
+                        ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+            }
+        }else if(roles.get(1).getJobName().equals("KIRA") && roles.get(0).getJobName().equals("CRIMINAL")){
+            data.addProperty("action", "meetKIRA");
+            params.add("data", data);
+            
+            for (int i = 0; i < 2; i++) {
+                rpcNotificationService.sendNotification(roles.get(i).getParticipant().getParticipantPrivateId(),
+                        ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+            }
+        }
+
         //data에 담을 정보
         data.addProperty("action", "exchangeNameStart");
         data.addProperty("turn", exchangeCnt);
@@ -184,6 +202,7 @@ public class GameRunnable implements Runnable {
             rpcNotificationService.sendNotification(roles.get(i).getParticipant().getParticipantPrivateId(),
                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
         }
+
         /**
          * 명교 끝
          */
