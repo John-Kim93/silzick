@@ -380,8 +380,14 @@ public class GameService {
                     data = new JsonObject();
                     //보호되는 상태가 아니면
                     if (!target.isProtected()) {
-                        //사망처리
-                        target.setAlive(false);
+
+                        //사망처리.
+                        for (Characters player : cList) {
+                            if (player.getParticipant().getParticipantPublicId().equals(target.getParticipant().getParticipantPublicId())) {
+                                player.setAlive(false);
+                                break;
+                            }
+                        }
 
                         //경찰일시 경찰 수 -1;
                         if (target.getJobName().equals("POLICE")) {
@@ -412,10 +418,57 @@ public class GameService {
                     }
                 }
                 break;
+            case "arrest":
+                target = getTarget(data, cList);
+
+                //KIRA 일때
+                if (target.getJobName().equals("KIRA")) {
+                    data.addProperty("isCriminal", true);
+                    params.add("data", data);
+                    rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
+                            ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+
+                    //키라는 사망처리 없이 게임이 끝남.
+                    finishGame(participant, sessionId, participants, params, data, "Police");
+
+                    //CRIMINAL 일때
+                } else if (target.getJobName().equals("CRIMINAL")) {
+                    target.setAlive(false);
+                    data.addProperty("isCriminal", true);
+                    params.add("data", data);
+
+                    //CRIMINAL 사망처리(수정값 적용은 case문 빠져 나간 뒤에)
+                    for (Characters player : cList) {
+                        if (player.getParticipant().getParticipantPublicId().equals(target.getParticipant().getParticipantPublicId())) {
+                            player.setAlive(false);
+                            break;
+                        }
+                    }
+
+                    rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
+                            ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+                    // L측 일때
+                } else {
+                    data.addProperty("isCriminal", false);
+                    params.add("data", data);
+
+                    //잘못된 사람을 체포했으므로 본인 사망처리.
+                    for (Characters player : cList) {
+                        if (player.getParticipant().getParticipantPublicId().equals(participant.getParticipantPublicId())) {
+                            player.setAlive(false);
+                            break;
+                        }
+                    }
+                    rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
+                            ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+                }
+                break;
             case "protect":
                 target = getTarget(data, cList);
                 //보호받는 사람 닉네임 같이 보내기
                 data.addProperty("userId", target.getParticipant().getClientMetadata());
+                //데이터 첨부
+                params.add("data", data);
                 //스킬 타겟 보호 설정
                 target.setProtected(true);
                 //가드한테 스킬 정상 작동 메세지 보내주기
@@ -501,19 +554,16 @@ public class GameService {
 
                     //보호되는 상태가 아니면
                     if (!c.isProtected()) {
-                        //사망처리
-                        c.setAlive(false);
 
                         //경찰일시 경찰 수 -1;
                         if (c.getJobName().equals("POLICE")) {
                             alivePolices.compute(sessionId, (k, v) -> v - 1);
                         }
 
+                        //사망처리
                         for (Characters player : cList) {
                             if (player.getParticipant().getParticipantPublicId().equals(c.getParticipant().getParticipantPublicId())) {
                                 player.setAlive(false);
-                                System.out.println("플레이 사망 여부 확인");
-                                System.out.println(player.isAlive());
                                 break;
                             }
                         }
@@ -569,8 +619,6 @@ public class GameService {
                 break;
         }
 
-        System.out.println(alivePolices.get(sessionId));
-        System.out.println(cList.size());
         //키라 사망 or 경찰 수 0명시 게임 종료
         for (Characters c : cList) {
             if ((c.getJobName().equals("KIRA") && !c.isAlive())) {
