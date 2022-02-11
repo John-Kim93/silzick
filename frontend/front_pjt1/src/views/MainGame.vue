@@ -123,15 +123,6 @@
     <div class="d-flex justify-content-around buttons">
       <!--능력사용-->
       <active-skill/>
-      <!--메모팝업-->
-      <!--1.버튼 사용-->
-      <!-- <div>
-        <button class="memo_button" @click="openmemo">메모하기</button>
-        <div class="modal" v-if="this.memo==true">
-          <h1>Memo</h1>
-          <textarea name="" id="" cols="auto" rows="auto"></textarea>
-        </div>
-      </div> -->
       <!--2.인풋과 라벨로만 만들기-->
       <input type="checkbox" id="popup">
       <label for="popup">메모 하기</label>
@@ -141,9 +132,7 @@
           <textarea name="" style="border:none; color:#44c767;" id="popup" class="textarea_position" cols="30" rows="10"></textarea>
         </div>
       </div>
-      <!-- <label for="popup"></label> -->
     </div>
-    <button @click="enterCard">test</button>
   </div>
 </template>
 

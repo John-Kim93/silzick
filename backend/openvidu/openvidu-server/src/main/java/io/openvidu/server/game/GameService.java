@@ -555,10 +555,7 @@ public class GameService {
         }
 
         //키라 사망 or 경찰 수 0명시 게임 종료
-            System.out.println("어디가 에러냐@@@@@@@@@@@@@@@@@@@@@");
-            System.out.println(alivePolices.get(sessionId));
         for (Characters c : cList) {
-            System.out.println(c.isAlive());
             if ((c.getRoles() == Roles.KIRA && !c.isAlive()) || alivePolices.get(sessionId) < 1) {
                 finishGame(participant, sessionId, participants, params, data);
             }
