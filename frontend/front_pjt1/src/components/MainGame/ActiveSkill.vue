@@ -385,24 +385,20 @@
             class="select_list"
           >
             <option selected disabled>참가자 목록</option>
-            <div v-if="subscribers">
-              <option
-                v-for="sub in subscribers"
-                :key="sub.stream.connection.connectionId"
-                :value="sub.stream.connection.connectionId"
-              >
-                {{sub.stream.connection.data.slice(15, -2)}}
-              </option>
-            </div>
-            <div v-if="subSubsscribers">
-              <option
-                v-for="sub in subSubscribers"
-                :key="sub.stream.connection.connectionId"
-                :value="sub.stream.connection.connectionId"
-              >
-                {{sub.stream.connection.data.slice(15, -2)}}
-              </option>
-            </div>
+            <option
+              v-for="sub in subscribers"
+              :key="sub.stream.connection.connectionId"
+              :value="sub.stream.connection.connectionId"
+            >
+              {{sub.stream.connection.data.slice(15, -2)}}
+            </option>
+            <option
+              v-for="sub in subSubscribers"
+              :key="sub.stream.connection.connectionId"
+              :value="sub.stream.connection.connectionId"
+            >
+              {{sub.stream.connection.data.slice(15, -2)}}
+            </option>
           </select>
           을/를 검거한다.
         </h5>
@@ -439,7 +435,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'jobs', 'subscribers', 'session'])
+    ...mapState(gameStore, ['myJob', 'jobs', 'subscribers', 'subSubscribers', 'session'])
   },
   methods: {
     noteWrite () {
