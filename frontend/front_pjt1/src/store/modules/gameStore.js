@@ -270,9 +270,15 @@ const gameStore = {
               state.messages.push(message)
               break
             }
-            // case 'arrest':{
-
-            // }
+            case 'protect':{
+              const {clientData} = JSON.parse(event.data.userId)
+              const message = clientData + '을/를 1회 보호합니다.'
+              state.messages.push(message)
+              break
+            },
+            case 'arrest': {
+              
+            }
           }
         }
       });
