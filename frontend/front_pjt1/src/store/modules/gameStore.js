@@ -254,13 +254,14 @@ const gameStore = {
               }
               break
             }
+            // 명교 확정 시 L에게 True or False 결과 전달
             case 'announceToL':{
               let TF = '거짓'
               if (event.data.result) {
                 TF = '진실'
               }
               const {clientData} = JSON.parse(event.data.userId)
-              const message = "System : " + clientData + "는" + TF + '인 명함을 냈습니다.'
+              const message = "System : " + clientData + "는 " + TF + '인 명함을 냈습니다.'
               state.messages.push(message)
               break
             }
@@ -270,14 +271,29 @@ const gameStore = {
               state.messages.push(message)
               break
             }
+            // 보디가드의 보호 기능은 백에서 구현, 확인 메세지만 출력
             case 'protect':{
               const {clientData} = JSON.parse(event.data.userId)
-              const message = clientData + '을/를 1회 보호합니다.'
+              const message = "System : " + clientData + '을/를 1회 보호합니다.'
               state.messages.push(message)
               break
-            },
+            }
+            // 경찰의 검거 능력, 키라측이면 죽임
             case 'arrest': {
-              
+              const {isCriminal, userId, connectionId} = event.data
+              const { clientData } = JSON.parse(userId)
+              if (isCriminal) {
+                if (state.publisher.stream.connection.connectionId == connectionId){
+                  state.session.unpublish(state.publisher)
+                  commit('SET_PUBLISHER', undefined)
+                  state.isAlive = false
+                } else if (state.subPublisher.stream.connection.connectionId == connectionId){
+                  state.subSession.unpublish(state.subPublisher)
+                  commit('SET_SUB_PUBLISHER', undefined)
+                  state.isAlive = false
+                } 
+                state.messages.push('System : 추종자 ' + clientData + '가 검거되었습니다.')
+              }
             }
           }
         }
@@ -293,7 +309,7 @@ const gameStore = {
             videoSource: undefined, // The source of video. If undefined default webcam
             publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
             publishVideo: true, // Whether you want to start publishing with your video enabled or not
-            resolution: "480x360", // The resolution of your video
+            resolution: "1280×720", // The resolution of your video
             frameRate: 30, // The frame rate of your video
             insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
             mirror: false, // Whether to mirror your local video or not
@@ -320,7 +336,7 @@ const gameStore = {
             videoSource: undefined, // The source of video. If undefined default webcam
             publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
             publishVideo: true, // Whether you want to start publishing with your video enabled or not
-            resolution: "480x360", // The resolution of your video
+            resolution: "1280×720", // The resolution of your video
             frameRate: 30, // The frame rate of your video
             insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
             mirror: false, // Whether to mirror your local video or not
@@ -546,7 +562,7 @@ const gameStore = {
         videoSource: undefined, // The source of video. If undefined default webcam
         publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
         publishVideo: true, // Whether you want to start publishing with your video enabled or not
-        resolution: "480x360", // The resolution of your video
+        resolution: "1280×720", // The resolution of your video
         frameRate: 30, // The frame rate of your video
         insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
         mirror: false, // Whether to mirror your local video or not
