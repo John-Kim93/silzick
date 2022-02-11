@@ -426,7 +426,7 @@ public class GameService {
                 if (target.getJobName().equals("KIRA")) {
                     data.addProperty("isCriminal", true);
                     data.addProperty("userId", target.getParticipant().getClientMetadata());
-                    data.addProperty("publicId", target.getParticipant().getParticipantPublicId());
+                    data.addProperty("connectionId", target.getParticipant().getParticipantPublicId());
                     params.add("data", data);
 
                     //키라는 사망처리 없이 게임이 끝남.
@@ -437,7 +437,7 @@ public class GameService {
                     target.setAlive(false);
                     data.addProperty("isCriminal", true);
                     data.addProperty("userId", target.getParticipant().getClientMetadata());
-                    data.addProperty("publicId", target.getParticipant().getParticipantPublicId());
+                    data.addProperty("connectionId", target.getParticipant().getParticipantPublicId());
                     params.add("data", data);
 
                     //CRIMINAL 사망처리(수정값 적용은 case문 빠져 나간 뒤에)
@@ -452,7 +452,7 @@ public class GameService {
                 } else {
                     data.addProperty("isCriminal", false);
                     data.addProperty("userId", participant.getClientMetadata());
-                    data.addProperty("publicId", participant.getParticipantPublicId());
+                    data.addProperty("connectionId", participant.getParticipantPublicId());
                     params.add("data", data);
 
                     //잘못된 사람을 체포했으므로 본인 사망처리.
