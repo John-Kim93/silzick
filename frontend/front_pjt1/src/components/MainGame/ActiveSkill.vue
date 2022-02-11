@@ -75,6 +75,13 @@
           >
             <h5>노트에 적는다</h5>
           </b-button>
+          <b-button
+            size="sm"
+            class="skill_button_note my-3"
+            @click="noteUse"
+          >
+            <h5>Kill'em all</h5>
+          </b-button>
         </div>
       </template>
     </b-modal>
@@ -398,7 +405,6 @@ export default {
     },
     noteUse () {
       this.show = false
-      console.log(this.selectSubscriber)
       this.session.signal({
         type: 'game',
         data: {

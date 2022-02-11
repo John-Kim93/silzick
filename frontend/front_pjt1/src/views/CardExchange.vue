@@ -96,7 +96,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['subPublisher', 'subSubscribers', 'myJob', 'subSession', 'receivedCard', 'session', 'messages'])
+    ...mapState(gameStore, ['subPublisher', 'subSubscribers', 'myJob', 'subSession', 'receivedCard', 'session', 'messages', 'isAlive'])
   },
   watch: {
     timerCount: {
@@ -151,12 +151,18 @@ export default {
           to: [],
         })
       }
+    },
+    isAlive (cur) {
+      if (cur == false) {
+        this.subSession.unPublish(this.subPublisher)
+        this.SET_SUB_PUBLISHER(undefined)
+      }
     }
 
   },
   methods: {
     ...mapActions(gameStore, ['exitCard']),
-    ...mapMutations(gameStore, ['RECEIVE_CARD']),
+    ...mapMutations(gameStore, ['RECEIVE_CARD', 'SET_SUB_PUBLISHER']),
   }
 }
 </script>

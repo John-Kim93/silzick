@@ -36,6 +36,7 @@ const gameStore = {
 
 
     //game
+    isAlive: true,
     jobs: jobs,
     myJob: undefined,
 
@@ -230,11 +231,18 @@ const gameStore = {
             case 'noteUse':{
               const results = event.data
               results.forEach(result => {
-                const {isDead, userId} = result
-                if (!isDead) {
-                  state.messages.push('System : ' + userId + '가 보디가드에 의해 보호되었습니다.')
+                const {isAlive, userId, connectionId} = result
+                const { clientData } = JSON.parse(userId)
+                if (isAlive) {
+                  state.messages.push('System : ' + clientData + '가 보디가드에 의해 보호되었습니다.')
                 } else {
-                  state.messages.push('System : ' + userId + '가 심장마비로 사망하였습니다.')
+                  if (state.session.connection.connectionId == connectionId){
+                    console.log('심장마비 발동@@@@@@@@@@@@@@')
+                    state.session.unpublish(state.publisher)
+                    commit('SET_PUBLISHER', undefined)
+                    state.isAlive = false
+                  }
+                  state.messages.push('System : ' + clientData + '가 심장마비로 사망하였습니다.')
                 }
               })
               break
@@ -521,8 +529,10 @@ const gameStore = {
         insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
         mirror: false, // Whether to mirror your local video or not
       });
-      commit('SET_PUBLISHER', publisher)
-      state.session.publish(state.publisher)
+      if (state.isAlive){
+        commit('SET_PUBLISHER', publisher)
+        state.session.publish(state.publisher)
+      }
       router.push({
         name: 'MainGame'
       })
