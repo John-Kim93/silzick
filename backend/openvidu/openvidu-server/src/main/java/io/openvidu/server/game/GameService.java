@@ -519,6 +519,8 @@ public class GameService {
                     }
                 }
 
+                deathNoteList.compute(sessionId, (k, v) -> v = noteList);
+
                 //죽은 사람 정보는 모든 유저에게 보낸다.
                 data.addProperty("cnt", aliveCnt);
                 params.add("data", data);
