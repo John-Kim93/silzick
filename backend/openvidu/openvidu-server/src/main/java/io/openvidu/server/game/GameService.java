@@ -470,7 +470,7 @@ public class GameService {
                         }
 
                         //사망 소식 전하기
-                        list.addProperty("isDead", true);
+                        list.addProperty("isAlive", false);
                         list.addProperty("userId", c.getParticipant().getClientMetadata());
                         list.addProperty("connectionId", c.getParticipant().getParticipantPublicId());
                         data.add(String.valueOf(cnt), list);
@@ -483,7 +483,7 @@ public class GameService {
                         //보호 중이면.
                     } else {
                         //방어됨 소식 알리기.
-                        list.addProperty("isDead", true);
+                        list.addProperty("isAlive", true);
                         list.addProperty("userId", c.getParticipant().getClientMetadata());
                         list.addProperty("connectionId", c.getParticipant().getParticipantPublicId());
                         data.add(String.valueOf(cnt), list);
