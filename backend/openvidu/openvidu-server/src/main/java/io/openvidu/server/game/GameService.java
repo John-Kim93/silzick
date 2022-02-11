@@ -442,7 +442,7 @@ public class GameService {
                 }
 
                 for (Participant p : participants) {
-                    rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
+                    rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                             ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                 }
                 break;

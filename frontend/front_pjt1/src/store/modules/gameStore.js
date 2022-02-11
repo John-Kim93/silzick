@@ -222,6 +222,8 @@ const gameStore = {
               const {writeName} = event.data
               if (writeName) {
                 state.messages.push('System : 누군가의 이름이 노트에 적혔습니다.')
+              } else {
+                state.messages.push('System : 이름과 직업이 일치하지 않습니다.')
               }
               break
             }
@@ -230,7 +232,7 @@ const gameStore = {
               results.forEach(result => {
                 const {isDead, userId} = result
                 if (!isDead) {
-                  state.messages.push('System : ' + userId + '가 보디가드에 의해 죽지 않았습니다.')
+                  state.messages.push('System : ' + userId + '가 보디가드에 의해 보호되었습니다.')
                 } else {
                   state.messages.push('System : ' + userId + '가 심장마비로 사망하였습니다.')
                 }
@@ -300,7 +302,8 @@ const gameStore = {
           commit('SET_SUBSCRIBERS', subscribers)
           commit('SET_OVTOKEN', token)
 
-            // --- Publish your stream ---
+          // --- Publish your stream ---
+          session.publish(state.publisher)
           router.push({
             name: 'Attend',
             params: { hostname: state.sessionId}
