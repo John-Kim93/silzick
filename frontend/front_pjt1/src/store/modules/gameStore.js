@@ -280,19 +280,25 @@ const gameStore = {
             }
             // 경찰의 검거 능력, 키라측이면 죽임
             case 'arrest': {
-              const {isCriminal, userId, connectionId} = event.data
+              const { isCriminal, userId, connectionId } = event.data
               const { clientData } = JSON.parse(userId)
-              if (isCriminal) {
-                if (state.publisher.stream.connection.connectionId == connectionId){
-                  state.session.unpublish(state.publisher)
-                  commit('SET_PUBLISHER', undefined)
-                  state.isAlive = false
-                } else if (state.subPublisher.stream.connection.connectionId == connectionId){
-                  state.subSession.unpublish(state.subPublisher)
-                  commit('SET_SUB_PUBLISHER', undefined)
-                  state.isAlive = false
-                } 
+              console.log("어레스트 확인@@@@@@@@@@")
+              console.log(userId)
+              console.log(connectionId)
+              console.log(clientData)
+              if (state.publisher.stream.connection.connectionId == connectionId){
+                state.session.unpublish(state.publisher)
+                commit('SET_PUBLISHER', undefined)
+                state.isAlive = false
+              } else if (state.subPublisher.stream.connection.connectionId == connectionId){
+                state.subSession.unpublish(state.subPublisher)
+                commit('SET_SUB_PUBLISHER', undefined)
+                state.isAlive = false
+              }
+              if (isCriminal == true) {
                 state.messages.push('System : 추종자 ' + clientData + '가 검거되었습니다.')
+              } else {
+                state.messages.push('System : 경찰 ' + clientData + '가 경찰측 체포를 시도하여 해고당했습니다.')
               }
             }
           }
