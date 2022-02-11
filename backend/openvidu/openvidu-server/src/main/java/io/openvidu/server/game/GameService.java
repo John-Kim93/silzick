@@ -428,8 +428,6 @@ public class GameService {
                     data.addProperty("userId", target.getParticipant().getClientMetadata());
                     data.addProperty("publicId", target.getParticipant().getParticipantPublicId());
                     params.add("data", data);
-                    rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
-                            ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
 
                     //키라는 사망처리 없이 게임이 끝남.
                     finishGame(participant, sessionId, participants, params, data, "Police");
@@ -450,11 +448,11 @@ public class GameService {
                         }
                     }
 
-                    rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
-                            ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                     // L측 일때
                 } else {
                     data.addProperty("isCriminal", false);
+                    data.addProperty("userId", participant.getClientMetadata());
+                    data.addProperty("publicId", participant.getParticipantPublicId());
                     params.add("data", data);
 
                     //잘못된 사람을 체포했으므로 본인 사망처리.
@@ -464,9 +462,12 @@ public class GameService {
                             break;
                         }
                     }
-                    rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
+                }
+                for (Participant p : participants) {
+                    rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                             ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                 }
+                
                 break;
             case "protect":
                 target = getTarget(data, cList);
