@@ -233,10 +233,10 @@ const gameStore = {
             // 키라가 노트에 적힌 사람을 모두 죽임
             case 'noteUse':{
               const results = event.data
+              const { cnt } = results
               console.log('@@@@@@@@@@@@@@@@@@@@')
-              console.log(results[0])
-              console.log(results.length)
-              for (let i = 0; i < results.length; i++) {
+              console.log(cnt)
+              for (let i = 0; i < cnt; i++) {
                 const {isAlive, userId, connectionId} = results[i]
                 const { clientData } = JSON.parse(userId)
                 console.log('for문 들어왔다@@@@@@@')

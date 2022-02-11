@@ -17,6 +17,7 @@
 
 package io.openvidu.server.game;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.openvidu.client.internal.ProtocolElements;
@@ -180,7 +181,7 @@ public class GameService {
             if (r.getJobName().equals(jobName) && count <= r.getMaxCount()) {
                 //경찰이면 살아있는 경찰 수 바꿔주기.
                 if (r.getJobName().equals("POLICE")) {
-                    alivePolices.computeIfPresent(sessionId, (k, v) -> v = count);
+                    alivePolices.compute(sessionId, (k, v) -> v = count);
                 }
                 //역할 수 바꾸기.
                 r.setCount(count);
@@ -355,6 +356,7 @@ public class GameService {
     private void useSkill(Participant participant, String sessionId, Set<Participant> participants,
                           JsonObject params, JsonObject data, RpcNotificationService notice) {
 
+
         //사용하는 스킬 타입 구별
         String skillType = data.get("skillType").getAsString();
         //역할 리스트 가져오기.
@@ -382,7 +384,7 @@ public class GameService {
 
                         //경찰일시 경찰 수 -1;
                         if (target.getRoles() == Roles.POLICE) {
-                            alivePolices.computeIfPresent(sessionId, (k, v) -> v - 1);
+                            alivePolices.compute(sessionId, (k, v) -> v = v - 1);
                         }
 
                         //사망 소식 전하기
@@ -450,10 +452,41 @@ public class GameService {
                 }
 
                 break;
+
+            /**
+             * 죽은사람 목록 모든 유저에게
+             * data : {
+             *  0:{  "isAlive" : false
+             *       "userId" : userNickname
+             *       "connectionId" : con5e786s
+             *  },
+             *  1:{  "isAlive" : false
+             *       "userId" : userNickname
+             *       "connectionId" : con5e786s
+             *  },
+             *  cnt : 2,
+             *  SkillType : noteUse,
+             *  GameStatue : 5
+             * }
+             *
+             * 보호된 목록 키라한테만
+             * data : {
+             *  0:{  "isAlive" : true
+             *       "userId" : userNickname
+             *       "connectionId" : con5e786s
+             *  },
+             *  cnt : 1,
+             *  SkillType : noteUse,
+             *  GameStatue : 5
+             * }
+             */
             case "noteUse":
                 noteList = deathNoteList.get(sessionId);
+                JsonObject ForKira = data;
 
-                int cnt = 0;
+                int aliveCnt = 0;
+                int protectedCnt = 0;
+
                 // 노트에 적힌 사람들 죄다 죽이기.
                 for (Characters c : noteList) {
                     JsonObject list = new JsonObject();
@@ -465,34 +498,40 @@ public class GameService {
 
                         //경찰일시 경찰 수 -1;
                         if (c.getRoles() == Roles.POLICE) {
-                            alivePolices.computeIfPresent(sessionId, (k, v) -> v - 1);
+                            alivePolices.compute(sessionId, (k, v) -> v - 1);
                         }
 
                         //사망 소식 전하기
                         list.addProperty("isAlive", false);
                         list.addProperty("userId", c.getParticipant().getClientMetadata());
                         list.addProperty("connectionId", c.getParticipant().getParticipantPublicId());
-                        data.add(String.valueOf(cnt), list);
-                        params.add("data", data);
+                        data.add(String.valueOf(aliveCnt), list);
+                        aliveCnt++;
 
-                        for (Participant p : participants) {
-                            rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
-                                    ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
-                        }
                         //보호 중이면.
                     } else {
                         //방어됨 소식 알리기.
                         list.addProperty("isAlive", true);
                         list.addProperty("userId", c.getParticipant().getClientMetadata());
                         list.addProperty("connectionId", c.getParticipant().getParticipantPublicId());
-                        data.add(String.valueOf(cnt), list);
-                        params.add("data", data);
-
-                        rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
-                                ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+                        ForKira.add(String.valueOf(protectedCnt), list);
+                        protectedCnt++;
                     }
-                    cnt++;
                 }
+
+                //죽은 사람 정보는 모든 유저에게 보낸다.
+                data.addProperty("cnt", aliveCnt);
+                params.add("data", data);
+                for (Participant p : participants) {
+                    rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+                            ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+                }
+
+                //보호된 정보 키라한테만
+                ForKira.addProperty("cnt", protectedCnt);
+                params.add("data", ForKira);
+                rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
+                        ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
 
                 //사용후 데스노트 목록 비우기.
                 deathNoteList.compute(sessionId, (k, v) -> v = new ArrayList<Characters>());
