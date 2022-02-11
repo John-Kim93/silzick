@@ -10,14 +10,12 @@ import java.util.Collections;
 
 public class GameRunnable implements Runnable {
 
-    private ArrayList<Characters> roleMatching;
     private ArrayList<Participant> participantsList;
     private RpcNotificationService rpcNotificationService;
     private String sessionId;
 
-    public GameRunnable(String sessionId, ArrayList<Characters> roleMatching, ArrayList<Participant> participantsList, RpcNotificationService notice) {
+    public GameRunnable(String sessionId, ArrayList<Participant> participantsList, RpcNotificationService notice) {
         this.sessionId = sessionId;
-        this.roleMatching = roleMatching;
         this.participantsList = participantsList;
         this.rpcNotificationService = notice;
     }
@@ -37,10 +35,10 @@ public class GameRunnable implements Runnable {
 //            //모든 참가자 목록 가져오기(랜덤 2명)
 //            ArrayList<Participant> pList = participantsList;
 
-            //역할 목록 가져오기
-            ArrayList<Characters> roles = roleMatching;
 
             while (true) {
+                //역할 목록 가져오기
+                ArrayList<Characters> roles = GameService.roleMatching.get(sessionId);
 
                 //살아있는 대상자만
                 ArrayList<Characters> list = new ArrayList<>();
@@ -50,6 +48,7 @@ public class GameRunnable implements Runnable {
                     }
                 }
 
+                roles = GameService.roleMatching.get(sessionId);
                 /**
                  * 명교 시작.
                  */
