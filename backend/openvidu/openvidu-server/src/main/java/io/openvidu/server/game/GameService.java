@@ -470,7 +470,7 @@ public class GameService {
                         }
 
                         //사망 소식 전하기
-                        list.addProperty("isDead", true);
+                        list.addProperty("isDead", false);
                         list.addProperty("userId", c.getParticipant().getClientMetadata());
                         list.addProperty("connectionId", c.getParticipant().getParticipantPublicId());
                         data.add(String.valueOf(cnt), list);
