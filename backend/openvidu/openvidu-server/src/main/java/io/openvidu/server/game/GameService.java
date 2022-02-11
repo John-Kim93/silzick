@@ -37,6 +37,7 @@ public class GameService {
     static final int GAMESTART = 4;
     static final int USESKILL = 5;
     static final int EXCHANGENAME = 6;
+    static final int GAMEOVER = 7;
 
 
     private static final Logger log = LoggerFactory.getLogger(GameService.class);
@@ -424,9 +425,9 @@ public class GameService {
                 //KIRA 일때
                 if (target.getJobName().equals("KIRA")) {
                     data.addProperty("isCriminal", true);
+                    data.addProperty("userId", target.getParticipant().getClientMetadata());
+                    data.addProperty("publicId", target.getParticipant().getParticipantPublicId());
                     params.add("data", data);
-                    rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
-                            ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
 
                     //키라는 사망처리 없이 게임이 끝남.
                     finishGame(participant, sessionId, participants, params, data, "Police");
@@ -435,6 +436,8 @@ public class GameService {
                 } else if (target.getJobName().equals("CRIMINAL")) {
                     target.setAlive(false);
                     data.addProperty("isCriminal", true);
+                    data.addProperty("userId", target.getParticipant().getClientMetadata());
+                    data.addProperty("publicId", target.getParticipant().getParticipantPublicId());
                     params.add("data", data);
 
                     //CRIMINAL 사망처리(수정값 적용은 case문 빠져 나간 뒤에)
@@ -445,11 +448,11 @@ public class GameService {
                         }
                     }
 
-                    rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
-                            ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                     // L측 일때
                 } else {
                     data.addProperty("isCriminal", false);
+                    data.addProperty("userId", participant.getClientMetadata());
+                    data.addProperty("publicId", participant.getParticipantPublicId());
                     params.add("data", data);
 
                     //잘못된 사람을 체포했으므로 본인 사망처리.
@@ -459,9 +462,12 @@ public class GameService {
                             break;
                         }
                     }
-                    rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
+                }
+                for (Participant p : participants) {
+                    rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                             ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                 }
+                
                 break;
             case "protect":
                 target = getTarget(data, cList);
@@ -686,7 +692,7 @@ public class GameService {
      * type : 'game';
      * data :
      * {
-     * gameStatus : 4,
+     * gameStatus : 7,
      * }
      */
     //게임 종료 메소드
@@ -718,7 +724,7 @@ public class GameService {
         }
 
         data.addProperty("winner", winner);
-        data.addProperty("gameStatus", 4);
+        data.addProperty("gameStatus", 7);
         params.add("data", data);
 
         //게임 종료 알리기
