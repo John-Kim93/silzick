@@ -467,7 +467,7 @@ public class GameService {
                     rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                             ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                 }
-                
+
                 break;
             case "protect":
                 target = getTarget(data, cList);
@@ -636,17 +636,22 @@ public class GameService {
     }
 
     private Characters getTarget(JsonObject data, ArrayList<Characters> cList) {
+        System.out.println("참여자 리스트 크기 확인.");
+        System.out.println(cList.size());
+
         String skillTarget = data.get("target").getAsString();
 
         Characters target = null;
 
         //connectionId로 Character 찾아옴.
-        for (int i = 0; i < cList.size(); i++) {
-            if (cList.get(i).getParticipant().getParticipantPublicId().equals(skillTarget)) {
-                target = cList.get(i);
+        for (Characters c : cList) {
+            if (c.getParticipant().getParticipantPublicId().equals(skillTarget)) {
+                target = c;
                 break;
             }
         }
+        System.out.println("타겟 직업이름");
+        System.out.println(target.getJobName());
         return target;
     }
 
