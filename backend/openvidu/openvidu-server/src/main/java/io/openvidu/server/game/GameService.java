@@ -325,7 +325,7 @@ public class GameService {
         }
 
         //쓰래드 생성 및 등록.
-        GameRunnable gameRunnable = new GameRunnable(sessionId, roleMatching.get(sessionId), participantsList.get(sessionId), notice);
+        GameRunnable gameRunnable = new GameRunnable(sessionId, participantsList.get(sessionId), notice);
         Thread deathNoteThread = new Thread(gameRunnable);
 
         //스래드 시작.(명교, 미션 쓰레드 두개 다 시작)
