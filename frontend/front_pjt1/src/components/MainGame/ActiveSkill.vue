@@ -27,7 +27,7 @@
               scale="0.35"
               ></b-icon>
           </b-iconstack>
-          정의구현
+          DEATH NOTE
         </h1>
         <div></div>
       </template> 
@@ -44,6 +44,13 @@
             <option selected disabled>참가자 목록</option>
             <option
               v-for="sub in subscribers"
+              :key="sub.stream.connection.connectionId"
+              :value="sub.stream.connection.connectionId"
+            >
+              {{sub.stream.connection.data.slice(15, -2)}}
+            </option>
+            <option
+              v-for="sub in subSubscribers"
               :key="sub.stream.connection.connectionId"
               :value="sub.stream.connection.connectionId"
             >
@@ -111,30 +118,46 @@
               scale="0.35"
               ></b-icon>
           </b-iconstack>
-          신의 뜻
+          노트 조각
         </h1>
         <div></div>
       </template> 
       <div variant="black" class="d-block text-center">
         <b-icon icon="exclamation-triangle" font-scale="4" variant="warning"></b-icon>
         <h4 class="link-warning">
-          당신은 당신이 따르는 신을 만나 신의 능력 일부를 받았습니다.<br>
-          단, 신에게 도움이 될 기회는 한 번 뿐 입니다.<br>
-          다시 힘을 얻고 싶다는 다시 한 번 당신의 신과 만나십시오. <br>
-          신중한 선택을 하시기 바랍니다.
+          누구를 죽이시겠습니까?
         </h4>
         <h5>
-          <select class="select_list">
+          <select
+            v-model="selectSubscriber"
+            class="select_list"
+          >
             <option selected disabled>참가자 목록</option>
-            <option v-for="sub in subscribers"
-            :key="sub.stream.connection.connectionId">
-              <user-list :streamManager="sub" doubt="true" />
+            <option
+              v-for="sub in subscribers"
+              :key="sub.stream.connection.connectionId"
+              :value="sub.stream.connection.connectionId"
+            >
+              {{sub.stream.connection.data.slice(15, -2)}}
+            </option>
+            <option
+              v-for="sub in subSubscribers"
+              :key="sub.stream.connection.connectionId"
+              :value="sub.stream.connection.connectionId"
+            >
+              {{sub.stream.connection.data.slice(15, -2)}}
             </option>
           </select>
           은/는 
-          <select class="select_list">
+          <select
+            v-model="selectJobName"
+            class="select_list"
+          >
             <option selected disabled>직업</option>
-            <option v-for="job in jobs" :key="job">
+            <option
+              v-for="job in jobs"
+              :key="job.jobName"
+            >
               {{job.jobName}}
             </option>
           </select>
@@ -145,10 +168,10 @@
         <div class="w-100 d-block text-center" >
           <b-button
             size="sm"
-            class="skill_button_note  my-3"
-            @click="show=false"
+            class="skill_button_note my-3"
+            @click="noteUse"
           >
-            God's will
+            Kill
           </b-button>
         </div>
       </template>
@@ -156,7 +179,7 @@
  
  
     <!-- 3.경찰총장 -->
-    <b-modal v-model="show" v-if='myJob == "L"' 
+    <!-- <b-modal v-model="show" v-if='myJob == "L"' 
       id='skill' 
       size="lg"
       variant='outline-primary' 
@@ -204,7 +227,7 @@
           </b-button>
         </div>
       </template>
-    </b-modal>
+    </b-modal> -->
  
     <!-- 4.보디가드 -->
     <b-modal v-model="show" v-if='myJob == "GUARD"' 
@@ -240,15 +263,25 @@
             단, 자신은 보호할 수 는 없습니다. <br>
             신중한 선택을 하시기 바랍니다.
           </h4>
-          <select class="select_list">
-              <option selected disabled>참가자 목록</option>
-              <option v-for="sub in subscribers"
-              :key="sub.stream.connection.connectionId">
-                <user-list :streamManager="sub" doubt="true" />
-              </option>
+          <select
+            v-model="selectSubscriber"
+            class="select_list"
+          >
+            <option selected disabled>참가자 목록</option>
+            <option v-for="sub in subscribers"
+            :key="sub.stream.connection.connectionId">
+              <user-list :streamManager="sub" doubt="true" />
+            </option>
+            <option
+              v-for="sub in subSubscribers"
+              :key="sub.stream.connection.connectionId"
+              :value="sub.stream.connection.connectionId"
+            >
+              {{sub.stream.connection.data.slice(15, -2)}}
+            </option>
           </select>
-        을/를 보호합니다.
-      </h5>
+          을/를 보호합니다.
+        </h5>
       </div>
       <template #modal-footer>
         <div class="w-100 d-block text-center" >
@@ -256,9 +289,9 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
-            @click="show=false"
+            @click="protect"
           >
-            SAVE!
+            PROTECT!
           </b-button>
         </div>
       </template>
@@ -294,11 +327,14 @@
             단, 그 권리가 당신에게 득이 될지 실이 될지 아무도 모릅니다.<br>
             신중한 선택을 하시기 바랍니다.
           </h4>
-          <textarea type="text" 
-          class="border rounded" 
-          rows="6"
-          style="background-color:transparent; width:500px" 
-          placeholder="방송할 멘트를 입력하세요">
+          <textarea
+            type="text" 
+            class="border rounded" 
+            rows="6"
+            style="background-color:transparent; width:500px; color:white;" 
+            placeholder="방송할 멘트를 입력하세요"
+            v-model="broadcastMessage"
+          >
           </textarea>
         </h5>
       </div>
@@ -308,7 +344,7 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
-            @click="show=false"
+            @click="broadcast"
           >
             BROADCAST!
           </b-button>
@@ -340,19 +376,31 @@
         <b-icon icon="exclamation-triangle" font-scale="4" variant="warning"></b-icon>
         <h4 class="link-warning">
           당신은 누군가를 검거할 수 있는 힘이 있습니다.<br>
-          단, 검거대상이 노트 주인측이 아니라면 본인 직업이 노출되고,<br>
-          그 즉시 노트주인에게 살해 당합니다.<br>
+          단, 검거 대상이 경찰측인 경우 당신은 해고당합니다.(사망처리)<br>
           신중한 선택을 하시기 바랍니다.
           </h4>
         <h5>
-          <select class="select_list">
+          <select
+            v-model="selectSubscriber"
+            class="select_list"
+          >
             <option selected disabled>참가자 목록</option>
-            <option v-for="sub in subscribers"
-            :key="sub.stream.connection.connectionId">
-              <user-list :streamManager="sub" doubt="true" />
+            <option
+              v-for="sub in subscribers"
+              :key="sub.stream.connection.connectionId"
+              :value="sub.stream.connection.connectionId"
+            >
+              {{sub.stream.connection.data.slice(15, -2)}}
+            </option>
+            <option
+              v-for="sub in subSubscribers"
+              :key="sub.stream.connection.connectionId"
+              :value="sub.stream.connection.connectionId"
+            >
+              {{sub.stream.connection.data.slice(15, -2)}}
             </option>
           </select>
-          은/는 노트측이다.
+          을/를 검거한다.
         </h5>
       </div>
       <template #modal-footer>
@@ -361,7 +409,7 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
-            @click="show=false"
+            @click="arrest"
           >
             ARREST!
           </b-button>
@@ -383,6 +431,7 @@ export default {
       show: false,
       selectSubscriber: '참가자 목록',
       selectJobName: '직업',
+      broadcastMessage: '',
     }
   },
   computed: {
@@ -414,7 +463,43 @@ export default {
         to: [],
       })
     },
-    
+    broadcast () {
+      this.show = false
+      this.session.signal({
+        type: 'game',
+        data: {
+          gameStatus: 5,
+          skillType: 'announce',
+          announce: 'broadcastMessage',
+        },
+        to: [],
+      })
+    },
+    arrest () {
+      this.show = false
+      this.session.signal({
+        type: 'game',
+        data: {
+          gameStatus: 5,
+          skillType: 'arrest',
+          announce: 'broadcastMessage',
+          target: this.selectSubscriber,
+        },
+        to: [],
+      })
+    },
+    protect () {
+      this.show = false
+      this.session.signal({
+        type: 'game',
+        data: {
+          gameStatus: 5,
+          skillType: 'protect',
+          target: this.selectSubscriber,
+        },
+        to: [],
+      })
+    }
   },
 }
 </script>

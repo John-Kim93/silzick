@@ -234,23 +234,21 @@ const gameStore = {
             case 'noteUse':{
               const results = event.data
               const { cnt } = results
-              console.log('@@@@@@@@@@@@@@@@@@@@')
-              console.log(cnt)
               for (let i = 0; i < cnt; i++) {
                 const {isAlive, userId, connectionId} = results[i]
                 const { clientData } = JSON.parse(userId)
-                console.log('for문 들어왔다@@@@@@@')
-                console.log(connectionId)
-                console.log(state.publisher.stream.connection.connectionId)
                 if (isAlive) {
                   state.messages.push('System : ' + clientData + '가 보디가드에 의해 보호되었습니다.')
                 } else {
                   if (state.publisher.stream.connection.connectionId == connectionId){
-                    console.log('심장마비 발동@@@@@@@@@@@@@@')
                     state.session.unpublish(state.publisher)
                     commit('SET_PUBLISHER', undefined)
                     state.isAlive = false
-                  }
+                  } else if (state.subPublisher.stream.connection.connectionId == connectionId){
+                    state.subSession.unpublish(state.subPublisher)
+                    commit('SET_SUB_PUBLISHER', undefined)
+                    state.isAlive = false
+                  } 
                   state.messages.push('System : ' + clientData + '가 심장마비로 사망하였습니다.')
                 }
               }
@@ -266,6 +264,15 @@ const gameStore = {
               state.messages.push(message)
               break
             }
+            // 방송인의 방송 기능
+            case 'announce':{
+              const message = event.data.broadcastMessage
+              state.messages.push(message)
+              break
+            }
+            // case 'arrest':{
+
+            // }
           }
         }
       });
