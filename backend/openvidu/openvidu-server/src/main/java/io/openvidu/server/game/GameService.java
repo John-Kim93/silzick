@@ -361,6 +361,7 @@ public class GameService {
         String skillType = data.get("skillType").getAsString();
         //역할 리스트 가져오기.
         ArrayList<Characters> cList = roleMatching.get(sessionId);
+        System.out.println(cList.size());
 
         String jobName = null;
 

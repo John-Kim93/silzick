@@ -16,7 +16,6 @@ import java.util.List;
 @RequestMapping("notice")
 @Api(tags = {"Notice Controller"})
 @Slf4j
-@CrossOrigin("*")
 public class NoticeController {
 
     private final NoticeService noticeService;
