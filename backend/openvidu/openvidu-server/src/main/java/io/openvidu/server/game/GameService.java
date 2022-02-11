@@ -436,15 +436,19 @@ public class GameService {
                     params.add("data", data);
                     //노트 목록 갱신
                     deathNoteList.compute(sessionId, (k, v) -> v = noteList);
+
+                    for (Participant p : participants) {
+                        rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+                                ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+                    }
                 } else {
                     data.addProperty("writeName", false);
                     params.add("data", data);
-                }
 
-                for (Participant p : participants) {
                     rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
                             ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                 }
+
                 break;
             case "noteUse":
                 noteList = deathNoteList.get(sessionId);
