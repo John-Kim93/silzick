@@ -185,7 +185,7 @@ public class GameRunnable implements Runnable {
         }else if(roles.get(1).getJobName().equals("KIRA") && roles.get(0).getJobName().equals("CRIMINAL")){
             data.addProperty("action", "meetKIRA");
             params.add("data", data);
-            
+
             for (int i = 0; i < 2; i++) {
                 rpcNotificationService.sendNotification(roles.get(i).getParticipant().getParticipantPrivateId(),
                         ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);

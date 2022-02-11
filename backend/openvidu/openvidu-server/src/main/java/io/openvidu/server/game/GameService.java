@@ -406,6 +406,8 @@ public class GameService {
                         }
                         //보호 중이면.
                     } else {
+                        //보호 풀기
+                        target.setProtected(false);
                         //방어됨 소식 알리기.
                         data.addProperty("isAlive", 0);
                         data.addProperty("userId", target.getParticipant().getClientMetadata());
@@ -592,6 +594,8 @@ public class GameService {
 
                         //보호 중이면.
                     } else {
+                        //보호막 풀고
+                        c.setProtected(true);
                         //방어됨 소식 알리기.
                         list.addProperty("isAlive", true);
                         list.addProperty("userId", c.getParticipant().getClientMetadata());
