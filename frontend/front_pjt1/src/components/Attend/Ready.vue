@@ -28,10 +28,10 @@ export default {
 
 	methods: {
 		getConnectionData () {
-			// console.log(this.streamManager.stream)
 			console.log('스트림메니져 레디에서 출력')
 			console.log(this.streamManager)
 			const { connection } = this.streamManager.stream;
+			console.log(connection)
 			return JSON.parse(connection.data);
 		},
 	},

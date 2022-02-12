@@ -10,8 +10,6 @@
       <!-- 내 비디오 -->
       <div
         class="col-4 private_cam_6"
-        v-for="subscriber in subscribers"
-        :key="subscriber.stream.connection.connectionId"
       >
         <user-video
           class="m-1"
@@ -68,10 +66,22 @@
     <div class="d-flex chat">
       <!--채팅 내역 : chat_list-->
       <div class="chat_list">
-        채팅
+        <p
+          v-for="message, idx in messages"
+          :key="idx"
+        >
+        {{ message }}
+        </p>
       </div>
       <!--채팅 입력 : chat_input-->
-      <input class="chat_input" type="text" placeholder="메세지를 입력하세요">
+      <input
+        class="chat_input"
+        type="text"
+        placeholder="메세지를 입력하세요"
+        v-model="chatMessage"
+        style="color:white;"
+        @keyup.enter="enterMessage"
+      >
     </div>
 
     <!--의심 직업 : doubt-->
@@ -113,15 +123,6 @@
     <div class="d-flex justify-content-around buttons">
       <!--능력사용-->
       <active-skill/>
-      <!--메모팝업-->
-      <!--1.버튼 사용-->
-      <!-- <div>
-        <button class="memo_button" @click="openmemo">메모하기</button>
-        <div class="modal" v-if="this.memo==true">
-          <h1>Memo</h1>
-          <textarea name="" id="" cols="auto" rows="auto"></textarea>
-        </div>
-      </div> -->
       <!--2.인풋과 라벨로만 만들기-->
       <input type="checkbox" id="popup">
       <label for="popup">메모 하기</label>
@@ -131,13 +132,12 @@
           <textarea name="" style="border:none; color:#44c767;" id="popup" class="textarea_position" cols="30" rows="10"></textarea>
         </div>
       </div>
-      <!-- <label for="popup"></label> -->
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import Doubt from '@/components/MainGame/Doubt.vue'
 import UserVideo from '@/components/Attend/UserVideo.vue'
 import ActiveSkill from '@/components/MainGame/ActiveSkill.vue'
@@ -153,18 +153,35 @@ export default {
   },
   data () {
     return {
+      chatMessage: '',
       memo : false,
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher'])
+    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages',])
   },
 
   methods : {
+    ...mapActions(gameStore, ['sendMessage']),
+    enterCard () {
+      console.log(this.publisher.stream.connection.connectionId)
+      console.log(this.subscribers[0].stream.connection.connectionId)
+      this.session.signal({
+        type: 'autoSystem',
+        data: JSON.stringify({ action: 'exchangeNameStart' }),
+        target: [this.publisher.stream.connection.connectionId, this.subscribers[0].stream.connection.connectionId]
+      })
+    },
     openmemo () {
       this.memo = true
-    }
-  }
+    },
+    enterMessage() {
+      if (this.chatMessage.trim()) {
+        this.sendMessage(this.chatMessage)
+        this.chatMessage=""
+      }
+    },
+  },
 }
 </script>
 

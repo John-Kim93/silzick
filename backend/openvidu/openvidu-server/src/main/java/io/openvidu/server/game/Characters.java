@@ -4,7 +4,7 @@ import io.openvidu.server.core.Participant;
 
 public class Characters {
     //역할 이름
-    private Roles roles;
+    private String jobName;
     //생존 여부
     private boolean isAlive = true;
     //역할 맡는 플레이어
@@ -12,13 +12,13 @@ public class Characters {
     //보호막 적용중 여부
     private boolean isProtected = false;
 
-    public Characters(Roles roles, Participant participant) {
-        this.roles = roles;
+    public Characters(String jobName, Participant participant) {
+        this.jobName = jobName;
         this.participant = participant;
     }
 
-    public Roles getRoles() {
-        return roles;
+    public String getJobName() {
+        return jobName;
     }
 
     public boolean isAlive() {
@@ -37,8 +37,8 @@ public class Characters {
         return participant;
     }
 
-    public void setRoles(Roles roles) {
-        this.roles = roles;
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
     }
 
     public void setAlive(boolean alive) {

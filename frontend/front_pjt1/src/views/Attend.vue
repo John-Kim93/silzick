@@ -163,11 +163,21 @@ export default {
     ...mapMutations(gameStore, ['SET_MY_READY']),
     
     gameStart() {
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@')
       let countSum = 0
       this.jobs.forEach(job => {
         countSum = job.count + countSum
       })
+      console.log(countSum)
       if (this.subscribers.length + 1 === countSum) {
+        console.log('파티스펀트 줘!')
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 7
+          },
+          to: [],
+        }) 
         this.session.signal({
           type: 'game',
           data: {

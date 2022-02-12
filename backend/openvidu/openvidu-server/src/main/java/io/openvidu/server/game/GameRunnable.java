@@ -10,48 +10,73 @@ import java.util.Collections;
 
 public class GameRunnable implements Runnable {
 
-    private ArrayList<Characters> roleMatching;
     private ArrayList<Participant> participantsList;
     private RpcNotificationService rpcNotificationService;
     private String sessionId;
 
-    public GameRunnable(String sessionId, ArrayList<Characters> roleMatching, ArrayList<Participant> participantsList, RpcNotificationService notice) {
+    public GameRunnable(String sessionId, ArrayList<Participant> participantsList, RpcNotificationService notice) {
         this.sessionId = sessionId;
-        this.roleMatching = roleMatching;
         this.participantsList = participantsList;
         this.rpcNotificationService = notice;
     }
 
     @Override
     public void run() {
-
         try {
             JsonObject data = new JsonObject();
             JsonObject params = new JsonObject();
-
             int exchangeCnt = 1;
             int misssionCnt = 1;
 
-            //모든 참가자 목록 가져오기(랜덤 2명)
-            ArrayList<Participant> pList = participantsList;
+            //타입 지정
+            String type = "signal:autoSystem";
+            params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_TYPE_PARAM, type);
 
-            //역할 목록 가져오기
-            ArrayList<Characters> roles = roleMatching;
+//            //모든 참가자 목록 가져오기(랜덤 2명)
+//            ArrayList<Participant> pList = participantsList;
+
 
             while (true) {
+                //처음 30초 sleep
+                Thread.sleep(30000);
+
+                //역할 목록 가져오기
+                ArrayList<Characters> roles = GameService.roleMatching.get(sessionId);
+
+                //살아있는 대상자만
+                ArrayList<Characters> list = new ArrayList<>();
+                for (Characters c : roles) {
+                    if (c.isAlive()) {
+                        list.add(c);
+                    }
+                }
+
                 /**
                  * 명교 시작.
                  */
-                ExchangeName(pList, data, exchangeCnt, params);
+                ExchangeName(list, data, exchangeCnt, params);
                 exchangeCnt++;
                 /**
                  * 명교 끝
                  */
 
+                //처음 30초 sleep
+                Thread.sleep(30000);
+
+                //역할 목록 가져오기
+                roles = GameService.roleMatching.get(sessionId);
+                //살아있는 대상자만
+                list = new ArrayList<>();
+                for (Characters c : roles) {
+                    if (c.isAlive()) {
+                        list.add(c);
+                    }
+                }
+
                 /**
                  * 명교 시작.
                  */
-                ExchangeName(pList, data, exchangeCnt, params);
+                ExchangeName(list, data, exchangeCnt, params);
                 exchangeCnt++;
                 /**
                  * 명교 끝
@@ -61,10 +86,14 @@ public class GameRunnable implements Runnable {
                  * 미션 시작.
                  */
                 //미션 시작할 사람 목록
-                ArrayList<Participant> missionCandidates = new ArrayList<>(pList);
-                //0,1번은 명교하러 갔으니 제외
-                missionCandidates.remove(1);
-                missionCandidates.remove(0);
+                ArrayList<Characters> missionCandidates = new ArrayList<>(list);
+
+                if (list.size() >= 2) {
+                    //0,1번은 명교하러 갔으니 제외
+                    missionCandidates.remove(1);
+                    missionCandidates.remove(0);
+
+                }
 
                 //미션 대기자 목록 섞기
                 Collections.shuffle(missionCandidates);
@@ -74,35 +103,59 @@ public class GameRunnable implements Runnable {
                 data.addProperty("turn", misssionCnt);
                 params.add("data", data);
 
-                //2명만 미션 시작.
-                for (int i = 0; i < 2; i++) {
-                    rpcNotificationService.sendNotification(missionCandidates.get(i).getParticipantPrivateId(),
+                //경찰 미션중인지 확인 하는 변수
+                boolean isPolice = false;
+
+                //미션 수행중인 사람 수
+                int missionSize = missionCandidates.size();
+
+                if (missionSize >= 2) {
+                    //2명만 미션 시작.
+                    for (int i = 0; i < 2; i++) {
+                        rpcNotificationService.sendNotification(missionCandidates.get(i).getParticipant().getParticipantPrivateId(),
+                                ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+                    }
+
+                    //미션 수행중인 사람이 police면 추종자에게 알리기.
+                    for (int i = 0; i < list.size(); i++) {
+                        if (list.get(i).getJobName().equals("POLICE") &&
+                                (list.get(i) == missionCandidates.get(0) || list.get(i) == missionCandidates.get(1))) {
+                            isPolice = true;
+                            break;
+                        }
+                    }
+                } else if(missionSize==1) {
+
+                    rpcNotificationService.sendNotification(missionCandidates.get(0).getParticipant().getParticipantPrivateId(),
                             ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+
+                    //미션 수행중인 사람이 police면 추종자에게 알리기.
+                    for (int i = 0; i < list.size(); i++) {
+                        if (list.get(i).getJobName().equals("POLICE") &&
+                                (list.get(i) == missionCandidates.get(0))) {
+                            isPolice = true;
+                            break;
+                        }
+                    }
+
                 }
 
-                boolean isPolice = false;
-                //미션 수행중인 사람이 police면 추종자에게 알리기.
-                for (int i = 0; i < roles.size(); i++) {
-                    if(roles.get(i).getRoles() == Roles.POLICE &&
-                            (roles.get(i).getParticipant() == missionCandidates.get(0) || roles.get(i).getParticipant() == missionCandidates.get(1))){
-                        isPolice = true;
-                        break;
-                    }
-                }
 
                 if (isPolice) {
                     //data에 담을 정보.
                     data.remove("action");
+                    data.remove("turn");
                     data.addProperty("announce", "policeMissionStart");
                     params.add("data", data);
 
                     //추종자들에게 전달.
                     for (int i = 0; i < roles.size(); i++) {
-                        if (roles.get(i).getRoles() == Roles.CRIMINAL) {
+                        if (roles.get(i).getJobName().equals("CRIMINAL")) {
                             rpcNotificationService.sendNotification(roles.get(i).getParticipant().getParticipantPrivateId(),
                                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                         }
                     }
+                    data.remove("announce");
                 }
                 misssionCnt++;
             }
@@ -113,15 +166,31 @@ public class GameRunnable implements Runnable {
 
     }
 
-    private void ExchangeName(ArrayList<Participant> pList, JsonObject data, int exchangeCnt, JsonObject params) throws InterruptedException {
+    private void ExchangeName(ArrayList<Characters> roles, JsonObject data, int exchangeCnt, JsonObject params) throws InterruptedException {
         /**
          * 명교 시작.
          */
-        //처음 30초 sleep
-        Thread.sleep(30000);
 
         //참가자 목록 섞기
-        Collections.shuffle(pList);
+        Collections.shuffle(roles);
+
+        if(roles.get(0).getJobName().equals("KIRA") && roles.get(1).getJobName().equals("CRIMINAL")){
+            data.addProperty("action", "meetKIRA");
+            params.add("data", data);
+
+            for (int i = 0; i < 2; i++) {
+                rpcNotificationService.sendNotification(roles.get(i).getParticipant().getParticipantPrivateId(),
+                        ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+            }
+        }else if(roles.get(1).getJobName().equals("KIRA") && roles.get(0).getJobName().equals("CRIMINAL")){
+            data.addProperty("action", "meetKIRA");
+            params.add("data", data);
+
+            for (int i = 0; i < 2; i++) {
+                rpcNotificationService.sendNotification(roles.get(i).getParticipant().getParticipantPrivateId(),
+                        ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+            }
+        }
 
         //data에 담을 정보
         data.addProperty("action", "exchangeNameStart");
@@ -130,9 +199,10 @@ public class GameRunnable implements Runnable {
 
         //2명만 명교 시작.
         for (int i = 0; i < 2; i++) {
-            rpcNotificationService.sendNotification(pList.get(i).getParticipantPrivateId(),
+            rpcNotificationService.sendNotification(roles.get(i).getParticipant().getParticipantPrivateId(),
                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
         }
+
         /**
          * 명교 끝
          */

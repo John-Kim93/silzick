@@ -16,7 +16,6 @@ import java.util.List;
 @RequestMapping("board")
 @Api(tags = {"Board Controller"})
 @Slf4j
-@CrossOrigin("*")
 public class BoardController {
 
     private final BoardService boardService;
