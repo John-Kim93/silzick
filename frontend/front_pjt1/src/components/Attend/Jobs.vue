@@ -1,11 +1,15 @@
 <template>
-	<div class="row count m-1">
-		<div class="col-8 count">
+	<div class="row m-1">
+		<div id="base-border" class="col-8">
 			{{job.jobName}}
 		</div>
-		<button @click="plus" class="col-2">+</button>
-		<button @click="minus" class="col-2">-</button>
-	</div>
+    <div class="col-2">
+      <button @click="plus" id="btn-color" class="btn btn-size">+</button>
+    </div>
+    <div class="col-2">
+      <button @click="minus" id="btn-color" class="btn btn-size">-</button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -44,9 +48,8 @@ export default {
 	}
 };
 </script>
-<style>
-	.count{
-		border-radius: 3%;
-		border: 1px solid black;
-	}
+<style scoped>
+.btn-size {
+  padding: 0.3rem 0.6rem 0.3rem 0.6rem;
+}
 </style>

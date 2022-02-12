@@ -8,5 +8,33 @@
     }
 
 #black-font {
-    color: black;
+  font-family: CBNUJIKJI;
+  color: black;
+}
+#base-font {
+  font-family: CBNUJIKJI;
+  color: #DDDDDD;
+}
+#background-black {
+  font-family: CBNUJIKJI;
+  background-color: #222831;
+  color: #DDDDDD;
+}
+.full-screen {
+  width: 100wh;
+  height: 100vh;
+}
+#btn-color {
+  background-color: #30475E;
+  color: #DDDDDD;
+} 
+#base-border {
+  border: solid 0.25rem #30475E;
+  border-radius: 5px;
+}
+@font-face {
+  font-family: 'CBNUJIKJI';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2202@1.0/CBNUJIKJI.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
 }

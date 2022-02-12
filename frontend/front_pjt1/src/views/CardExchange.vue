@@ -1,67 +1,63 @@
 <template>
-  <div style="color:white" class="container">
-  <img src="https://ifh.cc/g/N2y3IK.png" id="bg" alt="bgImg">
-    <div class="my_cam">
-      <user-video :streamManager="subPublisher"/>
-    </div>
-      <div class="my_after_offer">
-        나의 명함
-        <h3>{{ selected }}</h3>
+  <div id="background-black" class="full-screen">
+    <div class="container d-flex">
+      <div class="my_cam">
+        <user-video :streamManager="subPublisher"/>
       </div>
-    <div class="my_before_offer">
-      <h3>명함 제시</h3>
-      <div>
-        <h5>
-        <b-form-select v-model="selected" :options="options" class="card_select mx-2" :disabled="confirm"></b-form-select>
-        <b-button variant="outline-light" class="mx-2" @click="confirm=true">확정!</b-button>
-        </h5>
+        <div class="my_after_offer">
+          나의 명함
+          <h3>{{ selected }}</h3>
+        </div>
+      <div class="my_before_offer">
+        <h3>명함 제시</h3>
+        <div>
+          <h5>
+          <b-form-select v-model="selected" :options="options" class="card_select mx-2" :disabled="confirm"></b-form-select>
+          <b-button variant="outline-light" class="mx-2" @click="confirm=true">확정!</b-button>
+          </h5>
+        </div>
       </div>
-    </div>
-    <b-icon icon="arrow-left-right" font-scale="3" animation="fade" class="icon_location"></b-icon>
-    <div class="opp_cam">
-      <user-video :streamManager="subSubscribers[0]"/>
-    </div>
-    <div class="opp_after_offer">
-      상대방의 명함
-      <h3>{{ receivedCard }}</h3>
-    </div>
-    <!-- 상대방의 명함 제시는 필요없다 -->
-    <!-- <div class="opp_offer">
-      <h3>상대방의 명함 제시</h3>
-        <b-form-select v-model="selected" :options="options"></b-form-select>
-        <button>확정</button>
-    </div> -->
-    <div class="timer d-block">
-      <p>명함 교환 종료까지...</p>
-      <h2>{{ timerCount }}초</h2>
-    </div>
-    <!-- <button class="skill_button">스킬 사용</button> -->
-    <!-- <b-form-textarea
-      id="textarea"
-      v-model="text"
-      placeholder="Enter something..."
-      rows="3"
-      max-rows="6"
-    ></b-form-textarea>
-    <pre class="mt-3 mb-0">{{ text }}</pre>
-    <input type="text"> -->
-    <div class="d-flex chat">
-      <!--채팅 내역 : chat_list-->
-      <p
-        v-for="message, idx in messages"
-        :key="idx"
-      >
-        {{message}}
-      </p>
-      <!--채팅 입력 : chat_input-->
-      <input
-        class="chat_input"
-        type="text"
-        placeholder="메세지를 입력하세요"
-        v-model="chatMessage"
-        style="color:white;"
-        @keyup.enter="enterMessage"
-      >
+      <b-icon icon="arrow-left-right" font-scale="3" animation="fade" class="icon_location"></b-icon>
+      <div class="opp_cam">
+        <user-video :streamManager="subSubscribers[0]"/>
+      </div>
+      <div class="opp_after_offer">
+        상대방의 명함
+        <h3>{{ receivedCard }}</h3>
+      </div>
+
+      <div class="timer d-block">
+        <p>명함 교환 종료까지...</p>
+        <h2>{{ timerCount }}초</h2>
+      </div>
+      <!-- <button class="skill_button">스킬 사용</button> -->
+      <!-- <b-form-textarea
+        id="textarea"
+        v-model="text"
+        placeholder="Enter something..."
+        rows="3"
+        max-rows="6"
+      ></b-form-textarea>
+      <pre class="mt-3 mb-0">{{ text }}</pre>
+      <input type="text"> -->
+      <div class="d-flex chat">
+        <!--채팅 내역 : chat_list-->
+        <p
+          v-for="message, idx in messages"
+          :key="idx"
+        >
+          {{message}}
+        </p>
+        <!--채팅 입력 : chat_input-->
+        <input
+          class="chat_input"
+          type="text"
+          placeholder="메세지를 입력하세요"
+          v-model="chatMessage"
+          style="color:white;"
+          @keyup.enter="enterMessage"
+        >
+      </div>
     </div>
   </div>
 </template>
