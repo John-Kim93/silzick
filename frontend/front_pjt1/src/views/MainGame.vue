@@ -101,16 +101,16 @@
     <div class="counts">
       <div>
         <!-- 정체 숨기기 횟수(미션 성공 횟수) -->
-        <b-icon icon="eye-slash-fill" font-scale="2" variant="light"></b-icon><p>2회</p>
+        <b-icon icon="eye-slash-fill" font-scale="2" variant="light"></b-icon><p>{{missionSuccess}}</p>
       </div>
       <div>
         <!-- 스킬 사용 가능 횟수(히든 미션 성공 횟수) -->
-        <b-icon icon="lightning-fill" font-scale="2" variant="light"></b-icon><p>3회</p>
+        <b-icon icon="lightning-fill" font-scale="2" variant="light"></b-icon><p>{{hiddenMissionSuccess}}</p>
       </div>
       <!-- 검거권 수(경찰일때만)-->
       <!-- v-if=="경찰" 사용-->
-      <div>
-        <b-icon icon="person-bounding-box" font-scale="2" variant="light"></b-icon><p>1회</p>
+      <div v-if="myJob=='POLICE'">
+        <b-icon icon="person-bounding-box" font-scale="2" variant="light"></b-icon><p>{{hiddenMissionSuccess/2}}</p>
       </div>
     </div>
 
@@ -142,7 +142,7 @@ import { mapState, mapActions } from 'vuex'
 import Doubt from '@/components/MainGame/Doubt.vue'
 import UserVideo from '@/components/Attend/UserVideo.vue'
 import ActiveSkill from '@/components/MainGame/ActiveSkill.vue'
-import Mission from '@/components/Mission/Mission.vue';
+import Mission from '@/components/MainGame/Mission.vue';
 
 const gameStore = 'gameStore'
 
@@ -161,7 +161,8 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages',])
+    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession',
+                           'session', 'messages','missionSuccess','hiddenMissionSuccess'])
   },
 
   methods : {

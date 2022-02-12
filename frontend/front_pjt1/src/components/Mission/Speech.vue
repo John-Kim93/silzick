@@ -28,7 +28,7 @@
 /* eslint-disable no-undef */
 import { mapState, mapActions } from 'vuex'
 
-const mission = 'mission';
+const gameStore = 'gameStore';
 
 export default {
   props: {
@@ -78,6 +78,7 @@ export default {
     // 타이머의 시간이 다 되면 종료
     timerCount: {
       handler(value) {
+        //미션 성공시
         if(this.cnt>=2){
             console.log("4")
             console.log(this.success)
@@ -86,22 +87,32 @@ export default {
             console.log("5")
             console.log(this.success)
             this.ready = false
+            if(state.isNormalMission){
+              this.missionSuccess()
+            }else{
+              this.hiddenMissionSuccess()
+            }
+            //초기화 로직
             setTimeout(() => {
               this.missionReset()
               this.recordReset()
             }, 2000);
+            //미션을 실패하면
         }else{
+          //시간이 흐름.
           if (value > 0) {
             console.log("3")
             setTimeout(() => {
               this.timerCount--;
             }, 1000) 
           }else {
+            //시간이 0인데 달성 못하면 멈추고 실패
             this.recognition.stop()
             console.log("1")
             console.log(this.success)
             this.success = false
             this.ready = false
+            //미션 초기화 로직
             setTimeout(() => {
               this.missionReset()
               this.recordReset()
@@ -128,14 +139,14 @@ export default {
     },
   },
   computed: {
-    ...mapState(mission, ['mission','record']),
+    ...mapState(gameStore, ['mission','record','isNormalMission']),
   },
   created () {
     this.initRecognition()
     this.getmission()
   },
   methods: {
-    ...mapActions(mission, ['missionReset','recordReset']),
+    ...mapActions(gameStore, ['missionReset','recordReset','missionSuccess','hiddenMissionSuccess']),
 
     getmission () {
       this.s_mission = this.mission_list[Math.floor(Math.random()*this.mission_list.length)];

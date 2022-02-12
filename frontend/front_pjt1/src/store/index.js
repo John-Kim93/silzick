@@ -6,7 +6,6 @@ import cookies from 'vue-cookies'
 import board from './modules/board'
 import notice from './modules/notice'
 import gameStore from './modules/gameStore'
-import mission from './modules/mission'
 
 Vue.use(Vuex)
 
@@ -35,6 +34,5 @@ export default new Vuex.Store({
     board,
     notice,
     gameStore,
-    mission,
   }
 })

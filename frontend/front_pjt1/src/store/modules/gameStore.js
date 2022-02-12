@@ -37,6 +37,16 @@ const gameStore = {
     subSubscribers: [],
     receivedCard: '선택 중',
 
+    //mission
+    mission: 0,
+    random_int: 0,
+    record: false,
+    //거짓 명함 낼 수 있는 횟수(미션 달성 횟수)
+    missionSuccess: 0,
+    //히든 미션 달성 횟수
+    hiddenMissionSuccess: 0,
+    //그냥 미션인지 히든인지 구분.
+    isNormalMission: true,
 
     //game
     isAlive: true,
@@ -107,8 +117,35 @@ const gameStore = {
       state.subOVToken = undefined
     },
     
-
-
+    //미션 관련 기능
+    RANDOM_INT(state,res){
+      const min = Math.ceil(res.min)
+      const max = Math.floor(res.max)
+      state.random_int = Math.floor(Math.random()*(max-min+1))+min
+    },
+    MISSION_SELECT(state){
+      state.mission = state.random_int
+      state.random_int = 0
+    },
+    MISSION_RESET(state){
+      state.mission = 0
+    },
+    RECORD_RESET(state){
+      state.record = !state.record
+    },
+    SET_MISSION_SUCCESS(state){
+      state.missionSuccess += 1
+    },
+    IS_NORMAL_MISSION(state, res){
+      state.isNormalMission = res
+    },
+    //나중에 통합.
+    SET_HIDDEN_MISSION_SUCCESS(state){
+      state.hiddenMissionSuccess += 1
+    },
+    SET_SKILL_USE(state, res){
+      state.hiddenMissionSuccess -= res
+    },
 
     // 채팅 관련 기능
     SET_MESSAGES(state, res) {
@@ -354,28 +391,43 @@ const gameStore = {
       // 명함교환 방 자동 이동 & 미션 자동 분배
       session.on("signal:autoSystem", (event) => {
         // const action = JSON.parse(event.data).action
-        if (event.data.action == "exchangeNameStart") {
-          state.session.unpublish(state.publisher)
-          commit('SET_PUBLISHER', undefined)
-          let subPublisher = OV.initPublisher(undefined, {
-            audioSource: undefined, // The source of audio. If undefined default microphone
-            videoSource: undefined, // The source of video. If undefined default webcam
-            publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-            publishVideo: true, // Whether you want to start publishing with your video enabled or not
-            resolution: "1280×720", // The resolution of your video
-            frameRate: 30, // The frame rate of your video
-            insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
-            mirror: false, // Whether to mirror your local video or not
-          });
-          commit('SET_SUB_PUBLISHER', subPublisher)
-          state.subSession.publish(state.subPublisher)
-          router.push({
-            name: 'CardExchange',
-          })
-        } else if (event.data.action == "meetKIRA") {
-          const message = "System : 키라측 접선에 성공했습니다."
-          state.messages.push(message)
-        } 
+        const { action } = event.data
+        switch(action){
+          case 'exchangeNameStart': {
+            state.session.unpublish(state.publisher)
+            commit('SET_PUBLISHER', undefined)
+            let subPublisher = OV.initPublisher(undefined, {
+              audioSource: undefined, // The source of audio. If undefined default microphone
+              videoSource: undefined, // The source of video. If undefined default webcam
+              publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+              publishVideo: true, // Whether you want to start publishing with your video enabled or not
+              resolution: "1280×720", // The resolution of your video
+              frameRate: 30, // The frame rate of your video
+              insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+              mirror: false, // Whether to mirror your local video or not
+            });
+            //진행하고 있는 미션 초기화.
+            dispatch('missionReset')
+            commit('SET_SUB_PUBLISHER', subPublisher)
+            state.subSession.publish(state.subPublisher)
+            router.push({
+              name: 'CardExchange',
+            })
+            break;
+          } 
+          case 'meetKIRA':{
+            const message = "System : 키라측 접선에 성공했습니다."
+            state.messages.push(message)
+            break;
+          } 
+          case 'missionStart':{
+            //리셋하고
+            dispatch('missionReset')
+            //히든미션으로 다시 미션 시작.
+            dispatch('missionSelect',false)
+            break;
+          }
+      }
         // 두명 중 하나가 퍼블리셔면 언퍼블리시하고 라우터푸시 조인세션?
       })
 
@@ -638,7 +690,38 @@ const gameStore = {
     },
     receiveCard({commit}, card) {
       commit('RECEIVE_CARD', card)
+    },
+
+    //미션 관련 기능
+    randomInt({commit},res){
+      commit('RANDOM_INT',res)
+    },
+    missionSelect({state,commit,dispatch},isNormalMission){
+      console.log("노멀미션인지 확인!")
+      console.log(state.isNormalMission)
+      //미션 종류 선택
+      dispatch('randomInt',{min:1,max:2})
+      commit('MISSION_SELECT')
+      //미션이 일반미션인지, 히든인지.
+      commit('IS_NORMAL_MISSION',isNormalMission)
+    },
+    missionReset({commit}){
+      commit('MISSION_RESET')
+    },
+    recordReset({commit}){
+      commit('RECORD_RESET')
+    },
+    missionSuccess({commit}){
+      commit('SET_MISSION_SUCCESS')
+    },
+    //사용이랑 달성횟수 통합 가능 나중에.
+    hiddenMissionSuccess({commit}){
+      commit('SET_HIDDEN_MISSION_SUCCESS')
+    },
+    skillUse({commit},count){
+      commit('SET_SKILL_USE',count)
     }
+
   },
 
 }

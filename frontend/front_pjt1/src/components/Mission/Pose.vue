@@ -20,9 +20,9 @@
 import * as tmPose from '@teachablemachine/pose'
 import { mapState, mapActions } from 'vuex'
 
-const mission = 'mission'
+const gameStore = 'gameStore'
  
-let model, webcam, ctx, maxPredictions
+let model, webcam, maxPredictions
 export default {
   data () {
     return {
@@ -39,7 +39,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(mission, ['mission','random_int',]),
+    ...mapState(gameStore, ['mission','random_int','isNormalMission']),
   },
   created(){
     this.randomInt({min:1,max:4})
@@ -47,14 +47,13 @@ export default {
     
   },
   methods: {
-    ...mapActions(mission, ['missionReset','randomInt',]),
+    ...mapActions(gameStore, ['missionReset','randomInt','missionSuccess','hiddenMissionSuccess']),
 
     async init () {
       this.modelURL = this.url + "model.json"
       this.metadataURL = this.url + "metadata.json"
       model = await tmPose.load(this.modelURL, this.metadataURL)
       maxPredictions = model.getTotalClasses()
-      console.log(maxPredictions)
       const size = 200
       const flip = true
       webcam = new tmPose.Webcam(size, size, flip)
@@ -67,7 +66,7 @@ export default {
       const canvas = document.getElementById("canvas")
       canvas.width = size
       canvas.height = size
-      ctx = canvas.getContext("2d")
+      // ctx = canvas.getContext("2d")
     },
     async loop() {
       webcam.update()
@@ -75,15 +74,15 @@ export default {
       window.requestAnimationFrame(this.loop)
     },
     
-    drawPose(pose) {
-        if (webcam.canvas) {
-            ctx.drawImage(webcam.canvas, 0, 0)
-            pose
+    // drawPose(pose) {
+    //     if (webcam.canvas) {
+    //         ctx.drawImage(webcam.canvas, 0, 0)
+    //         pose
  
-        }
-    },
+    //     }
+    // },
     async predict() {
-      const { pose, posenetOutput } = await model.estimatePose(webcam.canvas)
+      const { posenetOutput } = await model.estimatePose(webcam.canvas)
       const prediction = await model.predict(posenetOutput)
       this.impormation = prediction[this.random_int].className
       this.similiarity = '정확도 :' + parseInt(prediction[this.random_int].probability.toFixed(2) *100) + '%'
@@ -92,11 +91,20 @@ export default {
           if( this.loadingTime < this.maxLoadingTime) {
             this.loadingTime++
           }else {
+            //loading진행바가 true면 끝남.
             if (this.loading == true){
               this.loading = false
               this.impormation=''
               this.similiarity = ''
               webcam.stop()
+              //성공한게 노멀미션이면 명교횟수 +1
+              if(this.isNormalMission){
+                this.missionSuccess()
+                //히든미션이면 스킬포인트 +1
+              }else{
+                this.hiddenMissionSuccess()
+              }
+              //성공 후 리셋
               setTimeout(()=>{
                 this.loadingTime = 0
                 this.missionReset()
@@ -107,7 +115,7 @@ export default {
       }
 
         // finally draw the poses
-      this.drawPose(pose)
+      // this.drawPose(pose)
     },
   }
 }
