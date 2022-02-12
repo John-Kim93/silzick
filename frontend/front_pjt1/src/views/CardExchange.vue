@@ -36,7 +36,6 @@
       <h2>{{ timerCount }}초</h2>
     </div>
     <!-- <button class="skill_button">스킬 사용</button> -->
-    <button @click="exitCard">명교 나가기(임시)</button>
     <!-- <b-form-textarea
       id="textarea"
       v-model="text"

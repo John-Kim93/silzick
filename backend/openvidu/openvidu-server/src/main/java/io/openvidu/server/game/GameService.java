@@ -424,7 +424,7 @@ public class GameService {
                         rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
                                 ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                     }
-                }else{
+                } else {
                     //방어됨 소식 알리기.
                     data.addProperty("isAlive", 1);
                     data.addProperty("userId", target.getParticipant().getClientMetadata());
@@ -710,17 +710,16 @@ public class GameService {
     }
 
     /**
-     *
      * gameStatus : 7,
      * 0: { userId : "userNickName",
-     *      connectionId : "conekt23lk",
-     *    },
+     * connectionId : "conekt23lk",
+     * },
      * cnt : 1,
      */
     private void checkParticipants(Participant participant, JsonObject message, String sessionId, Set<Participant> participants, JsonObject params, JsonObject data, RpcNotificationService notice) {
         int cnt = 0;
         //참여자 정보 담기.
-        for(Participant p : participants){
+        for (Participant p : participants) {
             JsonObject player = new JsonObject();
             player.addProperty("userId", p.getClientMetadata());
             player.addProperty("connectionId", p.getParticipantPublicId());
@@ -728,12 +727,13 @@ public class GameService {
             cnt++;
         }
         data.addProperty("cnt", cnt);
-        params.add("data",data);
+        params.add("data", data);
 
         //요청자에게 정보 전달달
-       rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
-                ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
-
+        for (Participant p : participants) {
+            rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+                    ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+        }
     }
 
     /**
@@ -741,7 +741,7 @@ public class GameService {
      * type : 'game';
      * data :
      * {
-     * gameStatus : 7,
+     * gameStatus : 8,
      * }
      */
     //게임 종료 메소드

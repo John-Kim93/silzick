@@ -17,6 +17,7 @@ import Rule from '../views/Rule.vue'
 import CardExchange from '../views/CardExchange.vue'
 import Attend from '../views/Attend.vue'
 import Join from '../views/Join.vue'
+import GameEnd from '../views/GameEnd.vue'
 
 Vue.use(VueRouter)
 
@@ -55,6 +56,11 @@ const routes = [
     path: '/',
     name: 'Main',
     component: Main
+  },
+  {
+    path: '/GameEnd',
+    name: 'GameEnd',
+    component: GameEnd
   },
   {
     path: '/Login',
