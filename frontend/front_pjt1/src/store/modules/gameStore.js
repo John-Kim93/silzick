@@ -330,10 +330,14 @@ const gameStore = {
         } else if (event.data.gameStatus === 7) {
           const participantsData = event.data
           const { cnt } = participantsData
+          console.log('파티스펀트 입력 해줘!')
+          console.log(participantsData)
           for (let i = 0; i < cnt; i++) {
             const { userId, connectionId } = participantsData[i]
             const { clientData } = JSON.parse(userId)
+            console.log({nickname: clientData, connectionId: connectionId})
             state.participants.push({nickname: clientData, connectionId: connectionId})
+            console.log(state.participants.length)
           }
         }
       });

@@ -727,7 +727,7 @@ public class GameService {
             data.add(String.valueOf(cnt), player);
             cnt++;
         }
-        data.addProperty("cnt", cnt+1);
+        data.addProperty("cnt", cnt);
         params.add("data",data);
 
         //요청자에게 정보 전달달
