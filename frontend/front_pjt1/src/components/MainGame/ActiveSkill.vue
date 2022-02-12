@@ -38,23 +38,16 @@
         </h4>
         <h5>
           <select
-            v-model="selectSubscriber"
+            v-model="selectParticipant"
             class="select_list"
           >
             <option selected disabled>참가자 목록</option>
             <option
-              v-for="sub in subscribers"
-              :key="sub.stream.connection.connectionId"
-              :value="sub.stream.connection.connectionId"
+              v-for="participant, idx in participants"
+              :key="idx"
+              :value="participant.connectionId"
             >
-              {{sub.stream.connection.data.slice(15, -2)}}
-            </option>
-            <option
-              v-for="sub in subSubscribers"
-              :key="sub.stream.connection.connectionId"
-              :value="sub.stream.connection.connectionId"
-            >
-              {{sub.stream.connection.data.slice(15, -2)}}
+              {{participant.nickname}}
             </option>
           </select>
           은/는 
@@ -129,23 +122,16 @@
         </h4>
         <h5>
           <select
-            v-model="selectSubscriber"
+            v-model="selectParticipant"
             class="select_list"
           >
             <option selected disabled>참가자 목록</option>
             <option
-              v-for="sub in subscribers"
-              :key="sub.stream.connection.connectionId"
-              :value="sub.stream.connection.connectionId"
+              v-for="participant, idx in participants"
+              :key="idx"
+              :value="participant.connectionId"
             >
-              {{sub.stream.connection.data.slice(15, -2)}}
-            </option>
-            <option
-              v-for="sub in subSubscribers"
-              :key="sub.stream.connection.connectionId"
-              :value="sub.stream.connection.connectionId"
-            >
-              {{sub.stream.connection.data.slice(15, -2)}}
+              {{participant.nickname}}
             </option>
           </select>
           은/는 
@@ -264,23 +250,16 @@
             신중한 선택을 하시기 바랍니다.
           </h4>
           <select
-            v-model="selectSubscriber"
+            v-model="selectParticipant"
             class="select_list"
           >
             <option selected disabled>참가자 목록</option>
             <option
-              v-for="sub in subscribers"
-              :key="sub.stream.connection.connectionId"
-              :value="sub.stream.connection.connectionId"
+              v-for="participant, idx in participants"
+              :key="idx"
+              :value="participant.connectionId"
             >
-              {{sub.stream.connection.data.slice(15, -2)}}
-            </option>
-            <option
-              v-for="sub in subSubscribers"
-              :key="sub.stream.connection.connectionId"
-              :value="sub.stream.connection.connectionId"
-            >
-              {{sub.stream.connection.data.slice(15, -2)}}
+              {{participant.nickname}}
             </option>
           </select>
           을/를 보호합니다.
@@ -384,23 +363,16 @@
           </h4>
         <h5>
           <select
-            v-model="selectSubscriber"
+            v-model="selectParticipant"
             class="select_list"
           >
             <option selected disabled>참가자 목록</option>
             <option
-              v-for="sub in subscribers"
-              :key="sub.stream.connection.connectionId"
-              :value="sub.stream.connection.connectionId"
+              v-for="participant, idx in participants"
+              :key="idx"
+              :value="participant.connectionId"
             >
-              {{sub.stream.connection.data.slice(15, -2)}}
-            </option>
-            <option
-              v-for="sub in subSubscribers"
-              :key="sub.stream.connection.connectionId"
-              :value="sub.stream.connection.connectionId"
-            >
-              {{sub.stream.connection.data.slice(15, -2)}}
+              {{participant.nickname}}
             </option>
           </select>
           을/를 검거한다.
@@ -432,29 +404,29 @@ export default {
   data(){
     return {
       show: false,
-      selectSubscriber: '참가자 목록',
+      selectParticipant: '참가자 목록',
       selectJobName: '직업',
       broadcastMessage: '',
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'jobs', 'subscribers', 'subSubscribers', 'session'])
+    ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants'])
   },
   methods: {
     noteWrite () {
       this.show = false
-      console.log(this.selectSubscriber)
+      console.log(this.selectParticipant)
       this.session.signal({
         type: 'game',
         data: {
           gameStatus: 5,
           skillType: 'noteWrite',
-          target: this.selectSubscriber,
+          target: this.selectParticipant,
           jobName: this.selectJobName
         },
         to: [],
       })
-      this.selectSubscriber = '참가자 목록'
+      this.selectParticipant = '참가자 목록'
       this.selectJobName = '직업'
     },
     noteUse () {
@@ -488,11 +460,11 @@ export default {
         data: {
           gameStatus: 5,
           skillType: 'arrest',
-          target: this.selectSubscriber,
+          target: this.selectParticipant,
         },
         to: [],
       })
-      this.selectSubscriber = '참가자 목록'
+      this.selectParticipant = '참가자 목록'
     },
     protect () {
       this.show = false
@@ -501,11 +473,11 @@ export default {
         data: {
           gameStatus: 5,
           skillType: 'protect',
-          target: this.selectSubscriber,
+          target: this.selectParticipant,
         },
         to: [],
       })
-      this.selectSubscriber = '참가자 목록'
+      this.selectParticipant = '참가자 목록'
     },
     kill () {
       this.show = false
@@ -514,12 +486,12 @@ export default {
         data: {
           gameStatus: 5,
           skillType: 'kill',
-          target: this.selectSubscriber,
+          target: this.selectParticipant,
           jobName: this.selectJobName
         },
         to: [],
       })
-      this.selectSubscriber = '참가자 목록'
+      this.selectParticipant = '참가자 목록'
       this.selectJobName = '직업'
     }
   },

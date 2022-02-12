@@ -17,6 +17,7 @@ const gameStore = {
     isReady: false,
     activeGameStart: false,
     readyStatus: false,
+    participants: [],
     
     // Ovenvidu
     OV: undefined,
@@ -240,15 +241,16 @@ const gameStore = {
                 if (isAlive) {
                   state.messages.push('System : ' + clientData + '가 보디가드에 의해 보호되었습니다.')
                 } else {
-                  if (state.publisher.stream.connection.connectionId == connectionId){
+                  if (state.publisher && state.publisher.stream.connection.connectionId == connectionId){
                     state.session.unpublish(state.publisher)
                     commit('SET_PUBLISHER', undefined)
                     state.isAlive = false
-                  } else if (state.subPublisher.stream.connection.connectionId == connectionId){
+                  } else if (state.subPublisher && state.subPublisher.stream.connection.connectionId == connectionId){
                     state.subSession.unpublish(state.subPublisher)
                     commit('SET_SUB_PUBLISHER', undefined)
                     state.isAlive = false
-                  } 
+                  }
+                  dispatch('removeParticipant', connectionId)
                   state.messages.push('System : ' + clientData + '가 심장마비로 사망하였습니다.')
                 }
               }
@@ -287,11 +289,14 @@ const gameStore = {
               } else {
                 state.messages.push('System : 경찰 ' + clientData + '가 경찰측 체포를 시도하여 해고당했습니다.')
               }
-              if (state.publisher.stream.connection.connectionId == connectionId){
+              // 찾아서 죽이기
+              dispatch('removeParticipant', connectionId)
+              // 퍼블리셔 지우기
+              if (state.publisher && state.publisher.stream.connection.connectionId == connectionId){
                 state.session.unpublish(state.publisher)
                 commit('SET_PUBLISHER', undefined)
                 state.isAlive = false
-              } else if (state.subPublisher.stream.connection.connectionId == connectionId){
+              } else if (state.subPublisher &&state.subPublisher.stream.connection.connectionId == connectionId){
                 state.subSession.unpublish(state.subPublisher)
                 commit('SET_SUB_PUBLISHER', undefined)
                 state.isAlive = false
@@ -307,11 +312,12 @@ const gameStore = {
               } else if (isAlive == 1) {
                 state.messages.push('System : ' + clientData + '의 직업 정보가 일치하지 않습니다.')
               } else {
-                if (state.publisher.stream.connection.connectionId == connectionId){
+                dispatch('removeParticipant', connectionId)
+                if (state.publisher && state.publisher.stream.connection.connectionId == connectionId){
                   state.session.unpublish(state.publisher)
                   commit('SET_PUBLISHER', undefined)
                   state.isAlive = false
-                } else if (state.subPublisher.stream.connection.connectionId == connectionId){
+                } else if (state.subPublisher && state.subPublisher.stream.connection.connectionId == connectionId){
                   state.subSession.unpublish(state.subPublisher)
                   commit('SET_SUB_PUBLISHER', undefined)
                   state.isAlive = false
@@ -320,6 +326,14 @@ const gameStore = {
               }
               break
             }
+          }
+        } else if (event.data.gameStatus === 7) {
+          const participantsData = event.data
+          const { cnt } = participantsData
+          for (let i = 0; i < cnt; i++) {
+            const { userId, connectionId } = participantsData[i]
+            const { clientData } = JSON.parse(userId)
+            state.participants.push({nickname: clientData, connectionId: connectionId})
           }
         }
       });
@@ -340,7 +354,7 @@ const gameStore = {
             mirror: false, // Whether to mirror your local video or not
           });
           commit('SET_SUB_PUBLISHER', subPublisher)
-          state.subSession.publish(state.subPublisher);
+          state.subSession.publish(state.subPublisher)
           router.push({
             name: 'CardExchange',
           })
@@ -375,7 +389,6 @@ const gameStore = {
           commit('SET_SESSION', session)
           commit('SET_SUBSCRIBERS', subscribers)
           commit('SET_OVTOKEN', token)
-
           // --- Publish your stream ---
           session.publish(state.publisher)
           router.push({
@@ -556,6 +569,11 @@ const gameStore = {
     },
 
     // 게임 기능
+    removeParticipant({state}, connectionId) {
+      const participant = state.participants.find(participant => {return participant.connectionId === connectionId})
+      const idx = state.participants.indexOf(participant)
+      if (idx > -1) { state.participants.splice(idx, 1) }
+    },
     changeJobCount({ state }, jobProps) {
       state.session.signal({
         type: 'game',
