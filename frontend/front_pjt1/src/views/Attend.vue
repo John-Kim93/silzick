@@ -152,7 +152,6 @@ export default {
   data () {
     return {
       message: "init",
-      ready: true
     }
   },
   computed: {

@@ -117,6 +117,7 @@
     <!--미션 및 히든 미션 : mission-->
     <div class="mission">
       미션 및 히든 미션
+      <mission/>
     </div>
 
     <!--스킬사용 및 메모팝업 버튼 : buttons-->
@@ -141,6 +142,7 @@ import { mapState, mapActions } from 'vuex'
 import Doubt from '@/components/MainGame/Doubt.vue'
 import UserVideo from '@/components/Attend/UserVideo.vue'
 import ActiveSkill from '@/components/MainGame/ActiveSkill.vue'
+import Mission from '@/components/Mission/Mission.vue';
 
 const gameStore = 'gameStore'
 
@@ -149,7 +151,8 @@ export default {
   components: {
     Doubt,
     UserVideo,
-    ActiveSkill
+    ActiveSkill,
+    Mission,
   },
   data () {
     return {
