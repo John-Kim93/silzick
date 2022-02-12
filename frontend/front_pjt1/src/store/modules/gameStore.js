@@ -346,8 +346,11 @@ const gameStore = {
             state.participants.push({nickname: clientData, connectionId: connectionId})
           }
         } else if (event.data.gameStatus === 8) {
+          console.log('@@@@@@@@@@@@@@@@@@@@@@끝났냐')
           const winner = event.data.winner
+          console.log(winner)
           commit('WINNER', winner)
+          router.push({ name: 'GameEnd' })
         }
       });
       // 명함교환 방 자동 이동 & 미션 자동 분배

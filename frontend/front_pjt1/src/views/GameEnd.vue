@@ -24,6 +24,9 @@ export default {
   },
   computed: {
     ...mapState(gameStore, ['winner'])
+  },
+  created () {
+    console.log(this.winner)
   }
 }
 </script>
