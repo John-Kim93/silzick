@@ -36,7 +36,6 @@ public class GameService {
     static final int SETREADYSETTING = 3;
     static final int GAMESTART = 4;
     static final int USESKILL = 5;
-//    static final int EXCHANGENAME = 6;
     static final int CHECKPARTICIPANTS = 7;
     static final int GAMEOVER = 8;
 
@@ -100,9 +99,6 @@ public class GameService {
             case USESKILL: // 스킬 사용
                 useSkill(participant, sessionId, participants, params, data, notice);
                 return;
-//            case EXCHANGENAME: // 명교 후 류자키에게 결과 전달 메소드.
-//                exchangeName(participant, sessionId, params, data);
-//                return;
             case CHECKPARTICIPANTS:
                 checkParticipants(participant, message, sessionId, participants, params, data, notice);
                 return;
@@ -480,6 +476,7 @@ public class GameService {
                         }
                     }
                 }
+
                 for (Participant p : participants) {
                     rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                             ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
@@ -646,10 +643,8 @@ public class GameService {
 
         //키라 사망 or 경찰 수 0명시 게임 종료
         for (Characters c : cList) {
-            if ((c.getJobName().equals("KIRA") && !c.isAlive())) {
+            if (alivePolices.getOrDefault(sessionId, 0) < 1) {
                 finishGame(participant, sessionId, participants, params, data, "KIRA");
-            } else if (alivePolices.getOrDefault(sessionId, 0) < 1) {
-                finishGame(participant, sessionId, participants, params, data, "POLICE");
             }
         }
     }
@@ -672,42 +667,6 @@ public class GameService {
         System.out.println(target.getJobName());
         return target;
     }
-
-//    //명교 결과 보내주기.
-//    private void exchangeName(Participant participant, String sessionId, JsonObject params, JsonObject data) {
-//
-//        String name = data.get("name").getAsString();
-//
-//        //역할 가져오기
-//        ArrayList<Characters> cList = roleMatching.get(sessionId);
-//        Characters target = null;
-//        //역할 리스트에서 신호보낸 Participant찾아내기
-//        for (Characters c : cList) {
-//            if (c.getParticipant() == participant) {
-//                target = c;
-//                break;
-//            }
-//        }
-//
-//        //data 초기화
-//        data = new JsonObject();
-//        //명교때 제출한 이름(직업)과 진짜 이름이 같으면 true 아니면 false
-//        if (target.getJobName().equals(name)) {
-//            data.addProperty("result", "true");
-//        } else {
-//            data.addProperty("result", "false");
-//        }
-//
-//        //params에 data 넣기.
-//        params.add("data", data);
-//
-//        //중요인물 리스트의 0번 = 키라, 1번 = 경찰총장
-//        Participant L = kiraAndL.get(sessionId).get(1);
-//        //명교 결과 경찰 총장에게 알리기.
-//        rpcNotificationService.sendNotification(L.getParticipantPrivateId(),
-//                ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
-//
-//    }
 
     /**
      * gameStatus : 7,
