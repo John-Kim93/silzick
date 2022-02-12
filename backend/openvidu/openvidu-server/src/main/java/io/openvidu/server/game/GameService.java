@@ -645,6 +645,7 @@ public class GameService {
         for (Characters c : cList) {
             if (alivePolices.getOrDefault(sessionId, 0) < 1) {
                 finishGame(participant, sessionId, participants, params, data, "KIRA");
+                break;
             }
         }
     }
