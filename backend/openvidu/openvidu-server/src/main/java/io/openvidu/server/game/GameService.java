@@ -37,7 +37,8 @@ public class GameService {
     static final int GAMESTART = 4;
     static final int USESKILL = 5;
     static final int EXCHANGENAME = 6;
-    static final int GAMEOVER = 7;
+    static final int CHECKPARTICIPANTS = 7;
+    static final int GAMEOVER = 8;
 
 
     private static final Logger log = LoggerFactory.getLogger(GameService.class);
@@ -102,8 +103,12 @@ public class GameService {
             case EXCHANGENAME: // 명교 후 류자키에게 결과 전달 메소드.
                 exchangeName(participant, sessionId, params, data);
                 return;
+            case CHECKPARTICIPANTS:
+                checkParticipants(participant, message, sessionId, participants, params, data, notice);
+                return;
         }
     }
+
 
     /**
      * 받는 signal
@@ -361,6 +366,7 @@ public class GameService {
         String skillType = data.get("skillType").getAsString();
         //역할 리스트 가져오기.
         ArrayList<Characters> cList = roleMatching.get(sessionId);
+        System.out.println(cList.size());
 
         String jobName = null;
 
@@ -703,6 +709,32 @@ public class GameService {
 
     }
 
+    /**
+     *
+     * gameStatus : 7,
+     * 0: { userId : "userNickName",
+     *      connectionId : "conekt23lk",
+     *    },
+     * cnt : 1,
+     */
+    private void checkParticipants(Participant participant, JsonObject message, String sessionId, Set<Participant> participants, JsonObject params, JsonObject data, RpcNotificationService notice) {
+        int cnt = 0;
+        //참여자 정보 담기.
+        for(Participant p : participants){
+            JsonObject player = new JsonObject();
+            player.addProperty("userId", p.getClientMetadata());
+            player.addProperty("connectionId", p.getParticipantPublicId());
+            data.add(String.valueOf(cnt), player);
+            cnt++;
+        }
+        data.addProperty("cnt", cnt+1);
+        params.add("data",data);
+
+        //요청자에게 정보 전달달
+       rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
+                ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+
+    }
 
     /**
      * 게임 종료시 전달되는 데이터 예시
