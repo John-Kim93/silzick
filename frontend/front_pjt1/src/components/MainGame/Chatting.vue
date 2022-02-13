@@ -1,7 +1,7 @@
 <template>
   <div id="base-border" class="d-flex flex-column p-3">
     <!--채팅 내역 : chat_list-->
-    <div class="scroll-bar my-1" style="height:63vh; text-align:left;">
+    <div class="scroll-bar my-1" style="height:53vh; text-align:left;">
       <p
         v-for="message, idx in messages"
         class="m-1"

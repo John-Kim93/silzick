@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex" style="color:white">
     <!--disabled 사용해서 skill이 1이상일때만 사용가능하도록-->
-    <b-button class="skill_button" @click="show=true"> Skill 사용</b-button>
+    <button class="skill_button" @click="show=true"> Skill 사용</button>
     <!-- 1.노트주인 -->
     <b-modal v-model='show' v-if='myJob == "KIRA"' 
       id='skill' 
@@ -523,17 +523,14 @@ export default {
 	text-decoration:none;
 	text-shadow:0px 1px 0px #283966;
 }
-.skill_button_police:hover {
-  background-color:#476e9e;
-}
 .skill_button_police:active {
 	position:relative;
 	top:1px;
 }
 .skill_button_note {
-	background-color:#fc5230;
+	background-color:#F05454;
 	border-radius:28px;
-	border:1px solid #d02718;
+	border:1px solid #F05454;
 	display:inline-block;
 	cursor:pointer;
 	color:#ffffff;
@@ -541,10 +538,6 @@ export default {
 	font-size:17px;
 	padding:16px 31px;
 	text-decoration:none;
-	text-shadow:0px 1px 0px #810e05;
-}
-.skill_button_note:hover {
-	background-color:#d65246;
 }
 .skill_button_note:active {
 	position:relative;
@@ -567,17 +560,16 @@ input[type=text]:focus {
   color: white
 }
 .skill_button {
-	background-color:#44c767;
+	background-color:#30475E;
 	border-radius:28px;
-	border:1px solid #18ab29;
+	border:1px solid #30475E;
 	display:inline-block;
 	cursor:pointer;
 	color:#ffffff;
 	font-family:Arial;
-	font-size:17px;
+	font-size:0.8rem;
 	font-weight:bold;
 	padding:16px 31px;
 	text-decoration:none;
-	text-shadow:0px 1px 0px #2f6627;
 }
 </style>

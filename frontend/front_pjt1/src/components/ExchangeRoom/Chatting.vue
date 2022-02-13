@@ -1,7 +1,7 @@
 <template>
-  <div id="base-border" class="d-flex flex-column p-3">
+  <div class="d-flex flex-column">
     <!--채팅 내역 : chat_list-->
-    <div class="scroll-bar my-1" style="height:63vh; text-align:left;">
+    <div class="scroll-bar" style="height:20vh; text-align:left;">
       <p
         v-for="message, idx in messages"
         class="m-1"
@@ -9,19 +9,6 @@
       >
         {{message}}
       </p>
-    </div>
-    <hr>
-    <!--채팅 입력 : chat_input-->
-    <div>
-      <input
-        id=""
-        class="col-12"
-        type="text"
-        placeholder="메세지를 입력하세요"
-        v-model="chatMessage"
-        style="color:#222831;"
-        @keyup.enter="enterMessage"
-      >
     </div>
   </div>
 </template>

@@ -1,12 +1,23 @@
 <template>
-    <div>
-		<div class="row count m-1">
-			<p class="col-2 count">{{ready}}</p>
-			<div class="col count">
-				{{ clientData }}
-			</div>
-		</div>
-	</div>
+  <div class="row m-1">
+    <div id="base-border" class="col-8">
+      {{ clientData }}
+    </div>
+    <div
+      v-if="ready"
+      class="col-2 d-inline-flex ready_check"
+      style="color:#30475E;"
+    >
+      <b-icon icon="check2-circle" font-scale="2"></b-icon>
+    </div>
+    <div
+      v-else
+      class="col-2 d-inline-flex ready_check"
+      style="color:#222831;"
+    >
+      <b-icon icon="check2-circle" font-scale="2"></b-icon>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -37,7 +48,7 @@ export default {
 	},
 };
 </script>
-<style>
+<style scoped>
 	.count{
 		border-radius: 3%;
 		border: 1px solid black;

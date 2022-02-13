@@ -1,136 +1,80 @@
 <template>
-  <div class="container" style="color:white">
-    <img src="https://ifh.cc/g/1WPkxv.png" id="bg" alt="bgImg">
-    <h1>{{myJob}}</h1>
-    <!--6명 이하 6분할-->
-    <div
-      v-if="subscribers.length < 6"
-      class="d-inline-flex row align-middle total_cam"
-    > 
-      <!-- 내 비디오 -->
-      <div
-        class="col-4 private_cam_6"
-      >
-        <user-video
-          class="m-1"
-          :stream-manager="publisher"
-        />
-      </div>
-      <!-- 다른 사람 비디오 -->
-      <div
-        class="col-4 private_cam_6"
-        v-for="subscriber in subscribers"
-        :key="subscriber.stream.connection.connectionId"
-      >
-        <user-video
-          class="m-1"
-          :stream-manager="subscriber"
-        />
-      </div>
-     
-    </div>
-
-    <!-- 6명 넘으면 9분할(미구현)-->
-
-    <!--다음 명함 교환 까지(타이머) : timer-->
-    <div class="timer d-flex">
-      <div>
-        <p>
-        다음 명함 교환까지
-        <br>
-        XX초 남았습니다.</p>
-      </div>
-    </div>
-
-    <!--직업/직업설명/능력/승리조건 : explain-->
-    <div class="explain">
-      <!--직업-->
-      <div class="explain_job dotted_line">
-        <strong>직업</strong>
-      </div>
-      <!--직업설명-->
-      <div class="explain_job_description dotted_line">
-        직업설명
-      </div>
-      <!--능력-->
-      <div class="explain_skill dotted_line">
-        능력
-      </div>
-      <!--승리조건-->
-      <div class="explain_win">
-        승리조건
-      </div>
-    </div>
-
-    <!--채팅 전체 : chat-->
-    <div class="d-flex chat">
-      <!--채팅 내역 : chat_list-->
-      <div class="chat_list">
-        <p
-          v-for="message, idx in messages"
-          :key="idx"
-        >
-        {{ message }}
-        </p>
-      </div>
-      <!--채팅 입력 : chat_input-->
-      <input
-        class="chat_input"
-        type="text"
-        placeholder="메세지를 입력하세요"
-        v-model="chatMessage"
-        style="color:white;"
-        @keyup.enter="enterMessage"
-      >
-    </div>
-
-    <!--의심 직업 : doubt-->
-    <div class="doubt">
-      <p>추측 현황</p>
-      <div
-        class="d-flex justify-content-around align-items-center"
-        v-for="subscriber, idx in subscribers"
-        :key="idx"
-      >
-        <doubt :subscriber="subscriber"/>
-
-      </div>
-    </div>
-
-    <!--정체 숨기기 횟수 / 스킬 횟수 / 검거권 수-->
-    <div class="counts">
-      <div>
-        <!-- 정체 숨기기 횟수(미션 성공 횟수) -->
-        <b-icon icon="eye-slash-fill" font-scale="2" variant="light"></b-icon><p>2회</p>
-      </div>
-      <div>
-        <!-- 스킬 사용 가능 횟수(히든 미션 성공 횟수) -->
-        <b-icon icon="lightning-fill" font-scale="2" variant="light"></b-icon><p>3회</p>
-      </div>
-      <!-- 검거권 수(경찰일때만)-->
-      <!-- v-if=="경찰" 사용-->
-      <div>
-        <b-icon icon="person-bounding-box" font-scale="2" variant="light"></b-icon><p>1회</p>
-      </div>
-    </div>
-
-    <!--미션 및 히든 미션 : mission-->
-    <div class="mission">
-      미션 및 히든 미션
-    </div>
-
-    <!--스킬사용 및 메모팝업 버튼 : buttons-->
-    <div class="d-flex justify-content-around buttons">
-      <!--능력사용-->
-      <active-skill/>
-      <!--2.인풋과 라벨로만 만들기-->
-      <input type="checkbox" id="popup">
-      <label for="popup">메모 하기</label>
-      <div>
-        <div class="popup">
-          <label style="color:black" for="popup">X</label>
-          <textarea name="" style="border:none; color:#44c767;" id="popup" class="textarea_position" cols="30" rows="10"></textarea>
+  <div id="background-black" class="full-screen d-flex justify-content-center">
+    <div class="container pt-4 row flex-wrap justify-content-center">
+      <!-- 카메라 -->
+      <div class="col-7 scroll-bar container mb-4 d-flex row flex-wrap align-content-around">
+        <!--6명 이하 6분할-->
+        <div
+          class="col-6"
+          v-if="subscribers.length < 6"
+        > 
+          <!-- 내 비디오 -->
+          <div class="p-1">
+            <user-video
+              id="base-border"
+              class="pt-1 px-1"
+              :stream-manager="publisher"
+            />
+          </div>
         </div>
+        <!-- 다른 사람 비디오 -->
+        <div
+          class="col-6"
+          v-for="subscriber in subscribers"
+          :key="subscriber.stream.connection.connectionId"
+        >
+          <div class="p-1">
+            <user-video
+              id="base-border"
+              class="pt-1 px-1"
+              :stream-manager="subscriber"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- 타이머 & 직업 & 메모 & 채팅 div -->
+      <div class="col-3 flex-column">
+        <!--다음 명함 교환 까지(타이머) : timer-->
+        <div id="base-border" class="row d-flex justify-content-center m-1">
+          <!-- 직업 이름 -->
+          <h4 class="py-1" style="text-align:left;">
+            직업 : {{ myJob }}
+          </h4>
+          <hr class="mb-1">
+          <!-- 타이머 & 메모 -->
+          <div class="row justify-content-center align-items-center">
+            <div class="col-4">
+              <exchange-timer></exchange-timer>
+            </div>
+            <div class="offset-1 col-7">
+              <input type="checkbox" id="popup">
+              <label for="popup">MEMO</label>
+              <div>
+                <div class="popup">
+                  <label style="color:black" for="popup">X</label>
+                  <textarea name="" style="border:none; color:#44c767;" id="popup" class="textarea_position" cols="30" rows="10"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--채팅 전체 : chat-->
+        <div class="scroll-bar mx-1">
+          <chatting/>
+        </div>
+      </div>
+      <toggle class="col-1"/>
+
+
+
+
+
+      <!--스킬사용 및 메모팝업 버튼 : buttons-->
+      <div class="d-flex justify-content-around buttons">
+        <!--2.인풋과 라벨로만 만들기-->
+        
       </div>
     </div>
   </div>
@@ -138,18 +82,20 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import Doubt from '@/components/MainGame/Doubt.vue'
 import UserVideo from '@/components/Attend/UserVideo.vue'
-import ActiveSkill from '@/components/MainGame/ActiveSkill.vue'
+import Toggle from '@/components/MainGame/Toggle.vue'
+import Chatting from '@/components/MainGame/Chatting.vue'
+import ExchangeTimer from '../components/MainGame/ExchangeTimer.vue'
 
 const gameStore = 'gameStore'
 
 export default {
   name : 'MainGame',
   components: {
-    Doubt,
     UserVideo,
-    ActiveSkill
+    Toggle,
+    Chatting,
+    ExchangeTimer, 
   },
   data () {
     return {
@@ -186,6 +132,9 @@ export default {
 </script>
 
 <style scoped>
+hr {
+  background: #30475E;
+}
 /* custom css */
   .private_cam_6 {
     border-style: solid;
@@ -224,7 +173,7 @@ input[id*="popup"] {
 /* 메모하기 버튼 */
 input[id*="popup"] + label {
   display: inline-block;
-  padding: 20px;
+  padding: 10px;
   background: #ffcd41;
   color: #fff;
   background-color:transparent;
@@ -236,7 +185,7 @@ input[id*="popup"] + label {
 	font-family:Arial;
 	font-size:17px;
 	font-weight:bold;
-	padding:16px 31px;
+	padding:10px 31px;
 	text-decoration:none;
 	text-shadow:0px 1px 0px #2f6627;
 }
