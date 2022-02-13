@@ -49,7 +49,6 @@ const gameStore = {
     //그냥 미션인지 히든인지 구분.
     isNormalMission: true,
     options: [
-      { value: '선택 중', text: '직업 선택', disabled: true },
       { value: 'KIRA', text: '노트주인'},
       { value: 'CRIMINAL', text: '추종자'},
       { value: 'L', text: '경찰총장'},
@@ -154,8 +153,9 @@ const gameStore = {
     SET_NUMBER_OF_SKILL_USE(state, count){
       state.numberOfSkillUse += count
     },
-
-
+    CHECK_IS_KIRA_OR_L(state, res){
+      state.isKIRAorL = res
+    },
 
 
     
@@ -273,7 +273,7 @@ const gameStore = {
         // 내 직업 받고 게임 스타트
         } else if (event.data.gameStatus === 4) {
           state.myJob = event.data.jobName
-          dispatch('checkIsKIRAorL')
+          dispatch('checkIsKIRAorL', event.data.jobName)
           router.push({
             name: 'MainGame'
           })
@@ -728,11 +728,12 @@ const gameStore = {
     numberOfSkillUse({commit},count){
       commit('SET_NUMBER_OF_SKILL_USE',count)
     },
-    checkIsKIRAorL({state}){
-      if(state.myJob == 'KIRA' || state.myJob == 'L'){
-        state.isKIRAorL = true;
+    checkIsKIRAorL({commit}, jobName){
+      if(jobName == 'KIRA' || jobName == 'L'){
+        console.log("키라랑 엘 바꾸기!")
+        commit('CHECK_IS_KIRA_OR_L', true);
       }else{
-        state.isKIRAorL = false;
+        commit('CHECK_IS_KIRA_OR_L', false);
       }
     },
     changeOption({state}){

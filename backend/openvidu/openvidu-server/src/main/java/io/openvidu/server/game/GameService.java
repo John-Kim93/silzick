@@ -475,6 +475,7 @@ public class GameService {
                             break;
                         }
                     }
+                    alivePolices.compute(sessionId, (k, v) -> v - 1);
                 }
 
                 for (Participant p : participants) {
