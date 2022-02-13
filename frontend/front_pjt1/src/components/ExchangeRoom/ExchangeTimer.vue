@@ -20,6 +20,7 @@
 	</div>
 </template>
 
+
 <script>
 export default {
 	name: 'ExchangeTimer',
@@ -31,24 +32,24 @@ export default {
         circleClasses: [],
         interval: 1000,
         mainCircleId: '1',
-        stopConditions: {},
+        stopConditions: {'1':0},
         triggerUpdate: false,
         circles: [
           {
             id: '1',
             classList: [ 'item' ],
-            startValue: -2,
-            value: 1,
-            size: 200,
-            strokeWidth: 20,
-            strokeColor: '#db47a0',
-            underneathStrokeColor: 'orange',
-            fillColor: '#fff0a0',
-            valueFontSize: 30,
+            startValue: 0,
+            value: 20,
+            size: 60,
+            strokeWidth: 5,
+            strokeColor: '#DDDDDD',
+            underneathStrokeColor: '#7C7A7A',
+            fillColor: '#222831',
+            valueFontSize: 20,
             labelFontSize: 30,
-            steps: 10,
-            stepLength: 1,
-            label: 'label',
+            steps: 20,
+            stepLength: -1,
+            label: '',
             labelPosition: 'bottom'
           }
         ]
@@ -57,6 +58,8 @@ export default {
 	},
 };
 </script>
+
+
 
 <style>
 </style>

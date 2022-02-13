@@ -65,37 +65,40 @@
         <hr>
 
         <!-- div3개 -->
-        <div class="row d-flex justify-content-center" style="height:80vh">
-          <!-- 참가자 리스트 -->
-          <div id="base-border" class="col-2 mx-1 align-self-start scroll-bar" style="height:44vh">
-            <div v-if="publisher">
-              <ready :streamManager="publisher"/>
-              <div
-                v-for="sub in subscribers"
-                :key="sub.stream.session.connection.connectionId"
-              >
-                <ready :stream-manager="sub" />
+        <div class="row d-flex justify-content-center">
+          <div class="col-9 d-flex-wrap row">
+            <!-- 참가자 리스트 -->
+            <div id="base-border" class="col-3 m-1 align-self-start scroll-bar" style="height:44vh">
+              <div v-if="publisher">
+                <ready :streamManager="publisher"/>
+                <div
+                  v-for="sub in subscribers"
+                  :key="sub.stream.session.connection.connectionId"
+                >
+                  <ready :stream-manager="sub" />
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- 직업리스트 -->
-          <div id="base-border" class="col-3 mx-1 align-self-start align-items-center flex-column scroll-bar" style="height:44vh">
-            <jobs :job="job" v-for="job in jobs" :key="job.jobName"/>          
-          </div>
+            <!-- 직업리스트 -->
+            <div id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar" style="height:44vh">
+              <jobs :job="job" v-for="job in jobs" :key="job.jobName"/>          
+            </div>
 
-          <!-- 적용직업리스트 -->
-          <div id="base-border" class="col-3 mx-1 align-self-start align-items-center flex-column scroll-bar" style="height:44vh">
-            <job-select :job="job" v-for="job in jobs" :key="job.jobName"/>
+            <!-- 적용직업리스트 -->
+            <div id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar px-2" style="height:44vh">
+              <job-select :job="job" v-for="job in jobs" :key="job.jobName"/>
+            </div>
+            <!-- 룰 또는 영상 -->
+            <div id="base-border" class="col-11 mx-2" style="height:35vh">
+              <rule/>
+            </div>
           </div>
-
           <!-- 채팅 -->
-          <div id="base-border" class="col-3 align-self-stretch scroll-bar mx-1">
-            <chatting/>
-          </div>
-          <!-- 룰 또는 영상 -->
-          <div id="base-border" class="rule">
-            <rule/>
+          <div class="col-3 row">
+            <div id="base-border" class="scroll-bar mx-1">
+              <chatting/>
+            </div>
           </div>
         </div>  
       </div>
@@ -193,20 +196,7 @@ export default {
   height: 400px;
   
 }
-.scroll-bar {
-  overflow: auto;
-}
-.scroll-bar::-webkit-scrollbar {
-  width: 5px;
-  background-color: transparent;
-}
-.scroll-bar::-webkit-scrollbar-thumb {
-  background-color: #7c7a7a;
-  border-radius: 15px;
-  z-index: -100;
-  background-clip: padding-box;
-  /* border: 0.5px solid transparent; */ /* 스크롤 바 두께 픽셀이 굵어지면 가늘어진다*/
-}
+
 .rule {
 
 }

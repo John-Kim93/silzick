@@ -23,6 +23,7 @@
 .full-screen {
   width: 100wh;
   height: 100vh;
+  font-size:smaller;
 }
 #btn-color {
   background-color: #30475E;
@@ -32,9 +33,32 @@
   border: solid 0.25rem #30475E;
   border-radius: 5px;
 }
+.select-btn {
+  border:3px solid #30475E;
+  border-radius: 4px;
+  font-size: 1rem;
+  padding: 0.4em 0.9em;
+}
+
 @font-face {
   font-family: 'CBNUJIKJI';
   src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2202@1.0/CBNUJIKJI.woff') format('woff');
   font-weight: normal;
   font-style: normal;
+}
+
+/* 스크롤 바 관련 css */
+.scroll-bar {
+  overflow: auto;
+}
+.scroll-bar::-webkit-scrollbar {
+  width: 5px;
+  background-color: transparent;
+}
+.scroll-bar::-webkit-scrollbar-thumb {
+  background-color: #7c7a7a;
+  border-radius: 15px;
+  z-index: -100;
+  background-clip: padding-box;
+  /* border: 0.5px solid transparent; */ /* 스크롤 바 두께 픽셀이 굵어지면 가늘어진다*/
 }
