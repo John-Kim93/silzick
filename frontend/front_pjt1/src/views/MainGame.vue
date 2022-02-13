@@ -2,7 +2,10 @@
   <div id="background-black" class="full-screen d-flex justify-content-center">
     <div class="container pt-4 row flex-wrap justify-content-center">
       <!-- 카메라 -->
-      <div class="col-7 scroll-bar container mb-4 d-flex row flex-wrap align-content-around">
+      <div
+        class="col-7 scroll-bar container mb-4 d-flex row flex-wrap align-content-start"
+        style="height: 84vh"
+      >
         <!--6명 이하 6분할-->
         <div
           class="col-6"
@@ -65,7 +68,9 @@
           <chatting/>
         </div>
       </div>
-      <toggle class="col-1"/>
+      <div class="col-1 d-flex row align-items-center">
+        <toggle/>
+      </div>
 
 
 

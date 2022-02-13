@@ -3,13 +3,13 @@
     <div class="container d-flex justify-content-center">
       <!-- 작성 후 세션의 대기방 -->
       <div class="row d-flex justify-content-center align-content-center">
-        <h3 class="col-2 pt-3">
+        <h3 class="col-4 pt-3">
           [ {{sessionId}}의 방 ]
         </h3>
         <!-- ready / start button -->
         <!-- 방장이면 스타트버튼도 있어야함 -->
         <div
-          class="offset-6 col-4 row mt-3"
+          class="offset-4 col-4 row mt-3"
           v-if="isHost"
         >
           <!-- 레디 토글 -->

@@ -29,6 +29,10 @@
   background-color: #30475E;
   color: #DDDDDD;
 } 
+#btn-color-kira {
+  background-color: #F05454;
+  color: #DDDDDD;
+} 
 #base-border {
   border: solid 0.25rem #30475E;
   border-radius: 5px;

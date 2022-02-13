@@ -1,6 +1,11 @@
 <template>
   <div>
-    <button id="btn-color" class="btn" style="background-color:transparent; border:solid 0.2rem #30475E;font-size:1.5rem;">◀</button>
+    <button
+      id="btn-color"
+      class="btn"
+      style="background-color:transparent; border:solid 0.2rem #30475E;font-size:1.5rem;"
+      v-b-toggle.sidebar-backdrop
+    >◀</button>
     <b-sidebar
       id="sidebar-backdrop"
       title="Sidebar with backdrop"
@@ -11,17 +16,17 @@
       shadow
       no-header
     >
-      <div class="px-3 py-2 d-flex justify-content-center">
-          <div v-if="toggle">
-          <button @click="skill">스킬창으로!</button>
-            <h1>MISSION</h1>
-            <mission></mission>
-          </div>
-          <div class="wide" v-else>
-          <button @click="skill">미션창으로!</button>
-            <h1>SKILL</h1>
-            <skill/>
-          </div>
+      <div id="background-black" class="pt-4 full-screen d-flex justify-content-center container ">
+        <div class="wide d-flex row align-items-start" v-if="toggle">
+        <button id="btn-color" class="select-btn offset-4 col-4 mt-4" style="height:8vh" @click="skill">Skill</button>
+          <h1>Mission</h1>
+          <mission></mission>
+        </div>
+        <div class="wide d-flex row align-content-start" v-else>
+        <button id="btn-color" class="select-btn offset-4 col-4 my-4" style="height:8vh" @click="skill">Mission</button>
+          <hr>
+          <skill class="mt-3"/>
+        </div>
       </div>
     </b-sidebar>
   </div>
@@ -37,7 +42,7 @@ export default {
   },
   data(){
     return {
-      toggle : true,
+      toggle : false,
     }
   },
   methods: {

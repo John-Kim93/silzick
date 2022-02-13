@@ -162,59 +162,7 @@
         </div>
       </template>
     </b-modal>
- 
- 
-    <!-- 3.경찰총장 -->
-    <!-- <b-modal v-model="show" v-if='myJob == "L"' 
-      id='skill' 
-      size="lg"
-      variant='outline-primary' 
-      header-bg-variant="black"
-      header-text-variant="primary"
-      body-bg-variant="black"
-      body-text-variant="light"
-      footer-bg-variant="black"
-      footer-text-variant="light"
-      centered
-      >
-      <template #modal-header  >
-        <div></div>
-        <h1>
-          <font size="7">
-            <b-iconstack  animation="">
-              <b-icon stacked icon="arrows-angle-contract" animation="throb"></b-icon>
-              <b-icon stacked icon="arrows-angle-contract" animation="throb" rotate="90"></b-icon>
-              <b-icon stacked icon="person" animation="" variant="danger"></b-icon>
-            </b-iconstack>
-            진실의 눈
-          </font>
-        </h1>
-        <div></div>
-      </template> 
-      <div variant="black" class="d-block text-center">
-        <h5>
-          <b-icon icon="exclamation-triangle" font-scale="4" variant="warning"></b-icon>
-          <h4 class="link-warning">
-            당신은 특유의 통찰력으로 진실을 파악할 수 있습니다.<br>
-            단, 명함의 진위여부 뿐입니다.<br>
-            신중한 선택을 하시기 바랍니다.
-          </h4>
-        </h5>
-      </div>
-      <template #modal-footer>
-        <div class="w-100 d-block text-center" >
-          <b-button
-            variant="primary"
-            size="sm"
-            class="skill_button_police my-3"
-            @click="show=false"
-          >
-            DETECT!
-          </b-button>
-        </div>
-      </template>
-    </b-modal> -->
- 
+    
     <!-- 4.보디가드 -->
     <b-modal v-model="show" v-if='myJob == "GUARD"' 
       id='skill' 
