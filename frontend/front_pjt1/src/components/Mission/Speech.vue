@@ -2,15 +2,13 @@
 <template>
   <div>
     <!-- <slot name="input" :text="text"></slot> -->
-    
+    <exchange-timer/>
     <div v-if="ready">
-      <button @click="recordReset">{{record?'Stop':'Start'}}</button>
-      <p>남은시간 : {{ timerCount }}</p>
+      <!-- <button @click="recordReset">{{record?'Stop':'Start'}}</button> -->
       <p>{{ importmation }}</p>
       <p>{{cnt}}회 / 2회</p>
     </div>
     <div v-else>
-      출력중
       <div v-if="success"> 
         <p class="text-success">미션 성공</p>
         <b-icon icon="check2-circle" font-scale="2.5" variant="success"></b-icon>
@@ -27,10 +25,12 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-undef */
 import { mapState, mapActions } from 'vuex'
+import ExchangeTimer from './ExchangeTimer.vue';
 
 const gameStore = 'gameStore';
 
 export default {
+  components: { ExchangeTimer },
   props: {
     lang: {
       type: String,
@@ -123,20 +123,20 @@ export default {
         }
       },    
     },
-    record (record) {
-      if (this.recognition) {
-        // 버튼이 눌리면 타이머의 시간을 맞추고 음성감지 시작
-        if(record) {
-          this.timerCount = 15
-          this.recognition.start()
-          console.log('start')
-          this.timerCount -= 1
-        }else {
-          console.log('end')
-          this.timerCount = 0
-        }
-      }
-    },
+    // record (record) {
+    //   if (this.recognition) {
+    //     // 버튼이 눌리면 타이머의 시간을 맞추고 음성감지 시작
+    //     if(record) {
+    //       this.timerCount = 15
+    //       this.recognition.start()
+    //       console.log('start')
+    //       this.timerCount -= 1
+    //     }else {
+    //       console.log('end')
+    //       this.timerCount = 0
+    //     }
+    //   }
+    // },
   },
   computed: {
     ...mapState(gameStore, ['mission','record','isNormalMission']),
@@ -144,6 +144,8 @@ export default {
   created () {
     this.initRecognition()
     this.getmission()
+    this.timerCount -= 1
+    this.recognition.start()
   },
   methods: {
     ...mapActions(gameStore, ['missionReset','recordReset','missionSuccess','numberOfSkillUse']),
