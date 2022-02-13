@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- <button @click="randomInt({min:1,max:4})">{{random_int}}</button> -->
     <button v-show="!mission" @click="missionSelect(true)">mission</button>
     {{mission}}
     <pose v-if="mission==1" />
@@ -29,10 +30,10 @@ export default {
     },
 
   computed: {
-    ...mapState(gameStore, ['mission','record']),
+    ...mapState(gameStore, ['mission','record','random_int']),
   },
     methods:{
-      ...mapActions(gameStore, ['missionSelect','recordReset']),
+      ...mapActions(gameStore, ['missionSelect','recordReset','randomInt']),
     }
     
 }

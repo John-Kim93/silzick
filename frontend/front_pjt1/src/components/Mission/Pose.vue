@@ -1,10 +1,14 @@
 <template>
   <div>
-    <h1>미션</h1>
+    <h5>다음 동작을 따라하세요</h5>
     <!-- canvas는 안보이더라도 존재해야 나머지가 작동됨 -->
     <div v-show="false"><canvas id="canvas"></canvas></div>
     <!-- 미션이 완료되는동안 확률이 계속 표시되서 게이지가 다 차면 안보이게 수정 -->
-    <div v-show="loading == true"><p>{{impormation}} <br> {{similiarity}}</p></div>
+    <div v-show="loading == true">
+      <p>{{impormation}} <br> {{similiarity}}</p>
+      <img width="100px" height="100px" :src="require(`@/assets/img/이모지/${impormation}.jpg`)" alt="모션">
+      </div>
+
     <!-- 미션게이지와 미션완료시 아이콘 표시 -->
     <div v-if="loadingTime!=maxLoadingTime" class="d-flex justify-content-center mb-3">
       <b-progress class="w-75" :max="maxLoadingTime" height="1.5rem">

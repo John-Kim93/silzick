@@ -66,7 +66,7 @@ export default {
       signal: false,
       textdata: '',
       timerCount: 15,
-      mission_list:['사과', '바나나', '파인애플', '복숭아', '경찰', '노트', '키라', '명함', '거짓말', '가짜', '직업', '미션', '화면', '컴퓨터', '버그'],
+      mission_list:['내가 키라다','사과', '바나나', '복숭아', '경찰','키라', '명함', '거짓말', '직업', '미션', '화면', '컴퓨터', ],
       s_mission: '',
       importmation: '',
       cnt : 0,
