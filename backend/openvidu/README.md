@@ -1,4 +1,3 @@
-
 ## Openvidu 테스트
 
 #### 0. Docker 설치

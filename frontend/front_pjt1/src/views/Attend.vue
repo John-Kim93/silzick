@@ -1,8 +1,8 @@
 <template>
   <div id="background-black" class="full-screen">
-    <div class="container d-flex">
+    <div class="container d-flex justify-content-center">
       <!-- 작성 후 세션의 대기방 -->
-      <div class="row">
+      <div class="row d-flex justify-content-center align-content-center">
         <h3 class="col-2 pt-3">
           [ {{sessionId}}의 방 ]
         </h3>
@@ -66,7 +66,7 @@
 
         <!-- div3개 -->
         <div class="row d-flex justify-content-center">
-          <div class="col-9 d-flex-wrap row">
+          <div class="col-9 d-flex-wrap row d-flex justify-content-center">
             <!-- 참가자 리스트 -->
             <div id="base-border" class="col-3 m-1 align-self-start scroll-bar" style="height:44vh">
               <div v-if="publisher">
@@ -96,7 +96,7 @@
           </div>
           <!-- 채팅 -->
           <div class="col-3 row">
-            <div id="base-border" class="scroll-bar mx-1">
+            <div class="scroll-bar mx-1">
               <chatting/>
             </div>
           </div>
