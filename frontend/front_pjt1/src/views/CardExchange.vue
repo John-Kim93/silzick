@@ -77,25 +77,19 @@ export default {
   components: { UserVideo },
   data() {
     return {
+      //가짜 명교 가능 여부
+      isKIRAorL: false,
       chatMessage: '',
       timerCount:20,
       timerExit:23,
       text: '',
       selected: '선택 중',
-      options: [
-        { value: '선택 중', text: '직업 선택', disabled: true },
-        { value: 'KIRA', text: '노트주인' },
-        { value: 'CRIMINAL', text: '추종자' },
-        { value: 'L', text: '경찰총장' },
-        { value: 'POLICE', text: '경찰' },
-        { value: 'GUARD', text: '보디가드' },
-        { value: 'BROADCASTER', text: '방송인' },
-      ],
       confirm: false,
     }
   },
   computed: {
-    ...mapState(gameStore, ['subPublisher', 'subSubscribers', 'myJob', 'subSession', 'receivedCard', 'session', 'messages', 'isAlive'])
+    ...mapState(gameStore, ['subPublisher', 'subSubscribers', 'myJob', 'subSession',
+                            'receivedCard', 'session', 'messages', 'isAlive','options','isKIRAorL']),
   },
   watch: {
     timerCount: {
@@ -139,6 +133,10 @@ export default {
         let checkCardAndJob = false
         if (this.selected == this.myJob) {
           checkCardAndJob = true
+        }else{
+          if(!this.isKIRAorL){
+            this.missionSuccess(-1)
+          }
         }
         this.session.signal({
           type: 'game',
@@ -160,8 +158,12 @@ export default {
 
   },
   methods: {
-    ...mapActions(gameStore, ['exitCard']),
-    ...mapMutations(gameStore, ['RECEIVE_CARD', 'SET_SUB_PUBLISHER']),
+    ...mapActions(gameStore, ['exitCard','changeOption','missionSuccess']),
+    ...mapMutations(gameStore, ['RECEIVE_CARD', 'SET_SUB_PUBLISHER',]),
+  },
+
+  created(){
+    this.changeOption()
   },
 }
 </script>

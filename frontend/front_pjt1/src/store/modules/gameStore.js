@@ -20,6 +20,7 @@ const gameStore = {
     participants: [],
     publisherId: undefined,
     winner: undefined,
+    publisherReady : false,
     
     // Ovenvidu
     OV: undefined,
@@ -42,11 +43,21 @@ const gameStore = {
     random_int: 0,
     record: false,
     //거짓 명함 낼 수 있는 횟수(미션 달성 횟수)
-    missionSuccess: 0,
+    missionSuccessCount: 0,
     //히든 미션 달성 횟수
-    hiddenMissionSuccess: 0,
+    numberOfSkillUse: 0,
     //그냥 미션인지 히든인지 구분.
     isNormalMission: true,
+    options: [
+      { value: '선택 중', text: '직업 선택', disabled: true },
+      { value: 'KIRA', text: '노트주인'},
+      { value: 'CRIMINAL', text: '추종자'},
+      { value: 'L', text: '경찰총장'},
+      { value: 'POLICE', text: '경찰'},
+      { value: 'GUARD', text: '보디가드'},
+      { value: 'BROADCASTER', text: '방송인'},
+    ],
+    isKIRAorL : false,
 
     //game
     isAlive: true,
@@ -133,20 +144,21 @@ const gameStore = {
     RECORD_RESET(state){
       state.record = !state.record
     },
-    SET_MISSION_SUCCESS(state){
-      state.missionSuccess += 1
+    SET_MISSION_SUCCESS(state, count){
+      state.missionSuccessCount += count
     },
     IS_NORMAL_MISSION(state, res){
       state.isNormalMission = res
     },
-    //나중에 통합.
-    SET_HIDDEN_MISSION_SUCCESS(state){
-      state.hiddenMissionSuccess += 1
-    },
-    SET_SKILL_USE(state, res){
-      state.hiddenMissionSuccess -= res
+    //스킬 사용 횟수
+    SET_NUMBER_OF_SKILL_USE(state, count){
+      state.numberOfSkillUse += count
     },
 
+
+
+
+    
     // 채팅 관련 기능
     SET_MESSAGES(state, res) {
       state.messages.push(res.message)
@@ -261,6 +273,7 @@ const gameStore = {
         // 내 직업 받고 게임 스타트
         } else if (event.data.gameStatus === 4) {
           state.myJob = event.data.jobName
+          dispatch('checkIsKIRAorL')
           router.push({
             name: 'MainGame'
           })
@@ -696,9 +709,7 @@ const gameStore = {
     randomInt({commit},res){
       commit('RANDOM_INT',res)
     },
-    missionSelect({state,commit,dispatch},isNormalMission){
-      console.log("노멀미션인지 확인!")
-      console.log(state.isNormalMission)
+    missionSelect({commit,dispatch},isNormalMission){
       //미션 종류 선택
       dispatch('randomInt',{min:1,max:2})
       commit('MISSION_SELECT')
@@ -711,16 +722,41 @@ const gameStore = {
     recordReset({commit}){
       commit('RECORD_RESET')
     },
-    missionSuccess({commit}){
-      commit('SET_MISSION_SUCCESS')
+    missionSuccess({commit}, count){
+      commit('SET_MISSION_SUCCESS', count)
     },
-    //사용이랑 달성횟수 통합 가능 나중에.
-    hiddenMissionSuccess({commit}){
-      commit('SET_HIDDEN_MISSION_SUCCESS')
+    numberOfSkillUse({commit},count){
+      commit('SET_NUMBER_OF_SKILL_USE',count)
     },
-    skillUse({commit},count){
-      commit('SET_SKILL_USE',count)
-    }
+    checkIsKIRAorL({state}){
+      if(state.myJob == 'KIRA' || state.myJob == 'L'){
+        state.isKIRAorL = true;
+      }else{
+        state.isKIRAorL = false;
+      }
+    },
+    changeOption({state}){
+      //키라랑 엘이면 그냥 모두 사용가능하게 두고.
+      if(!state.isKIRAorL){
+        //키라랑 엘이 아니면 미션 카운트가 1이상일때만 모두 사용가능.
+        if(state.isKIRAorL || state.missionSuccessCount>0){
+          state.options.map((option)=>{
+            if(option.value!="선택 중"){
+              option.disabled = false
+            }
+          })
+          //그게 아니면 자기직업만 낼 수 있음.
+        }else{
+          state.options.map((option)=>{
+            if(option.value == state.myJob){
+              option.disabled = false
+            }else{
+              option.disabled = true
+            }
+          })
+        }
+      }
+    },
 
   },
 

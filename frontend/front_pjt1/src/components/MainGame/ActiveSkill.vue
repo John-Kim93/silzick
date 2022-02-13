@@ -155,10 +155,10 @@
           <b-button
             size="sm"
             class="skill_button_note my-3"
-            :disabled='hiddenMissionSuccess==0'
+            :disabled='numberOfSkillUse==0'
             @click="kill"
           >
-            Kill (사용가능 : {{hiddenMissionSuccess}})
+            Kill (사용가능 : {{numberOfSkillUse}})
           </b-button>
         </div>
       </template>
@@ -220,10 +220,10 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
-            :disabled='hiddenMissionSuccess==0'
+            :disabled='numberOfSkillUse==0'
             @click="protect"
           >
-            PROTECT!(사용가능 : {{hiddenMissionSuccess}})
+            PROTECT!(사용가능 : {{numberOfSkillUse}})
           </b-button>
         </div>
       </template>
@@ -276,10 +276,10 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
-            :disabled='hiddenMissionSuccess==0'
+            :disabled='numberOfSkillUse==0'
             @click="broadcast"
           >
-            BROADCAST!(사용가능 : {{hiddenMissionSuccess}})
+            BROADCAST!(사용가능 : {{numberOfSkillUse}})
           </b-button>
         </div>
       </template>
@@ -335,10 +335,10 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
-            :disabled='Math.floor(hiddenMissionSuccess/2)==0'
+            :disabled='Math.floor(numberOfSkillUse/2)==0'
             @click="arrest"
           >
-            ARREST!(사용가능 : {{hiddenMissionSuccess/2}})
+            ARREST!(사용가능 : {{numberOfSkillUse/2}})
           </b-button>
         </div>
       </template>
@@ -362,7 +362,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants','missionSuccess','hiddenMissionSuccess'])
+    ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants','missionSuccess','numberOfSkillUse'])
   },
   methods: {
     ...mapActions(gameStore, ['skillUse']),
@@ -395,7 +395,7 @@ export default {
       })
     },
     broadcast () {
-      if(this.hiddenMissionSuccess>0){
+      if(this.numberOfSkillUse>0){
         this.show = false
         this.session.signal({
           type: 'game',
@@ -407,11 +407,11 @@ export default {
           to: [],
         })
         this.broadcastMessage = ''
-        this.skillUse(1)
+        this.skillUse(-1)
       }
     },
     arrest () {
-      if(this.hiddenMissionSuccess>0){
+      if(this.numberOfSkillUse>0){
         this.show = false
         this.session.signal({
           type: 'game',
@@ -423,11 +423,11 @@ export default {
           to: [],
         })
         this.selectParticipant = '참가자 목록'
-        this.skillUse(2)
+        this.skillUse(-2)
       }
     },
     protect () {
-      if(this.hiddenMissionSuccess>0){
+      if(this.numberOfSkillUse>0){
         this.show = false
         this.session.signal({
           type: 'game',
@@ -439,11 +439,11 @@ export default {
           to: [],
         })
         this.selectParticipant = '참가자 목록'
-        this.skillUse(1)
+        this.skillUse(-1)
       }
     },
     kill () {
-      if(this.hiddenMissionSuccess>0){
+      if(this.numberOfSkillUse>0){
         this.show = false
         this.session.signal({
           type: 'game',
@@ -457,7 +457,7 @@ export default {
         })
         this.selectParticipant = '참가자 목록'
         this.selectJobName = '직업'
-        this.skillUse(1)
+        this.skillUse(-1)
       }
     }
   },

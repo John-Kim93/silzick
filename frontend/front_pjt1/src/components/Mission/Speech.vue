@@ -87,10 +87,10 @@ export default {
             console.log("5")
             console.log(this.success)
             this.ready = false
-            if(state.isNormalMission){
-              this.missionSuccess()
+            if(this.isNormalMission){
+              this.missionSuccess(+1)
             }else{
-              this.hiddenMissionSuccess()
+              this.numberOfSkillUse(+1)
             }
             //초기화 로직
             setTimeout(() => {
@@ -146,7 +146,7 @@ export default {
     this.getmission()
   },
   methods: {
-    ...mapActions(gameStore, ['missionReset','recordReset','missionSuccess','hiddenMissionSuccess']),
+    ...mapActions(gameStore, ['missionReset','recordReset','missionSuccess','numberOfSkillUse']),
 
     getmission () {
       this.s_mission = this.mission_list[Math.floor(Math.random()*this.mission_list.length)];

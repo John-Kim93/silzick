@@ -47,7 +47,7 @@ export default {
     
   },
   methods: {
-    ...mapActions(gameStore, ['missionReset','randomInt','missionSuccess','hiddenMissionSuccess']),
+    ...mapActions(gameStore, ['missionReset','randomInt','missionSuccess','numberOfSkillUse']),
 
     async init () {
       this.modelURL = this.url + "model.json"
@@ -99,10 +99,10 @@ export default {
               webcam.stop()
               //성공한게 노멀미션이면 명교횟수 +1
               if(this.isNormalMission){
-                this.missionSuccess()
+                this.missionSuccess(+1)
                 //히든미션이면 스킬포인트 +1
               }else{
-                this.hiddenMissionSuccess()
+                this.numberOfSkillUse(+1)
               }
               //성공 후 리셋
               setTimeout(()=>{
