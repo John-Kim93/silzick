@@ -55,8 +55,8 @@
               <label for="popup">MEMO</label>
               <div>
                 <div class="popup">
-                  <label style="color:black" for="popup">X</label>
-                  <textarea name="" style="border:none; color:#44c767;" id="popup" class="textarea_position" cols="30" rows="10"></textarea>
+                  <label style="color:#222831" for="popup">X</label>
+                  <textarea name="" style="border:none; color:#DDDDDD;" id="popup" class="textarea_position" cols="30" rows="10"></textarea>
                 </div>
               </div>
             </div>
@@ -178,21 +178,17 @@ input[id*="popup"] {
 /* 메모하기 버튼 */
 input[id*="popup"] + label {
   display: inline-block;
-  padding: 10px;
-  background: #ffcd41;
-  color: #fff;
-  background-color:transparent;
-	border-radius:28px;
-	border:1px solid white;
+  background-color: #30475E;
+	border-radius:5px;
+	border:solid #30475E;
 	display:inline-block;
 	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-	font-size:17px;
+	color:#DDDDDD;
+	font-family:'CBNUJIKJI';
+	/* font-size:17px; */
 	font-weight:bold;
-	padding:10px 31px;
+	padding:10px 23px;
 	text-decoration:none;
-	text-shadow:0px 1px 0px #2f6627;
 }
 /* 버튼 클릭 후 div 전체화면인듯?*/
 input[id*="popup"] + label + div {
@@ -211,9 +207,9 @@ input[id*="popup"] + label + div > div {
   transform:translate(-50%, -50%);
   width: 30%;
   height: 30%;
-  background: black;
+  background: #222831;
   opacity: 80%;
-  border: solid white;
+  border: solid #DDDDDD;
   border-radius: 15px;
   z-index: 2;
 }
@@ -224,10 +220,10 @@ input[id*="popup"] + label + div > div > label {
   right: 0%;
   transform:translate(40%, -40%);
   padding: 2%;
-  background: white;
+  background: #DDDDDD;
   border-radius: 100%;
   z-index: 1;
-  border: solid white;
+  border: solid #DDDDDD;
 }
 /* 필요X */
 /* input[id*="popup"] + label + div > label {
