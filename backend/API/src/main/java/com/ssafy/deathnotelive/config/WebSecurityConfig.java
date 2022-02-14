@@ -58,7 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // authorization
         http.authorizeRequests()
                 // /와 /home, /room의 참가, 닉네임 중복확인은 모두에게 허용
-                .antMatchers("/", "/home", "/user/signup", "/user/login", "/room/nickName", "/room/join/{userId}").permitAll()
+                .antMatchers("/", "/home", "/user/signup", "/user/login", "/room/nickName", "/room/join/{userId}", "/room/finish/{roomCode}").permitAll()
                 .antMatchers(HttpMethod.POST, "/notice/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PUT, "/notice/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/notice/**").hasRole("ADMIN")

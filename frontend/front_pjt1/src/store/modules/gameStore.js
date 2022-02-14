@@ -804,6 +804,7 @@ const gameStore = {
         ({data})=>{
           //호스트로 바꾸기.
           commit('IS_HOST')
+          commit('SET_HOST_ID', userId)
           commit('SET_SESSIONID',data)
           router.push({ name : 'Join' })
       },

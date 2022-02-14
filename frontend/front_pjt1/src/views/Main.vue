@@ -15,7 +15,7 @@
       v-if="isLogin"
       class="btn-1st-position"
       variant="outline-light"
-      @click="createRoomRequest(username)"
+      @click="createRoomRequest(userName)"
     > 방생성
     </b-button>
     <b-button
@@ -33,31 +33,32 @@ import { mapState, mapMutations, mapActions } from 'vuex'
 import cookies from 'vue-cookies'
 
 const gameStore = 'gameStore'
+const userStore = 'userStore'
 
 export default {
   name: 'Main',
   computed: {
-    ...mapState(['username']),
+    ...mapState(userStore, ['userName']),
     isLogin () {
       return cookies.isKey("JWT-AUTHENTICATION")
     }
   },
   methods: {
-    ...mapMutations(gameStore, ['RESET_USER', 'GAME_CHECKOUT']),
+    ...mapMutations(gameStore, ['GAME_CHECKOUT']),
+    ...mapMutations(userStore, ['RESET_USER']),
     ...mapActions(gameStore, ['createRoomRequest']),
-    ...mapActions(['saveUser']),
+    ...mapActions(userStore, ['saveUser']),
     logout () {
       if (cookies.isKey('JWT-AUTHENTICATION')) {
         cookies.remove('JWT-AUTHENTICATION')
         this.RESET_USER()
-        this.$router.go(this.$router.currentRoute)
+        this.$router.go();
       }
     },
   },
   created () {
     this.GAME_CHECKOUT()
     this.saveUser()
-    console.log(this.username)
   }
 }
 </script>

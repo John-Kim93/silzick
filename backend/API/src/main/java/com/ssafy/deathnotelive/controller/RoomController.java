@@ -87,7 +87,7 @@ public class RoomController {
         return new ResponseEntity("Your nickName is duplicated", HttpStatus.FORBIDDEN);
     }
 
-    @PutMapping("finish")
+    @PutMapping("finish/{roomCode}")
     @ApiOperation(value = "룸 종료", notes = "게임룸을 비활성화 시킨다.", response = String.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공"),
@@ -97,7 +97,7 @@ public class RoomController {
             @ApiResponse(code = 500, message = "서버 오류")
     })
     private ResponseEntity<String> finishRoom(
-            @ApiParam(value = "종료시킬 룸 코드", required = true) @RequestParam String roomCode) {
+            @ApiParam(value = "종료시킬 룸 코드", required = true) @PathVariable String roomCode) {
         //룸 활성화 끄기 + 해당 룸의 참여자 닉네임 초기화
         roomService.finishRoom(roomCode);
 

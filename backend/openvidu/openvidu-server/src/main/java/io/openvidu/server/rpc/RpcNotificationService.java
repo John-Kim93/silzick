@@ -167,22 +167,14 @@ public class RpcNotificationService {
             if (deathNoteThread != null) {
                 deathNoteThread.interrupt();
             }
-//            //API서버로 PUT요청으로 방 비활성화 시키기.
-//            JsonObject data = (JsonObject) JsonParser.parseString(message.get("data").getAsString());
-//            // roomId와 jwt토큰 받아옴
-//            int roomId = data.get("roomId").getAsInt();
-//            String JWT = data.get("JWT").getAsString();
-//
-//            String homesoolUrl = "https://k3a503.p.ssafy.io:8889/room/finish/"+roomId;
-//
-//            // API서버로 /room/finish/{roomId} 요청 보냄
-//            // endTime 저장됨!
-//            RestTemplate restTemplate = new RestTemplate();
-//            HttpHeaders httpHeaders = new HttpHeaders();
-//            httpHeaders.add("X-AUTH-TOKEN", JWT);
-//            UriComponents uri = UriComponentsBuilder.fromHttpUrl(homesoolUrl).build();
-//            HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
-//            restTemplate.exchange(uri.toString(), HttpMethod.PUT, httpEntity, String.class);
+
+            //세션 종료되면 방 비활성화.
+            String apiUrl = "http://localhost:8080/room/finish/"+sessionId;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders httpHeaders = new HttpHeaders();
+            UriComponents uri = UriComponentsBuilder.fromHttpUrl(apiUrl).build();
+            HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
+            restTemplate.exchange(uri.toString(), HttpMethod.PUT, httpEntity, String.class);
 
             log.info("Closed rpc session for participant with private id {}", participantPrivateId);
             this.showRpcConnections();
