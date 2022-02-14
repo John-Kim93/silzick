@@ -1,153 +1,132 @@
 <template>
-  <div id="main-container" class="container d-flex">
-    <!-- 작성 후 세션의 대기방 -->
-    <div id="enter" class="container">
-      <div>
-        <div class=" row">
-          {{sessionId}}의 방
+  <div id="background-black" class="full-screen">
+    <div class="container d-flex justify-content-center">
+      <!-- 작성 후 세션의 대기방 -->
+      <div class="row d-flex justify-content-center align-content-center">
+        <h3 class="col-4 pt-3">
+          [ {{sessionId}}의 방 ]
+        </h3>
+        <!-- ready / start button -->
+        <!-- 방장이면 스타트버튼도 있어야함 -->
+        <div
+          class="offset-4 col-4 row mt-3"
+          v-if="isHost"
+        >
+          <!-- 레디 토글 -->
+          <button
+            id="btn-color"
+            class="btn col-5 m-1"
+            @click="setReady"
+            v-if="!publisher.ready"
+          >
+          READY
+          </button>
+          <button
+            id="btn-color"
+            class="btn col-5 m-1"
+            @click="setReady"
+            v-else
+          >
+          CANCEL
+          </button>
+          <!-- 전원(6명 이상) 레디되면 활성화 -->
+          <button
+            id="btn-color"
+            class="btn col-5 m-1"
+            @click="gameStart"
+            :disabled="!readyStatus"
+          >
+          START
+          </button>
         </div>
+        <!-- 게스트인 경우 레디만 띄움 -->
+        <div
+          
+          class="offset-6 col-3 row mt-3"
+          v-else
+        >
+          <button
+            id="btn-color"
+            class="offset-1 col-10 btn m-1"
+            @click="setReady"
+            v-if="!publisher.ready"
+          >
+          READY
+          </button>
+          <button
+            id="btn-color"
+            class="offset-1 col-10 btn m-1"
+            @click="setReady"
+            v-else
+          >
+          CANCEL
+          </button>
+        </div>  
         <hr>
-        <div class="row justify-content-center">
-          <!-- 참가자 리스트 -->
-          <div class="col status">
-            <div v-if="publisher">
-              <ready :streamManager="publisher"/>
-              <div
-                v-for="sub in subscribers"
-                :key="sub.stream.session.connection.connectionId"
-              >
-                <ready :stream-manager="sub" />
+
+        <!-- div3개 -->
+        <div class="row d-flex justify-content-center">
+          <div class="col-9 d-flex-wrap row d-flex justify-content-center">
+            <!-- 참가자 리스트 -->
+            <div id="base-border" class="col-3 m-1 align-self-start scroll-bar" style="height:44vh">
+              <div v-if="publisher">
+                <ready :streamManager="publisher"/>
+                <div
+                  v-for="sub in subscribers"
+                  :key="sub.stream.session.connection.connectionId"
+                >
+                  <ready :stream-manager="sub" />
+                </div>
               </div>
             </div>
-          </div>
-          <!-- 직업리스트 -->
-          <div class="col status">
-            <jobs :job="job" v-for="job in jobs" :key="job.jobName"/>          
-          </div>
 
-          <!-- 적용직업리스트 -->
-          <div class="col status">
-            <job-select :job="job" v-for="job in jobs" :key="job.jobName"/>
-          </div>
-          <hr>
-          <div class="row d-flex justify-content-between">
-            <div class="chat col-8">
-              <div> chat</div>
-              <input type="text" class="w-auto">
+            <!-- 직업리스트 -->
+            <div id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar" style="height:44vh">
+              <jobs :job="job" v-for="job in jobs" :key="job.jobName"/>          
             </div>
-          <!-- ready / start button -->
-            <!-- 방장이면 스타트버튼도 있어야함 -->
-            <div
-              class="d-flex col"
-              v-if="isHost"
-            >
-              <!-- 레디 토글 -->
-              <button
-                class="btn btn-success col m-1"
-                @click="setReady"
-                v-if="!publisher.ready"
-              >
-              Ready
-              </button>
-              <button
-                class="btn btn-success col m-1"
-                @click="setReady"
-                v-else
-              >
-              Ready 취소
-              </button>
-              <!-- 전원(6명 이상) 레디되면 활성화 -->
-              <button
-                class="btn btn-success col m-1"
-                @click="gameStart"
-                :disabled="!readyStatus"
-              >
-              Start
-              </button>
+
+            <!-- 적용직업리스트 -->
+            <div id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar px-2" style="height:44vh">
+              <job-select :job="job" v-for="job in jobs" :key="job.jobName"/>
             </div>
-            <!-- 게스트인 경우 레디만 띄움 -->
-            <div
-              class="d-flex col"
-              v-else
-            >
-              <button
-                class="btn btn-success col m-1"
-                @click="setReady"
-                v-if="!publisher.ready"
-              >
-              Ready
-              </button>
-              <button
-                class="btn btn-success col m-1"
-                @click="setReady"
-                v-else
-              >
-              Ready 취소
-              </button>
+            <!-- 룰 또는 영상 -->
+            <div id="base-border" class="col-11 mx-2" style="height:35vh">
+              <rule/>
             </div>
           </div>
-          
-        </div>
-      </div>  
-      <!-- 레디시 영상 송출 -->
-      <div id="RTC" v-if="false">
-        <div>
-          <div
-            v-for="(message, index) of messages"
-            :key="index"
-          >
-            <!-- <span>{{ message.sender }}</span> -->
-            <!-- <span>{{ message.time }}</span> -->
-            <span>{{ message }}</span>
-          </div>
-          <input type="text" style="color:black;" v-model="message" @keyup.enter="clickSendMessage">
-        </div>
-          <h1 id="session-title">{{ sessionId }}</h1>
-          <input
-            class="btn btn-large btn-danger"
-            type="button"
-            id="buttonLeaveSession"
-            @click="leaveSession"
-            value="Leave session"
-          />
-          <div id="video-container" class="col-md-6">
-            <user-video
-              :stream-manager="publisher"
-              
-            />
-            <div
-              v-for="sub in subscribers"
-              :key="sub.stream.connection.connectionId"
-            >
-              <user-video
-                :stream-manager="sub"
-                
-              />
-              <button @click="videoOff(sub)">OFF</button>
+          <!-- 채팅 -->
+          <div class="col-3 row">
+            <div class="scroll-bar mx-1">
+              <chatting/>
             </div>
           </div>
-        
+        </div>  
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import UserVideo from "../components/Attend/UserVideo.vue";
 import Ready from '@/components/Attend/Ready.vue';
 import Jobs from  '@/components/Attend/Jobs.vue';
 import JobSelect from '@/components/Attend/JobSelect.vue';
+import Chatting from '@/components/Attend/Chatting.vue';
+import Rule from '@/components/Attend/Rule.vue'
+
 import { mapState, mapActions, mapMutations } from 'vuex'
+
 
 const gameStore = 'gameStore';
 
 export default {
   name: "Attend",
   components: {
-    UserVideo,
     Ready,
     Jobs,
     JobSelect,
+    Chatting,
+    Rule,
+
   },
   data () {
     return {
@@ -162,14 +141,11 @@ export default {
     ...mapMutations(gameStore, ['SET_MY_READY']),
     
     gameStart() {
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@')
       let countSum = 0
       this.jobs.forEach(job => {
         countSum = job.count + countSum
       })
-      console.log(countSum)
       if (this.subscribers.length + 1 === countSum) {
-        console.log('파티스펀트 줘!')
         this.session.signal({
           type: 'game',
           data: {
@@ -208,7 +184,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .status{
   border: 5px  solid black;
   margin: 2px;
@@ -217,12 +193,15 @@ export default {
   
 }
 
-.chat{
+.rule {
+
+}
+/* .chat{
   border: 5px  solid black;
   margin: 2px;
   border-radius: 5% / 8%;
   height: 150px;
   flex-direction : column;
-  
-}
+} */
+
 </style>
