@@ -27,7 +27,7 @@ public class RoomController {
      * 방의 룸 코드(세션아이디)를 보내서 활성화 되어있는지 조회함.
      * 방이 활성화 중이라면 true 아니라면 false를 반납한다.
      */
-    @GetMapping("join")
+    @GetMapping("join/{userId}")
     @ApiOperation(value = "방 참여", notes = "해당 유저의 방이 열려있는지 확인한다.")
     @ApiResponses({
             @ApiResponse(code = 200, message = "성공"),
@@ -37,16 +37,16 @@ public class RoomController {
             @ApiResponse(code = 500, message = "서버 오류")
     })
     public ResponseEntity<String> joinRoom(
-            @ApiParam(value = "방장 Id", required = true) @RequestParam String userId) {
+            @ApiParam(value = "방장 Id", required = true) @PathVariable String userId) {
 
-        boolean roomIsOpened = roomService.checkRoomIsOpened(userId);
-        if (roomIsOpened) {
-            return new ResponseEntity("room is opened", HttpStatus.OK);
+        Room room = roomService.getRoomByUserId(userId);
+        if (room.getIsOpen()) {
+            return new ResponseEntity(room.getRoomCode(), HttpStatus.OK);
         }
         return new ResponseEntity("room is closed", HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("create")
+    @GetMapping("create/{userId}")
     @ApiOperation(value = "방 룸생성", notes = "해당 유저가 호스트인 방을 생성후 룸코드를 반납해줌.")
     @ApiResponses({
             @ApiResponse(code = 200, message = "성공"),
@@ -56,7 +56,7 @@ public class RoomController {
             @ApiResponse(code = 500, message = "서버 오류")
     })
     public ResponseEntity<String> createRoom(
-            @ApiParam(value = "방장 Id", required = true) @RequestParam String userId) {
+            @ApiParam(value = "방장 Id", required = true) @PathVariable String userId) {
 
         String roomCode = roomService.createRoom(userId);
 
@@ -78,6 +78,8 @@ public class RoomController {
             @ApiParam(value = "Room code, NickName", required = true) @RequestBody RoomDto.validateName validateName) {
         String roomCode = validateName.getRoomCode();
         String nickName = validateName.getNickName();
+        System.out.println(roomCode);
+        System.out.println(nickName);
         boolean nameIsValid = roomService.validateName(roomCode, nickName);
         if (nameIsValid) {
             return new ResponseEntity("Your nickName can use", HttpStatus.OK);

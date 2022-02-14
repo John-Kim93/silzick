@@ -39,9 +39,11 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 import cookies from 'vue-cookies'
 import { login } from '@/api/user.js'
+
+const gameStore = 'gameStore'
 
 export default {
   name: 'Login',
@@ -62,12 +64,14 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(gameStore, ['SET_USER_ID']),
     ...mapActions(['saveUser']),
     login () {
       const user = this.requestInfo
       login(
         user,
         () => {
+          this.SET_USER_ID(user.userId)
           this.saveUser()
           this.$router.go(-1)
           alert("로그인에 성공했습니다.")

@@ -4,7 +4,7 @@
       <!-- 작성 후 세션의 대기방 -->
       <div class="row d-flex justify-content-center align-content-center">
         <h3 class="col-4 pt-3">
-          [ {{sessionId}}의 방 ]
+          [ {{hostId}}의 방 ]
         </h3>
         <!-- ready / start button -->
         <!-- 방장이면 스타트버튼도 있어야함 -->
@@ -134,7 +134,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['sessionId', 'subscribers', 'publisher', 'jobs', 'nickname', 'messages', 'isHost', 'session', 'readyStatus']),
+    ...mapState(gameStore, ['sessionId', 'subscribers', 'publisher', 'jobs', 'messages', 'isHost', 'session', 'readyStatus','hostId']),
   },
   methods: {
     ...mapActions(gameStore, [ 'sendMessage', 'leaveSession', 'setReady', 'getReadyStatus', 'getJobsState',]),
@@ -193,9 +193,7 @@ export default {
   
 }
 
-.rule {
 
-}
 /* .chat{
   border: 5px  solid black;
   margin: 2px;

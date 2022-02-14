@@ -26,11 +26,11 @@ public class RoomService {
     private final UserRepository userRepository;
     private final ParticipantsRepository participantsRepository;
 
-    public boolean checkRoomIsOpened(String userId) {
+    public Room getRoomByUserId(String userId) {
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserNotFoundException("Error"));
         Room room = roomRepository.findRoomByUser(user).orElseThrow(() -> new RoomNotFoundException("Error"));
 
-        return room.getIsOpen();
+        return room;
     }
 
     public boolean validateName(String roomCode, String nickName) {
