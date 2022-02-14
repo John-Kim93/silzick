@@ -6,7 +6,7 @@
 
     <!-- 미션게이지와 미션완료시 아이콘 표시 -->
     
-    <div v-if="impormation" class=" mb-3">
+    <div v-if="impormation" class="justify-content-center mb-3">
 
       <p class="m-0">{{impormation}} <br> {{similiarity}}</p>
       <exchange-timer/>
