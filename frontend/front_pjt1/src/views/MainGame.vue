@@ -22,10 +22,18 @@
         </div>
         <!-- 다른 사람 비디오 -->
         <div
-          class="col-6"
-          v-for="subscriber in subscribers"
-          :key="subscriber.stream.connection.connectionId"
-        >
+        class="col-6"
+        v-for="subscriber in subscribers"
+        :key="subscriber.stream.connection.connectionId"
+      >
+        <div class="p-1">
+          <user-video
+            id="base-border"
+            class="pt-1 px-1"
+            :stream-manager="subscriber"
+          />
+        </div>
+      </div>
 
     <!--정체 숨기기 횟수 / 스킬 횟수 / 검거권 수-->
     <div class="counts">
@@ -77,6 +85,7 @@
             </div>
           </div>
         </div>
+      </div>
 
         <!-- 미션 및 히든 미션-->
         <div id="base-border" class="row d-flex justify-content-center m-1">
@@ -103,9 +112,6 @@
       <div class="col-1 d-flex row align-items-center">
         <toggle/>
       </div>
-
-
-
 
 
     </div>
@@ -143,7 +149,9 @@ export default {
     ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession',
                             'session', 'messages','missionSuccessCount','numberOfSkillUse'])
   },
-
+  created(){
+    console.log("메인게임까지는 왔습니다.!!")
+  },
   methods : {
     ...mapActions(gameStore, ['sendMessage']),
     enterCard () {

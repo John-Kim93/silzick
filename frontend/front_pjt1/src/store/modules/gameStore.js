@@ -248,8 +248,6 @@ const gameStore = {
       // session.on의 첫번째 인자 = event(String), 두번째 인자 = 앞의 event를 받아서 실행하는 함수(Function)
       // event.data에 채팅 input에서 받은 내용을 parsing해서 state의 messages에 반영
       session.on("signal:chat", (event)=>{
-        console.log('채팅!!')
-        console.log(event)
         const { message } = JSON.parse(event.data);
         const { user, chatMessage } = message
         const data = user + " : " + chatMessage
