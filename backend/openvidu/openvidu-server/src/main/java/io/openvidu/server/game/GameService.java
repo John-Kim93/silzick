@@ -48,21 +48,21 @@ public class GameService {
      * 게임 정보 관리.
      */
     //Tread 관리
-    protected ConcurrentHashMap<String, Thread> gameThread = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, Thread> gameThread = new ConcurrentHashMap<>();
     // 역할 관리 <sessionId, <Participant, Roles>>
-    protected static ConcurrentHashMap<String, ArrayList<Roles>> gameRoles = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, ArrayList<Roles>> gameRoles = new ConcurrentHashMap<>();
     // 역할 - player 매칭 정보 관리
-    protected static ConcurrentHashMap<String, ArrayList<Characters>> roleMatching = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, ArrayList<Characters>> roleMatching = new ConcurrentHashMap<>();
     // 참가자 목록 관리
-    protected static ConcurrentHashMap<String, ArrayList<Participant>> participantsList = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, ArrayList<Participant>> participantsList = new ConcurrentHashMap<>();
     // 살아있는 경찰 수 관리
-    protected static ConcurrentHashMap<String, Integer> alivePolices = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, Integer> alivePolices = new ConcurrentHashMap<>();
     // 경찰총장, 노트주인 따로 관리
-    protected static ConcurrentHashMap<String, ArrayList<Participant>> kiraAndL = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, ArrayList<Participant>> kiraAndL = new ConcurrentHashMap<>();
     // 데스노트 적힌사람.
-    protected static ConcurrentHashMap<String, ArrayList<Characters>> deathNoteList = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, ArrayList<Characters>> deathNoteList = new ConcurrentHashMap<>();
     // Ready현황 관리
-    protected static ConcurrentHashMap<String, HashMap<String, Boolean>> readySetting = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, HashMap<String, Boolean>> readySetting = new ConcurrentHashMap<>();
 
     public void gameNavigator(Participant participant, JsonObject message, Set<Participant> participants,
                               String sessionId, RpcNotificationService notice) {

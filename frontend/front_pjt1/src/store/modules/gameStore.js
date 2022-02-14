@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { OpenVidu } from "openvidu-browser";
-import { OPENVIDU_SERVER_URL, OPENVIDU_SERVER_SECRET } from '@/config/index.js'
+import { OPENVIDU_SERVER_URL} from '@/config/index.js'
 import { jobs } from './gameUtil.js'
 import router from '@/router/index.js'
 
@@ -504,7 +504,7 @@ const gameStore = {
               },
               auth: {
                 username: "OPENVIDUAPP",
-                password: "MY_SECRET",
+                password: process.env.VUE_APP_OPENVIDU_SERVER_SECRET,
               },
             }
           )
@@ -538,7 +538,7 @@ const gameStore = {
             {
               auth: {
                 username: "OPENVIDUAPP",
-                password: OPENVIDU_SERVER_SECRET,
+                password: process.env.VUE_APP_OPENVIDU_SERVER_SECRET,
               },
             }
           )

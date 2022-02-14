@@ -90,6 +90,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
     }
 
+    @ExceptionHandler(RoomNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> handleRoomNotFoundException(final RoomNotFoundException e) {
+        log.error("handleRoomNotFoundException", e);
+        final ErrorCode errorCode = e.getErrorCode();
+        final ErrorResponse response = ErrorResponse.of(errorCode);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+    }
+
     @ExceptionHandler(UserIdDuplicationException.class)
     protected ResponseEntity<ErrorResponse> handleUserIdDuplicationException(final UserIdDuplicationException e) {
         log.error("handleUserIdDuplicationException", e);

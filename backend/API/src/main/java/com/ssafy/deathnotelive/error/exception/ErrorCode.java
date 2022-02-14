@@ -24,7 +24,9 @@ public enum ErrorCode {
 
     // Board
     BOARD_NOT_FOUND(400, "B001", "No boards were found for that boardMo"),
-    ;
+
+    // Room
+    ROOM_NOT_FOUND(400, "R001", "There is no room in the condition");
     private final String code;
     private final String message;
     private int status;

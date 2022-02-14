@@ -45,6 +45,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable() //csrf 안씀
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS); //토큰 기반 인증(세션 X)
+
         // jwt filter
         http.addFilterBefore(
                 new JwtAuthenticationFilter(jwtUtils),
@@ -53,10 +54,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 new JwtAuthorizationFilter(userRepository),
                 BasicAuthenticationFilter.class
         );
+
         // authorization
         http.authorizeRequests()
-                // /와 /home은 모두에게 허용
-                .antMatchers("/", "/home", "/user/signup", "/user/login").permitAll()
+                // /와 /home, /room의 참가, 닉네임 중복확인은 모두에게 허용
+                .antMatchers("/", "/home", "/user/signup", "/user/login", "/room/nickName", "/room/join").permitAll()
                 .antMatchers(HttpMethod.POST, "/notice/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PUT, "/notice/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/notice/**").hasRole("ADMIN")
