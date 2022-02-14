@@ -33,8 +33,8 @@ import java.util.Collections;
 @Entity
 public class User implements UserDetails {
 
-    @Setter
     @Id
+    @Setter
     @Column(nullable = false, unique = true, columnDefinition = "varchar(20)")
     private String userId;
 

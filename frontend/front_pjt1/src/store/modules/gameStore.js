@@ -1,8 +1,9 @@
 import axios from 'axios'
 import { OpenVidu } from "openvidu-browser";
-import { OPENVIDU_SERVER_URL, OPENVIDU_SERVER_SECRET } from '@/config/index.js'
+import { OPENVIDU_SERVER_URL} from '@/config/index.js'
 import { jobs } from './gameUtil.js'
 import router from '@/router/index.js'
+import * as tmPose from '@teachablemachine/pose'
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -20,6 +21,7 @@ const gameStore = {
     participants: [],
     publisherId: undefined,
     winner: undefined,
+    publisherReady : false,
     
     // Ovenvidu
     OV: undefined,
@@ -37,6 +39,24 @@ const gameStore = {
     subSubscribers: [],
     receivedCard: '선택 중',
 
+    //mission
+    mission: -1,
+    random_int: 0,
+    //거짓 명함 낼 수 있는 횟수(미션 달성 횟수)
+    missionSuccessCount: 0,
+    //히든 미션 달성 횟수
+    numberOfSkillUse: 0,
+    //그냥 미션인지 히든인지 구분.
+    isNormalMission: true,
+    options: [
+      { value: 'KIRA', text: '노트주인'},
+      { value: 'CRIMINAL', text: '추종자'},
+      { value: 'L', text: '경찰총장'},
+      { value: 'POLICE', text: '경찰'},
+      { value: 'GUARD', text: '보디가드'},
+      { value: 'BROADCASTER', text: '방송인'},
+    ],
+    isKIRAorL : false,
 
     //game
     isAlive: true,
@@ -45,6 +65,14 @@ const gameStore = {
 
     //chatting
     messages: [],
+
+    // Pose
+    url : "https://teachablemachine.withgoogle.com/models/Zcd4DPpuu/",
+    modelURL: 'https://teachablemachine.withgoogle.com/models/Zcd4DPpuu/model.json',
+    metadataURL: 'https://teachablemachine.withgoogle.com/models/Zcd4DPpuu/metadata.json',
+    model: undefined,
+    webcam: undefined,
+    size: 200,
   },
   
   mutations: {
@@ -107,9 +135,38 @@ const gameStore = {
       state.subOVToken = undefined
     },
     
+    //미션 관련 기능
+    RANDOM_INT(state,res){
+      const min = Math.ceil(res.min)
+      const max = Math.floor(res.max)
+      state.random_int = Math.floor(Math.random()*(max-min+1))+min
+    },
+    MISSION_SELECT(state){
+      state.mission = state.random_int
+      state.random_int = 0
+    },
+    MISSION_RESET(state){
+      state.mission = 0
+    },
+    RECORD_RESET(state){
+      state.record = !state.record
+    },
+    SET_MISSION_SUCCESS(state, count){
+      state.missionSuccessCount += count
+    },
+    IS_NORMAL_MISSION(state, res){
+      state.isNormalMission = res
+    },
+    //스킬 사용 횟수
+    SET_NUMBER_OF_SKILL_USE(state, count){
+      state.numberOfSkillUse += count
+    },
+    CHECK_IS_KIRA_OR_L(state, res){
+      state.isKIRAorL = res
+    },
 
 
-
+    
     // 채팅 관련 기능
     SET_MESSAGES(state, res) {
       state.messages.push(res.message)
@@ -137,8 +194,15 @@ const gameStore = {
     // 게임 끝나는 화면 선택
     WINNER(state, winner) {
       state.winner = winner
-    }
+    },
     
+    // 포즈 관련 
+    SET_POSE_MODEL(state,res){
+      state.model = res
+    },
+    SET_POSE_WEBCAM(state,res){
+      state.webcam = res
+    },
   },
 
   actions: {
@@ -224,6 +288,7 @@ const gameStore = {
         // 내 직업 받고 게임 스타트
         } else if (event.data.gameStatus === 4) {
           state.myJob = event.data.jobName
+          dispatch('checkIsKIRAorL', event.data.jobName)
           router.push({
             name: 'MainGame'
           })
@@ -354,28 +419,43 @@ const gameStore = {
       // 명함교환 방 자동 이동 & 미션 자동 분배
       session.on("signal:autoSystem", (event) => {
         // const action = JSON.parse(event.data).action
-        if (event.data.action == "exchangeNameStart") {
-          state.session.unpublish(state.publisher)
-          commit('SET_PUBLISHER', undefined)
-          let subPublisher = OV.initPublisher(undefined, {
-            audioSource: undefined, // The source of audio. If undefined default microphone
-            videoSource: undefined, // The source of video. If undefined default webcam
-            publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-            publishVideo: true, // Whether you want to start publishing with your video enabled or not
-            resolution: "1280×720", // The resolution of your video
-            frameRate: 30, // The frame rate of your video
-            insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
-            mirror: false, // Whether to mirror your local video or not
-          });
-          commit('SET_SUB_PUBLISHER', subPublisher)
-          state.subSession.publish(state.subPublisher)
-          router.push({
-            name: 'CardExchange',
-          })
-        } else if (event.data.action == "meetKIRA") {
-          const message = "System : 키라측 접선에 성공했습니다."
-          state.messages.push(message)
-        } 
+        const { action } = event.data
+        switch(action){
+          case 'exchangeNameStart': {
+            state.session.unpublish(state.publisher)
+            commit('SET_PUBLISHER', undefined)
+            let subPublisher = OV.initPublisher(undefined, {
+              audioSource: undefined, // The source of audio. If undefined default microphone
+              videoSource: undefined, // The source of video. If undefined default webcam
+              publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+              publishVideo: true, // Whether you want to start publishing with your video enabled or not
+              resolution: "1280×720", // The resolution of your video
+              frameRate: 30, // The frame rate of your video
+              insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+              mirror: false, // Whether to mirror your local video or not
+            });
+            //진행하고 있는 미션 초기화.
+            dispatch('missionReset')
+            commit('SET_SUB_PUBLISHER', subPublisher)
+            state.subSession.publish(state.subPublisher)
+            router.push({
+              name: 'CardExchange',
+            })
+            break;
+          } 
+          case 'meetKIRA':{
+            const message = "System : 키라측 접선에 성공했습니다."
+            state.messages.push(message)
+            break;
+          } 
+          case 'missionStart':{
+            //리셋하고
+            dispatch('missionReset')
+            //히든미션으로 다시 미션 시작.
+            dispatch('missionSelect',false)
+            break;
+          }
+      }
         // 두명 중 하나가 퍼블리셔면 언퍼블리시하고 라우터푸시 조인세션?
       })
 
@@ -439,7 +519,7 @@ const gameStore = {
               },
               auth: {
                 username: "OPENVIDUAPP",
-                password: "MY_SECRET",
+                password: process.env.VUE_APP_OPENVIDU_SERVER_SECRET,
               },
             }
           )
@@ -473,7 +553,7 @@ const gameStore = {
             {
               auth: {
                 username: "OPENVIDUAPP",
-                password: OPENVIDU_SERVER_SECRET,
+                password: process.env.VUE_APP_OPENVIDU_SERVER_SECRET,
               },
             }
           )
@@ -638,7 +718,69 @@ const gameStore = {
     },
     receiveCard({commit}, card) {
       commit('RECEIVE_CARD', card)
-    }
+    },
+
+    //미션 관련 기능
+    randomInt({commit},res){
+      commit('RANDOM_INT',res)
+    },
+    missionSelect({commit,dispatch},isNormalMission){
+      //미션 종류 선택
+      dispatch('randomInt',{min:1,max:2})
+      commit('MISSION_SELECT')
+      //미션이 일반미션인지, 히든인지.
+      commit('IS_NORMAL_MISSION',isNormalMission)
+    },
+    missionReset({commit}){
+      commit('MISSION_RESET')
+    },
+    missionSuccess({commit}, count){
+      commit('SET_MISSION_SUCCESS', count)
+    },
+    numberOfSkillUse({commit},count){
+      commit('SET_NUMBER_OF_SKILL_USE',count)
+    },
+    checkIsKIRAorL({commit}, jobName){
+      if(jobName == 'KIRA' || jobName == 'L'){
+        console.log("키라랑 엘 바꾸기!")
+        commit('CHECK_IS_KIRA_OR_L', true);
+      }else{
+        commit('CHECK_IS_KIRA_OR_L', false);
+      }
+    },
+    changeOption({state}){
+      //키라랑 엘이면 그냥 모두 사용가능하게 두고.
+      if(!state.isKIRAorL){
+        //키라랑 엘이 아니면 미션 카운트가 1이상일때만 모두 사용가능.
+        if(state.isKIRAorL || state.missionSuccessCount>0){
+          state.options.map((option)=>{
+            if(option.value!="선택 중"){
+              option.disabled = false
+            }
+          })
+          //그게 아니면 자기직업만 낼 수 있음.
+        }else{
+          state.options.map((option)=>{
+            if(option.value == state.myJob){
+              option.disabled = false
+            }else{
+              option.disabled = true
+            }
+          })
+        }
+      }
+    },
+    async init ({state,commit}) {
+      console.log('0!!!!')
+      const model = await tmPose.load(state.modelURL, state.metadataURL)
+      const flip = true
+      const webcam = new tmPose.Webcam(state.size, state.size, flip)
+      commit('SET_POSE_MODEL',model)
+      commit('SET_POSE_WEBCAM',webcam)
+      await state.webcam.setup()
+      console.log("!!!")
+      await state.webcam.play()
+    },
   },
 
 }

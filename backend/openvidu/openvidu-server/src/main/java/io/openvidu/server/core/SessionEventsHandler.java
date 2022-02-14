@@ -451,7 +451,7 @@ public class SessionEventsHandler {
                 }
             }
 
-        CDR.recordSignalSent(sessionId, uniqueSessionId, from, toSet.toArray(new String[toSet.size()]), type, data);
+            CDR.recordSignalSent(sessionId, uniqueSessionId, from, toSet.toArray(new String[toSet.size()]), type, data);
         }
         if (isRpcCall) {
             rpcNotificationService.sendResponse(participant.getParticipantPrivateId(), transactionId, new JsonObject());

@@ -101,22 +101,23 @@
     <div class="counts">
       <div>
         <!-- 정체 숨기기 횟수(미션 성공 횟수) -->
-        <b-icon icon="eye-slash-fill" font-scale="2" variant="light"></b-icon><p>2회</p>
+        <b-icon icon="eye-slash-fill" font-scale="2" variant="light"></b-icon><p>{{missionSuccessCount}}</p>
       </div>
-      <div>
+      <div v-if="myJob=='POLICE'">
         <!-- 스킬 사용 가능 횟수(히든 미션 성공 횟수) -->
-        <b-icon icon="lightning-fill" font-scale="2" variant="light"></b-icon><p>3회</p>
+        <b-icon icon="lightning-fill" font-scale="2" variant="light"></b-icon><p>{{numberOfSkillUse/2}}</p>
       </div>
       <!-- 검거권 수(경찰일때만)-->
       <!-- v-if=="경찰" 사용-->
-      <div>
-        <b-icon icon="person-bounding-box" font-scale="2" variant="light"></b-icon><p>1회</p>
+      <div v-else>
+        <b-icon icon="lightning-fill" font-scale="2" variant="light"></b-icon><p>{{numberOfSkillUse}}</p>
       </div>
     </div>
 
     <!--미션 및 히든 미션 : mission-->
     <div class="mission">
       미션 및 히든 미션
+      <mission/>
     </div>
 
     <!--스킬사용 및 메모팝업 버튼 : buttons-->
@@ -141,6 +142,7 @@ import { mapState, mapActions } from 'vuex'
 import Doubt from '@/components/MainGame/Doubt.vue'
 import UserVideo from '@/components/Attend/UserVideo.vue'
 import ActiveSkill from '@/components/MainGame/ActiveSkill.vue'
+import Mission from '@/components/MainGame/Mission.vue';
 
 const gameStore = 'gameStore'
 
@@ -149,7 +151,8 @@ export default {
   components: {
     Doubt,
     UserVideo,
-    ActiveSkill
+    ActiveSkill,
+    Mission,
   },
   data () {
     return {
@@ -158,7 +161,8 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages',])
+    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession',
+                           'session', 'messages','missionSuccessCount','numberOfSkillUse'])
   },
 
   methods : {

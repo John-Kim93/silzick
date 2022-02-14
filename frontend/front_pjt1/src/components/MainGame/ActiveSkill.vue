@@ -155,65 +155,14 @@
           <b-button
             size="sm"
             class="skill_button_note my-3"
+            :disabled='numberOfSkillUse==0'
             @click="kill"
           >
-            Kill
+            Kill (사용가능 : {{numberOfSkillUse}})
           </b-button>
         </div>
       </template>
     </b-modal>
- 
- 
-    <!-- 3.경찰총장 -->
-    <!-- <b-modal v-model="show" v-if='myJob == "L"' 
-      id='skill' 
-      size="lg"
-      variant='outline-primary' 
-      header-bg-variant="black"
-      header-text-variant="primary"
-      body-bg-variant="black"
-      body-text-variant="light"
-      footer-bg-variant="black"
-      footer-text-variant="light"
-      centered
-      >
-      <template #modal-header  >
-        <div></div>
-        <h1>
-          <font size="7">
-            <b-iconstack  animation="">
-              <b-icon stacked icon="arrows-angle-contract" animation="throb"></b-icon>
-              <b-icon stacked icon="arrows-angle-contract" animation="throb" rotate="90"></b-icon>
-              <b-icon stacked icon="person" animation="" variant="danger"></b-icon>
-            </b-iconstack>
-            진실의 눈
-          </font>
-        </h1>
-        <div></div>
-      </template> 
-      <div variant="black" class="d-block text-center">
-        <h5>
-          <b-icon icon="exclamation-triangle" font-scale="4" variant="warning"></b-icon>
-          <h4 class="link-warning">
-            당신은 특유의 통찰력으로 진실을 파악할 수 있습니다.<br>
-            단, 명함의 진위여부 뿐입니다.<br>
-            신중한 선택을 하시기 바랍니다.
-          </h4>
-        </h5>
-      </div>
-      <template #modal-footer>
-        <div class="w-100 d-block text-center" >
-          <b-button
-            variant="primary"
-            size="sm"
-            class="skill_button_police my-3"
-            @click="show=false"
-          >
-            DETECT!
-          </b-button>
-        </div>
-      </template>
-    </b-modal> -->
  
     <!-- 4.보디가드 -->
     <b-modal v-model="show" v-if='myJob == "GUARD"' 
@@ -271,9 +220,10 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
+            :disabled='numberOfSkillUse==0'
             @click="protect"
           >
-            PROTECT!
+            PROTECT!(사용가능 : {{numberOfSkillUse}})
           </b-button>
         </div>
       </template>
@@ -326,9 +276,10 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
+            :disabled='numberOfSkillUse==0'
             @click="broadcast"
           >
-            BROADCAST!
+            BROADCAST!(사용가능 : {{numberOfSkillUse}})
           </b-button>
         </div>
       </template>
@@ -384,9 +335,10 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
+            :disabled='Math.floor(numberOfSkillUse/2)==0'
             @click="arrest"
           >
-            ARREST!
+            ARREST!(사용가능 : {{numberOfSkillUse/2}})
           </b-button>
         </div>
       </template>
@@ -395,7 +347,7 @@
 </template>
 <script src="https://kit.fontawesome.com/ac38071ee5.js" crossorigin="anonymous"></script>
 <script>
-import {mapState} from 'vuex'
+import {mapState, mapActions} from 'vuex'
 
 const gameStore = 'gameStore'
 
@@ -410,9 +362,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants'])
+    ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants','missionSuccess','numberOfSkillUse'])
   },
   methods: {
+    ...mapActions(gameStore, ['skillUse']),
+
     noteWrite () {
       this.show = false
       console.log(this.selectParticipant)
@@ -441,58 +395,70 @@ export default {
       })
     },
     broadcast () {
-      this.show = false
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 5,
-          skillType: 'announce',
-          announce: this.broadcastMessage,
-        },
-        to: [],
-      })
-      this.broadcastMessage = ''
+      if(this.numberOfSkillUse>0){
+        this.show = false
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 5,
+            skillType: 'announce',
+            announce: this.broadcastMessage,
+          },
+          to: [],
+        })
+        this.broadcastMessage = ''
+        this.skillUse(-1)
+      }
     },
     arrest () {
-      this.show = false
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 5,
-          skillType: 'arrest',
-          target: this.selectParticipant,
-        },
-        to: [],
-      })
-      this.selectParticipant = '참가자 목록'
+      if(this.numberOfSkillUse>0){
+        this.show = false
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 5,
+            skillType: 'arrest',
+            target: this.selectParticipant,
+          },
+          to: [],
+        })
+        this.selectParticipant = '참가자 목록'
+        this.skillUse(-2)
+      }
     },
     protect () {
-      this.show = false
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 5,
-          skillType: 'protect',
-          target: this.selectParticipant,
-        },
-        to: [],
-      })
-      this.selectParticipant = '참가자 목록'
+      if(this.numberOfSkillUse>0){
+        this.show = false
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 5,
+            skillType: 'protect',
+            target: this.selectParticipant,
+          },
+          to: [],
+        })
+        this.selectParticipant = '참가자 목록'
+        this.skillUse(-1)
+      }
     },
     kill () {
-      this.show = false
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 5,
-          skillType: 'kill',
-          target: this.selectParticipant,
-          jobName: this.selectJobName
-        },
-        to: [],
-      })
-      this.selectParticipant = '참가자 목록'
-      this.selectJobName = '직업'
+      if(this.numberOfSkillUse>0){
+        this.show = false
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 5,
+            skillType: 'kill',
+            target: this.selectParticipant,
+            jobName: this.selectJobName
+          },
+          to: [],
+        })
+        this.selectParticipant = '참가자 목록'
+        this.selectJobName = '직업'
+        this.skillUse(-1)
+      }
     }
   },
 }
