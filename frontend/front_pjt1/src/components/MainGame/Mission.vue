@@ -30,12 +30,15 @@ export default {
     },
   created(){
     this.init()
+    setTimeout(()=>{
+      this.missionReset()
+    },2000)
   },
   computed: {
-    ...mapState(gameStore, ['mission','record','random_int','webcam']),
+    ...mapState(gameStore, ['mission','webcam']),
   },
     methods:{
-      ...mapActions(gameStore, ['missionSelect','recordReset','randomInt','init']),
+      ...mapActions(gameStore, ['missionSelect','init','missionReset']),
     }
     
 }

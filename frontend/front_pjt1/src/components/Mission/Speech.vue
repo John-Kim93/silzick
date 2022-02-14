@@ -1,10 +1,8 @@
 
 <template>
   <div>
-    <!-- <slot name="input" :text="text"></slot> -->
-    <exchange-timer/>
     <div v-if="ready">
-      <!-- <button @click="recordReset">{{record?'Stop':'Start'}}</button> -->
+      <exchange-timer/>
       <p>{{ importmation }}</p>
       <p>{{cnt}}회 / 2회</p>
     </div>
@@ -65,13 +63,14 @@ export default {
       recognition: null,
       signal: false,
       textdata: '',
-      timerCount: 15,
-      mission_list:['내가 키라다','사과', '복숭아', '경찰', '명함', '거짓말', '직업', '미션', '화면', '컴퓨터', ],
+      timerCount: 16,
+      mission_list:['간장 공장 공장장','내가 키라다','안녕하세요','혹시 직업이 뭐세요', ],
       s_mission: '',
       importmation: '',
       cnt : 0,
       success: true,
-      ready:true
+      ready:true,
+      timer_state : false
     }
   },
   watch: {
@@ -84,71 +83,58 @@ export default {
             console.log(this.success)
             this.recognition.stop()
             this.success = true
-            console.log("5")
-            console.log(this.success)
             this.ready = false
-            if(this.isNormalMission){
-              this.missionSuccess(+1)
-            }else{
-              this.numberOfSkillUse(+1)
-            }
+            this.timerCount = 16
             //초기화 로직
-            setTimeout(() => {
-              this.missionReset()
-              this.recordReset()
-            }, 2000);
+            if (this.timer_state){
+              if(this.isNormalMission){
+                this.missionSuccess(+1)
+              }else{
+                this.numberOfSkillUse(+1)
+              }
+              this.timer_state = false
+              setTimeout(() => {
+                this.missionReset()
+              }, 2000);
+            }
             //미션을 실패하면
         }else{
           //시간이 흐름.
-          if (value > 0) {
-            console.log("3")
+          if (value > 0 && value <16) {
+            console.log(value)
             setTimeout(() => {
               this.timerCount--;
             }, 1000) 
           }else {
             //시간이 0인데 달성 못하면 멈추고 실패
             this.recognition.stop()
-            console.log("1")
-            console.log(this.success)
             this.success = false
             this.ready = false
+            this.timerCount = 16
             //미션 초기화 로직
-            setTimeout(() => {
-              this.missionReset()
-              this.recordReset()
-              console.log("2")
-              console.log(this.success)
-            }, 1000);     
+            if (this.timer_state){
+              this.timer_state = false
+              setTimeout(() => {
+                this.missionReset()
+              }, 1000);
+            }       
           }
         }
       },    
     },
-    // record (record) {
-    //   if (this.recognition) {
-    //     // 버튼이 눌리면 타이머의 시간을 맞추고 음성감지 시작
-    //     if(record) {
-    //       this.timerCount = 15
-    //       this.recognition.start()
-    //       console.log('start')
-    //       this.timerCount -= 1
-    //     }else {
-    //       console.log('end')
-    //       this.timerCount = 0
-    //     }
-    //   }
-    // },
   },
   computed: {
-    ...mapState(gameStore, ['mission','record','isNormalMission']),
+    ...mapState(gameStore, ['mission','isNormalMission']),
   },
   created () {
     this.initRecognition()
     this.getmission()
+    this.timer_state = true
     this.timerCount -= 1
     this.recognition.start()
   },
   methods: {
-    ...mapActions(gameStore, ['missionReset','recordReset','missionSuccess','numberOfSkillUse']),
+    ...mapActions(gameStore, ['missionReset','missionSuccess','numberOfSkillUse']),
 
     getmission () {
       this.s_mission = this.mission_list[Math.floor(Math.random()*this.mission_list.length)];
@@ -179,6 +165,7 @@ export default {
           return srr[0].transcript
         })
         this.textdata = textArr.join('\n')
+        console.log(this.textdata)
         if (this.textdata.search(this.s_mission) != -1) {
           this.cnt = this.textdata.split(this.s_mission).length-1
         }

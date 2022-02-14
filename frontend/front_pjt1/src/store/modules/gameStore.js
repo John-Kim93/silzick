@@ -40,9 +40,8 @@ const gameStore = {
     receivedCard: '선택 중',
 
     //mission
-    mission: 0,
+    mission: -1,
     random_int: 0,
-    record: false,
     //거짓 명함 낼 수 있는 횟수(미션 달성 횟수)
     missionSuccessCount: 0,
     //히든 미션 달성 횟수
@@ -735,9 +734,6 @@ const gameStore = {
     missionReset({commit}){
       commit('MISSION_RESET')
     },
-    recordReset({commit}){
-      commit('RECORD_RESET')
-    },
     missionSuccess({commit}, count){
       commit('SET_MISSION_SUCCESS', count)
     },
@@ -777,7 +773,6 @@ const gameStore = {
     async init ({state,commit}) {
       console.log('0!!!!')
       const model = await tmPose.load(state.modelURL, state.metadataURL)
-      // maxPredictions = model.getTotalClasses()
       const flip = true
       const webcam = new tmPose.Webcam(state.size, state.size, flip)
       commit('SET_POSE_MODEL',model)
@@ -785,7 +780,6 @@ const gameStore = {
       await state.webcam.setup()
       console.log("!!!")
       await state.webcam.play()
-      // webcam = new tmImage.Webcam(width, height, flip)
     },
   },
 

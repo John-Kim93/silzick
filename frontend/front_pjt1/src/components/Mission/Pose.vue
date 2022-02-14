@@ -72,7 +72,7 @@ export default {
     },    
   },
   computed: {
-    ...mapState(gameStore, ['mission','random_int','isNormalMission','model','webcam']),
+    ...mapState(gameStore, ['mission','random_int','isNormalMission','model','webcam','size']),
   },
   created(){
     this.randomInt({min:1,max:4})
@@ -86,9 +86,6 @@ export default {
       this.timerCount -=1
       window.requestAnimationFrame(this.loop)
       this.loop_state =true
-      const canvas = document.getElementById("canvas")
-      canvas.width = this.size
-      canvas.height = this.size
     },
     async loop() {
       if(this.loop_state){
