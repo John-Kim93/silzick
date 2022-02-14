@@ -50,6 +50,7 @@
             <div class="col-4">
               <exchange-timer></exchange-timer>
             </div>
+            <!--2.인풋과 라벨로만 만들기-->
             <div class="offset-1 col-7">
               <input type="checkbox" id="popup">
               <label for="popup">MEMO</label>
@@ -59,6 +60,23 @@
                   <textarea name="" style="border:none; color:#DDDDDD;" id="popup" class="textarea_position" cols="30" rows="10"></textarea>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 미션 및 히든 미션-->
+        <div id="base-border" class="row d-flex justify-content-center m-1">
+          <div class="py-1" style="text-align:center;">
+            <button id="btn-color" class="btn">MISSION</button>
+          </div>
+          <hr class="mb-1">
+          <!-- 타이머 & 미션제시 -->
+          <div class="row justify-content-center align-items-center">
+            <div class="col-4">
+              <mission-timer/>
+            </div>
+            <div class="offset-1 col-7">
+              미션사진
             </div>
           </div>
         </div>
@@ -76,11 +94,6 @@
 
 
 
-      <!--스킬사용 및 메모팝업 버튼 : buttons-->
-      <div class="d-flex justify-content-around buttons">
-        <!--2.인풋과 라벨로만 만들기-->
-        
-      </div>
     </div>
   </div>
 </template>
@@ -91,6 +104,7 @@ import UserVideo from '@/components/Attend/UserVideo.vue'
 import Toggle from '@/components/MainGame/Toggle.vue'
 import Chatting from '@/components/MainGame/Chatting.vue'
 import ExchangeTimer from '../components/MainGame/ExchangeTimer.vue'
+import MissionTimer from '../components/MainGame/MissionTimer.vue'
 
 const gameStore = 'gameStore'
 
@@ -100,7 +114,8 @@ export default {
     UserVideo,
     Toggle,
     Chatting,
-    ExchangeTimer, 
+    ExchangeTimer,
+    MissionTimer,
   },
   data () {
     return {
@@ -185,9 +200,9 @@ input[id*="popup"] + label {
 	cursor:pointer;
 	color:#DDDDDD;
 	font-family:'CBNUJIKJI';
-	/* font-size:17px; */
+	font-size:15px;
 	font-weight:bold;
-	padding:10px 23px;
+	padding:8px 20px;
 	text-decoration:none;
 }
 /* 버튼 클릭 후 div 전체화면인듯?*/
@@ -203,7 +218,7 @@ input[id*="popup"] + label + div {
 input[id*="popup"] + label + div > div {
   position: absolute;
   top: 50%;
-  left: 75%;
+  left: 67%;
   transform:translate(-50%, -50%);
   width: 30%;
   height: 30%;

@@ -17,13 +17,14 @@
       no-header
     >
       <div id="background-black" class="pt-4 full-screen d-flex justify-content-center container ">
-        <div class="wide d-flex row align-items-start" v-if="toggle">
+        <!-- <div class="wide d-flex row align-items-start" v-if="toggle">
         <button id="btn-color" class="select-btn offset-4 col-4 mt-4" style="height:8vh" @click="skill">Skill</button>
           <h1>Mission</h1>
           <mission></mission>
-        </div>
-        <div class="wide d-flex row align-content-start" v-else>
-        <button id="btn-color" class="select-btn offset-4 col-4 my-4" style="height:8vh" @click="skill">Mission</button>
+        </div> -->
+        <div class="wide d-flex row align-content-start">
+        <!-- <button id="btn-color" class="select-btn offset-4 col-4 my-4" style="height:8vh">Mission</button> -->
+          <h1 class="my-2">SKILL</h1>
           <hr>
           <skill class="mt-3"/>
         </div>
@@ -42,7 +43,7 @@ export default {
   },
   data(){
     return {
-      toggle : false,
+      // toggle : false,
     }
   },
   methods: {

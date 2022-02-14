@@ -30,7 +30,7 @@
       </div>
 
       <!-- 두번째 라인 -->
-      <div class="col-4 my-1">
+      <div class="col-4 my-1 align-self-center">
         <h3>명함 제시</h3>
         <div>
           <h5>
@@ -45,10 +45,10 @@
           </h5>
         </div>
       </div>
-      <div class="col-4 d-flex justify-content-center">
+      <div class="col-4 d-flex justify-content-center align-self-center">
         <exchange-timer/>
       </div>
-      <div class="col-4 d-flex justify-content-center align-self-start my-3">
+      <div class="col-4 d-flex justify-content-center align-self-start my-3 align-self-center">
         <active-skill/>
       </div>
 
@@ -87,12 +87,12 @@ export default {
       selected: '선택 중',
       options: [
         { value: '선택 중', text: '직업 선택', disabled: true },
-        { value: 'KIRA', text: '노트주인' },
-        { value: 'CRIMINAL', text: '추종자' },
-        { value: 'L', text: '경찰총장' },
-        { value: 'POLICE', text: '경찰' },
-        { value: 'GUARD', text: '보디가드' },
-        { value: 'BROADCASTER', text: '방송인' },
+        { value: '노트주인', text: '노트주인' },
+        { value: '추종자', text: '추종자' },
+        { value: '경찰총장', text: '경찰총장' },
+        { value: '경찰', text: '경찰' },
+        { value: '보디가드', text: '보디가드' },
+        { value: '방송인', text: '방송인' },
       ],
       confirm: false,
     }

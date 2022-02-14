@@ -1,9 +1,9 @@
 <template>
   <div class="d-flex" style="color:white">
     <!--disabled 사용해서 skill이 1이상일때만 사용가능하도록-->
-    <button class="skill_button" @click="show=true"> Skill 사용</button>
+    <button id="btn-color" class="btn btn-lg" style="height:10vh; width:15vw" @click="show=true"> Skill</button>
     <!-- 1.노트주인 -->
-    <b-modal v-model='show' v-if='myJob == "KIRA"' 
+    <b-modal v-model='show' v-if='myJob == "노트주인"' 
       id='skill' 
       size="md"
       variant='outline-primary' 
@@ -87,7 +87,7 @@
     </b-modal>
  
     <!-- 2. 추종자 -->
-    <b-modal v-model="show" v-if='myJob == "CRIMINAL"'
+    <b-modal v-model="show" v-if='myJob == "추종자"'
       id='skill' 
       size="lg"
       variant='outline-primary' 
@@ -164,7 +164,7 @@
     </b-modal>
     
     <!-- 4.보디가드 -->
-    <b-modal v-model="show" v-if='myJob == "GUARD"' 
+    <b-modal v-model="show" v-if='myJob == "보디가드"' 
       id='skill' 
       size="lg"
       variant='outline-primary' 
@@ -227,7 +227,7 @@
       </template>
     </b-modal>
     <!-- 5.방송인 -->
-    <b-modal v-model="show" v-if='myJob == "BROADCASTER"'
+    <b-modal v-model="show" v-if='myJob == "방송인"'
       id='skill' 
       size="lg"
       variant='outline-primary' 
@@ -283,7 +283,7 @@
     </b-modal>
  
     <!-- 6.경찰 -->
-    <b-modal v-model="show" v-if='myJob == "POLICE"'
+    <b-modal v-model="show" v-if='myJob == "경찰"'
       id='skill' 
       size="lg"
       variant='outline-primary' 

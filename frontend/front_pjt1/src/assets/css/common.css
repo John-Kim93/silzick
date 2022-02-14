@@ -37,6 +37,16 @@
   border: solid 0.25rem #30475E;
   border-radius: 5px;
 }
+#red-border {
+  border: solid 0.25rem #F05454;
+  border-radius: 5px;
+}
+#blue-hr {
+  border: solid #30475E;
+}
+#red-hr {
+  border: solid #F05454;
+}
 .select-btn {
   border:3px solid #30475E;
   border-radius: 4px;

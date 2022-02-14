@@ -17,10 +17,22 @@ import CardExchange from '../views/CardExchange.vue'
 import Attend from '../views/Attend.vue'
 import Join from '../views/Join.vue'
 import GameEnd from '../views/GameEnd.vue'
+import KiraWin from '@/components/MainGame/KiraWin.vue'
+import LWin from '@/components/MainGame/LWin.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/KiraWin',
+    name: 'KiraWin',
+    component : KiraWin,
+  },
+  {
+    path: '/LWin',
+    name: 'LWin',
+    component : LWin,
+  },
   {
     path: '/Join',
     name: 'Join',

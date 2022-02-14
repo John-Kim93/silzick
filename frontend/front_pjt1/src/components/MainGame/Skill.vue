@@ -1,7 +1,7 @@
 <template>
 <div id="base-font">
   <!-- 1. 노트주인 -->
-  <div class="" v-if='myJob == "KIRA"'>
+  <div class="" v-if='myJob == "노트주인"'>
     <div>
       <h1>
         <font size="7">
@@ -72,7 +72,7 @@
   </div>
 
   <!-- 2. 추종자 -->
-  <div class="border border-dark rounded-3" v-if='myJob == "CRIMINAL"'>
+  <div class="border border-dark rounded-3" v-if='myJob == "추종자"'>
     <h1 class="" style="">
       <font size="7">
         <b-iconstack  animation="">
@@ -133,7 +133,7 @@
   </div>
 
   <!-- 3.경찰총장 -->
-  <div class="border border-dark rounded-3" v-if='myJob == "L"'>
+  <div class="border border-dark rounded-3" v-if='myJob == "경찰총장"'>
     <div>
       <h1 class="" style="">
         <font size="7">
@@ -159,7 +159,7 @@
   </div>
 
   <!-- 4. 보디가드 -->
-  <div class="border border-dark rounded-3" v-if='myJob == "GUARD"'>
+  <div class="border border-dark rounded-3" v-if='myJob == "보디가드"'>
     <div>
       <h1 class="" style="">
         <font size="7">
@@ -209,7 +209,7 @@
   </div>
 
   <!-- 5. 방송인 -->
-  <div class="border border-dark rounded-3" v-if='myJob == "BROADCASTER"'>
+  <div class="border border-dark rounded-3" v-if='myJob == "방송인"'>
     <div>
       <h1 class="" style="">
         <font size="7">
@@ -252,7 +252,7 @@
   </div>
 
   <!-- 6. 경찰 -->
-  <div class="border border-dark rounded-3" v-if='myJob == "POLICE"'>
+  <div class="border border-dark rounded-3" v-if='myJob == "경찰"'>
     <div>
       <h1 class="" style="">
         <font size="7">
