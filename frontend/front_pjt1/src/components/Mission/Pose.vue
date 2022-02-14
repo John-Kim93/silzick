@@ -46,10 +46,6 @@ export default {
       loadingTime: 0,
       maxLoadingTime: 100,
 
-      url : "https://teachablemachine.withgoogle.com/models/Zcd4DPpuu/",
-      modelURL: '',
-      metadataURL: '',
-
       impormation: '',
       similiarity: '',
 
@@ -84,36 +80,15 @@ export default {
     
   },
   methods: {
-    ...mapActions(gameStore, ['missionReset','randomInt','missionSuccess','numberOfSkillUse','init']),
+    ...mapActions(gameStore, ['missionReset','randomInt','missionSuccess','numberOfSkillUse',]),
 
     async inits () {
-      // this.modelURL = this.url + "model.json"
-      // this.metadataURL = this.url + "metadata.json"
-      // console.log('0!!!!')
-      // model = await tmPose.load(this.modelURL, this.metadataURL)
-      // // maxPredictions = model.getTotalClasses()
-      // const size = 200
-      // const flip = true
-      // console.log('1!!!!')
-      // webcam = new tmPose.Webcam(size, size, flip)
-      // // webcam = new tmImage.Webcam(width, height, flip)
-      // console.log('2!!!!')
-      // await this.webcam.setup()
-      
-      // console.log(window.navigator.mediaDevices.getUserMedia({video:true}))
-      // console.log(this.webcam)
-      // await this.webcam.play()
-      console.log('4!!!!')
       this.timerCount -=1
-      // document.getElementById("webcam-container").appendChild(webcam.canvas)
-      console.log('?!!!!')
       window.requestAnimationFrame(this.loop)
-      console.log('??!!!!')
       this.loop_state =true
       const canvas = document.getElementById("canvas")
       canvas.width = this.size
       canvas.height = this.size
-      // ctx = canvas.getContext("2d")
     },
     async loop() {
       if(this.loop_state){
@@ -122,14 +97,7 @@ export default {
         window.requestAnimationFrame(this.loop)
       }
     },
-    
-    // drawPose(pose) {
-    //     if (webcam.canvas) {
-    //         ctx.drawImage(webcam.canvas, 0, 0)
-    //         pose
- 
-    //     }
-    // },
+
     async predict() {
       const { posenetOutput } = await this.model.estimatePose(this.webcam.canvas)
       const prediction = await this.model.predict(posenetOutput)
@@ -141,7 +109,6 @@ export default {
             this.loadingTime++
           }
         }else {
-          console.log('!')
           this.loading = false
           this.success = true
           this.loop_state =false
@@ -149,8 +116,6 @@ export default {
           this.similiarity = ''
           this.loadingTime = 0
           this.timerCount = 17
-          // this.webcam.stop()
-          // // this.init()
           //loading진행바가 true면 끝남.
           //성공한게 노멀미션이면 명교횟수 +1
           if(this.isNormalMission){
@@ -170,8 +135,6 @@ export default {
         this.loop_state =false
         this.impormation=''
         this.similiarity = ''
-        // this.webcam.stop()
-        // this.init()
         this.loadingTime = 0
         this.timerCount = 17
         setTimeout(()=>{
