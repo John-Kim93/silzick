@@ -8,11 +8,7 @@
     <!-- 요청사항: 출력 문구 :15초 안에 해당 단어를 ?번 말하시오 -->
     <!-- ex: 0/{요구횟수} -->
     <div v-if="mission==2">
-
-      <vue-web-speech
-        v-model="record"
-      >
-
+      <vue-web-speech>
       </vue-web-speech>
     </div>
   </div>

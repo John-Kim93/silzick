@@ -4,7 +4,7 @@
     <div v-if="ready">
       <exchange-timer/>
       <p>{{ importmation }}</p>
-      <p>{{cnt}}회 / 2회</p>
+      <p>{{cnt}}회 / {{s_count}}회</p>
     </div>
     <div v-else>
       <div v-if="success"> 
@@ -64,8 +64,9 @@ export default {
       signal: false,
       textdata: '',
       timerCount: 16,
-      mission_list:['간장 공장 공장장','내가 키라다','안녕하세요','혹시 직업이 뭐세요', ],
+      mission_list:['간장 공장 공장장','내가 키라다','안녕하세요 오늘 날씨가 좋죠','혹시 직업이 뭐예요 키라', '왕밤빵','홍합','내가 그린 기린 그림은 안 긴 기린 그림',],
       s_mission: '',
+      s_count : 20,
       importmation: '',
       cnt : 0,
       success: true,
@@ -78,13 +79,9 @@ export default {
     timerCount: {
       handler(value) {
         //미션 성공시
-        if(this.cnt>=2){
+        if(this.cnt>=this.s_count){
             console.log("4")
             console.log(this.success)
-            this.recognition.stop()
-            this.success = true
-            this.ready = false
-            this.timerCount = 16
             //초기화 로직
             if (this.timer_state){
               if(this.isNormalMission){
@@ -92,6 +89,11 @@ export default {
               }else{
                 this.numberOfSkillUse(+1)
               }
+              this.recognition.stop()
+              this.success = true
+              this.ready = false
+              this.timerCount = 16
+              this.cnt = 0
               this.timer_state = false
               setTimeout(() => {
                 this.missionReset()
@@ -107,12 +109,13 @@ export default {
             }, 1000) 
           }else {
             //시간이 0인데 달성 못하면 멈추고 실패
-            this.recognition.stop()
-            this.success = false
-            this.ready = false
-            this.timerCount = 16
             //미션 초기화 로직
             if (this.timer_state){
+              this.recognition.stop()
+              this.success = false
+              this.ready = false
+              this.timerCount = 16
+              this.cnt = 0
               this.timer_state = false
               setTimeout(() => {
                 this.missionReset()
@@ -138,7 +141,8 @@ export default {
 
     getmission () {
       this.s_mission = this.mission_list[Math.floor(Math.random()*this.mission_list.length)];
-      this.importmation = `15초 안에 <${this.s_mission}>을(를) 2번 말하시오`
+      this.s_count = parseInt(20 / this.s_mission.length)
+      this.importmation = `15초 안에 <${this.s_mission}>을(를) ${this.s_count}번 말하시오`
     },
     initRecognition () {
       const SpeechRecognition = SpeechRecognition || webkitSpeechRecognition

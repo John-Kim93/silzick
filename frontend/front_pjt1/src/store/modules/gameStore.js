@@ -726,7 +726,7 @@ const gameStore = {
     },
     missionSelect({commit,dispatch},isNormalMission){
       //미션 종류 선택
-      dispatch('randomInt',{min:1,max:1})
+      dispatch('randomInt',{min:1,max:2})
       commit('MISSION_SELECT')
       //미션이 일반미션인지, 히든인지.
       commit('IS_NORMAL_MISSION',isNormalMission)
