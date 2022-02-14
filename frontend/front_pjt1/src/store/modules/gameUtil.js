@@ -1,36 +1,36 @@
 const jobs = [
   {
-    jobName: 'KIRA',
+    jobName: '노트주인',
     isChange: false,
     count: 1,
     maxCount: 1,
   },
   {
-    jobName: 'CRIMINAL',
+    jobName: '추종자',
     isChange: true,
     count: 1,
     maxCount: 3,
   },
   {
-    jobName: 'L',
+    jobName: '경찰총장',
     isChange: false,
     count: 1,
     maxCount: 1,
   },
   {
-    jobName: 'POLICE',
+    jobName: '경찰',
     isChange: true,
     count: 1,
     maxCount: 3,
   },
   {
-    jobName: 'BROADCASTER',
+    jobName: '방송인',
     isChange: true,
     count: 0,
     maxCount: 3,
   },
   {
-    jobName: 'GUARD',
+    jobName: '보디가드',
     isChange: true,
     count: 0,
     maxCount: 3,

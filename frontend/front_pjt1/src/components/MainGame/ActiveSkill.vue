@@ -1,9 +1,9 @@
 <template>
   <div class="d-flex" style="color:white">
     <!--disabled 사용해서 skill이 1이상일때만 사용가능하도록-->
-    <b-button class="skill_button" @click="show=true"> Skill 사용</b-button>
+    <button id="btn-color" class="btn btn-lg" style="height:10vh; width:15vw" @click="show=true"> Skill</button>
     <!-- 1.노트주인 -->
-    <b-modal v-model='show' v-if='myJob == "KIRA"' 
+    <b-modal v-model='show' v-if='myJob == "노트주인"' 
       id='skill' 
       size="md"
       variant='outline-primary' 
@@ -16,7 +16,7 @@
       centered
       >
       <template #modal-header  >
-       <div></div>
+      <div></div>
         <h1>
           <b-iconstack scale="2" animation="">
             <b-icon stacked icon="receipt" animation="" rotate="180"></b-icon>
@@ -87,7 +87,7 @@
     </b-modal>
  
     <!-- 2. 추종자 -->
-    <b-modal v-model="show" v-if='myJob == "CRIMINAL"'
+    <b-modal v-model="show" v-if='myJob == "추종자"'
       id='skill' 
       size="lg"
       variant='outline-primary' 
@@ -163,9 +163,8 @@
         </div>
       </template>
     </b-modal>
- 
     <!-- 4.보디가드 -->
-    <b-modal v-model="show" v-if='myJob == "GUARD"' 
+    <b-modal v-model="show" v-if='myJob == "보디가드"' 
       id='skill' 
       size="lg"
       variant='outline-primary' 
@@ -229,7 +228,7 @@
       </template>
     </b-modal>
     <!-- 5.방송인 -->
-    <b-modal v-model="show" v-if='myJob == "BROADCASTER"'
+    <b-modal v-model="show" v-if='myJob == "방송인"'
       id='skill' 
       size="lg"
       variant='outline-primary' 
@@ -286,7 +285,7 @@
     </b-modal>
  
     <!-- 6.경찰 -->
-    <b-modal v-model="show" v-if='myJob == "POLICE"'
+    <b-modal v-model="show" v-if='myJob == "경찰"'
       id='skill' 
       size="lg"
       variant='outline-primary' 
@@ -489,17 +488,14 @@ export default {
 	text-decoration:none;
 	text-shadow:0px 1px 0px #283966;
 }
-.skill_button_police:hover {
-  background-color:#476e9e;
-}
 .skill_button_police:active {
 	position:relative;
 	top:1px;
 }
 .skill_button_note {
-	background-color:#fc5230;
+	background-color:#F05454;
 	border-radius:28px;
-	border:1px solid #d02718;
+	border:1px solid #F05454;
 	display:inline-block;
 	cursor:pointer;
 	color:#ffffff;
@@ -507,10 +503,6 @@ export default {
 	font-size:17px;
 	padding:16px 31px;
 	text-decoration:none;
-	text-shadow:0px 1px 0px #810e05;
-}
-.skill_button_note:hover {
-	background-color:#d65246;
 }
 .skill_button_note:active {
 	position:relative;
@@ -533,17 +525,16 @@ input[type=text]:focus {
   color: white
 }
 .skill_button {
-	background-color:#44c767;
+	background-color:#30475E;
 	border-radius:28px;
-	border:1px solid #18ab29;
+	border:1px solid #30475E;
 	display:inline-block;
 	cursor:pointer;
 	color:#ffffff;
 	font-family:Arial;
-	font-size:17px;
+	font-size:0.8rem;
 	font-weight:bold;
 	padding:16px 31px;
 	text-decoration:none;
-	text-shadow:0px 1px 0px #2f6627;
 }
 </style>

@@ -1,101 +1,31 @@
 <template>
-  <div class="container" style="color:white">
-    <img src="https://ifh.cc/g/1WPkxv.png" id="bg" alt="bgImg">
-    <h1>{{myJob}}</h1>
-    <!--6명 이하 6분할-->
-    <div
-      v-if="subscribers.length < 6"
-      class="d-inline-flex row align-middle total_cam"
-    > 
-      <!-- 내 비디오 -->
+  <div id="background-black" class="full-screen d-flex justify-content-center">
+    <div class="container pt-4 row flex-wrap justify-content-center">
+      <!-- 카메라 -->
       <div
-        class="col-4 private_cam_6"
+        class="col-7 scroll-bar container mb-4 d-flex row flex-wrap align-content-start"
+        style="height: 84vh"
       >
-        <user-video
-          class="m-1"
-          :stream-manager="publisher"
-        />
-      </div>
-      <!-- 다른 사람 비디오 -->
-      <div
-        class="col-4 private_cam_6"
-        v-for="subscriber in subscribers"
-        :key="subscriber.stream.connection.connectionId"
-      >
-        <user-video
-          class="m-1"
-          :stream-manager="subscriber"
-        />
-      </div>
-     
-    </div>
-
-    <!-- 6명 넘으면 9분할(미구현)-->
-
-    <!--다음 명함 교환 까지(타이머) : timer-->
-    <div class="timer d-flex">
-      <div>
-        <p>
-        다음 명함 교환까지
-        <br>
-        XX초 남았습니다.</p>
-      </div>
-    </div>
-
-    <!--직업/직업설명/능력/승리조건 : explain-->
-    <div class="explain">
-      <!--직업-->
-      <div class="explain_job dotted_line">
-        <strong>직업</strong>
-      </div>
-      <!--직업설명-->
-      <div class="explain_job_description dotted_line">
-        직업설명
-      </div>
-      <!--능력-->
-      <div class="explain_skill dotted_line">
-        능력
-      </div>
-      <!--승리조건-->
-      <div class="explain_win">
-        승리조건
-      </div>
-    </div>
-
-    <!--채팅 전체 : chat-->
-    <div class="d-flex chat">
-      <!--채팅 내역 : chat_list-->
-      <div class="chat_list">
-        <p
-          v-for="message, idx in messages"
-          :key="idx"
+        <!--6명 이하 6분할-->
+        <div
+          class="col-6"
+          v-if="subscribers.length < 6"
+        > 
+          <!-- 내 비디오 -->
+          <div class="p-1">
+            <user-video
+              id="base-border"
+              class="pt-1 px-1"
+              :stream-manager="publisher"
+            />
+          </div>
+        </div>
+        <!-- 다른 사람 비디오 -->
+        <div
+          class="col-6"
+          v-for="subscriber in subscribers"
+          :key="subscriber.stream.connection.connectionId"
         >
-        {{ message }}
-        </p>
-      </div>
-      <!--채팅 입력 : chat_input-->
-      <input
-        class="chat_input"
-        type="text"
-        placeholder="메세지를 입력하세요"
-        v-model="chatMessage"
-        style="color:white;"
-        @keyup.enter="enterMessage"
-      >
-    </div>
-
-    <!--의심 직업 : doubt-->
-    <div class="doubt">
-      <p>추측 현황</p>
-      <div
-        class="d-flex justify-content-around align-items-center"
-        v-for="subscriber, idx in subscribers"
-        :key="idx"
-      >
-        <doubt :subscriber="subscriber"/>
-
-      </div>
-    </div>
 
     <!--정체 숨기기 횟수 / 스킬 횟수 / 검거권 수-->
     <div class="counts">
@@ -120,39 +50,88 @@
       <mission/>
     </div>
 
-    <!--스킬사용 및 메모팝업 버튼 : buttons-->
-    <div class="d-flex justify-content-around buttons">
-      <!--능력사용-->
-      <active-skill/>
-      <!--2.인풋과 라벨로만 만들기-->
-      <input type="checkbox" id="popup">
-      <label for="popup">메모 하기</label>
-      <div>
-        <div class="popup">
-          <label style="color:black" for="popup">X</label>
-          <textarea name="" style="border:none; color:#44c767;" id="popup" class="textarea_position" cols="30" rows="10"></textarea>
+      <!-- 타이머 & 직업 & 메모 & 채팅 div -->
+      <div class="col-3 flex-column">
+        <!--다음 명함 교환 까지(타이머) : timer-->
+        <div id="base-border" class="row d-flex justify-content-center m-1">
+          <!-- 직업 이름 -->
+          <h4 class="py-1" style="text-align:left;">
+            직업 : {{ myJob }}
+          </h4>
+          <hr class="mb-1">
+          <!-- 타이머 & 메모 -->
+          <div class="row justify-content-center align-items-center">
+            <div class="col-4">
+              <exchange-timer></exchange-timer>
+            </div>
+            <!--2.인풋과 라벨로만 만들기-->
+            <div class="offset-1 col-7">
+              <input type="checkbox" id="popup">
+              <label for="popup">MEMO</label>
+              <div>
+                <div class="popup">
+                  <label style="color:#222831" for="popup">X</label>
+                  <textarea name="" style="border:none; color:#DDDDDD;" id="popup" class="textarea_position" cols="30" rows="10"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 미션 및 히든 미션-->
+        <div id="base-border" class="row d-flex justify-content-center m-1">
+          <div class="py-1" style="text-align:center;">
+            <button id="btn-color" class="btn">MISSION</button>
+          </div>
+          <hr class="mb-1">
+          <!-- 타이머 & 미션제시 -->
+          <div class="row justify-content-center align-items-center">
+            <div class="col-4">
+              <mission-timer/>
+            </div>
+            <div class="offset-1 col-7">
+              미션사진
+            </div>
+          </div>
+        </div>
+
+        <!--채팅 전체 : chat-->
+        <div class="scroll-bar mx-1">
+          <chatting/>
         </div>
       </div>
+      <div class="col-1 d-flex row align-items-center">
+        <toggle/>
+      </div>
+
+
+
+
+
     </div>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import Doubt from '@/components/MainGame/Doubt.vue'
 import UserVideo from '@/components/Attend/UserVideo.vue'
-import ActiveSkill from '@/components/MainGame/ActiveSkill.vue'
 import Mission from '@/components/MainGame/Mission.vue';
+import Toggle from '@/components/MainGame/Toggle.vue'
+import Chatting from '@/components/MainGame/Chatting.vue'
+import ExchangeTimer from '../components/MainGame/ExchangeTimer.vue'
+import MissionTimer from '../components/MainGame/MissionTimer.vue'
 
 const gameStore = 'gameStore'
 
 export default {
   name : 'MainGame',
   components: {
-    Doubt,
     UserVideo,
-    ActiveSkill,
     Mission,
+    Toggle,
+    Chatting,
+    ExchangeTimer,
+    MissionTimer,
   },
   data () {
     return {
@@ -162,7 +141,7 @@ export default {
   },
   computed: {
     ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession',
-                           'session', 'messages','missionSuccessCount','numberOfSkillUse'])
+                            'session', 'messages','missionSuccessCount','numberOfSkillUse'])
   },
 
   methods : {
@@ -190,6 +169,9 @@ export default {
 </script>
 
 <style scoped>
+hr {
+  background: #30475E;
+}
 /* custom css */
   .private_cam_6 {
     border-style: solid;
@@ -228,21 +210,17 @@ input[id*="popup"] {
 /* 메모하기 버튼 */
 input[id*="popup"] + label {
   display: inline-block;
-  padding: 20px;
-  background: #ffcd41;
-  color: #fff;
-  background-color:transparent;
-	border-radius:28px;
-	border:1px solid white;
+  background-color: #30475E;
+	border-radius:5px;
+	border:solid #30475E;
 	display:inline-block;
 	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-	font-size:17px;
+	color:#DDDDDD;
+	font-family:'CBNUJIKJI';
+	font-size:15px;
 	font-weight:bold;
-	padding:16px 31px;
+	padding:8px 20px;
 	text-decoration:none;
-	text-shadow:0px 1px 0px #2f6627;
 }
 /* 버튼 클릭 후 div 전체화면인듯?*/
 input[id*="popup"] + label + div {
@@ -257,13 +235,13 @@ input[id*="popup"] + label + div {
 input[id*="popup"] + label + div > div {
   position: absolute;
   top: 50%;
-  left: 75%;
+  left: 67%;
   transform:translate(-50%, -50%);
   width: 30%;
   height: 30%;
-  background: black;
+  background: #222831;
   opacity: 80%;
-  border: solid white;
+  border: solid #DDDDDD;
   border-radius: 15px;
   z-index: 2;
 }
@@ -274,10 +252,10 @@ input[id*="popup"] + label + div > div > label {
   right: 0%;
   transform:translate(40%, -40%);
   padding: 2%;
-  background: white;
+  background: #DDDDDD;
   border-radius: 100%;
   z-index: 1;
-  border: solid white;
+  border: solid #DDDDDD;
 }
 /* 필요X */
 /* input[id*="popup"] + label + div > label {

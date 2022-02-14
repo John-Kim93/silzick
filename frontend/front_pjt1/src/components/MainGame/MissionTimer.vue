@@ -1,21 +1,21 @@
 <template>
 	<div>
     <circular-count-down-timer
-      :circles="exchangeTimer.circles"
-      :interval="exchangeTimer.interval"
-      :main-circle-id="exchangeTimer.mainCircleId || '1'"
-      :size="exchangeTimer.size"
-      :container-classes="exchangeTimer.containerClasses"
-      :circle-classes="exchangeTimer.circleClasses"
-      :stop-conditions="exchangeTimer.stopConditions"
-      :trigger-update="exchangeTimer.triggerUpdate"
-      :stroke-width="exchangeTimer.strokeWidth"
-      :stroke-color="exchangeTimer.strokeColor"
-      :underneath-stroke-color="exchangeTimer.underneathStrokeColor"
-      :fill-color="exchangeTimer.fillColor"
-      :value-font-size="exchangeTimer.valueFontSize"
-      :label-font-size="exchangeTimer.labelFontSize"
-      :label-position="exchangeTimer.labelPosition"
+      :circles="missionTimer.circles"
+      :interval="missionTimer.interval"
+      :main-circle-id="missionTimer.mainCircleId || '1'"
+      :size="missionTimer.size"
+      :container-classes="missionTimer.containerClasses"
+      :circle-classes="missionTimer.circleClasses"
+      :stop-conditions="missionTimer.stopConditions"
+      :trigger-update="missionTimer.triggerUpdate"
+      :stroke-width="missionTimer.strokeWidth"
+      :stroke-color="missionTimer.strokeColor"
+      :underneath-stroke-color="missionTimer.underneathStrokeColor"
+      :fill-color="missionTimer.fillColor"
+      :value-font-size="missionTimer.valueFontSize"
+      :label-font-size="missionTimer.labelFontSize"
+      :label-position="missionTimer.labelPosition"
     />
 	</div>
 </template>
@@ -23,10 +23,10 @@
 
 <script>
 export default {
-	name: 'ExchangeTimer',
+	name: 'MissionTimer',
 	data(){
 		return {
-      exchangeTimer:{
+      missionTimer:{
         title: 'Full configuration',
         containerClasses: [],
         circleClasses: [],
@@ -40,7 +40,7 @@ export default {
             classList: [ 'item' ],
             startValue: 0,
             value: 20,
-            size: 80,
+            size: 60,
             strokeWidth: 5,
             strokeColor: '#DDDDDD',
             underneathStrokeColor: '#7C7A7A',
