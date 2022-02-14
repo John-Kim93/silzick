@@ -3,6 +3,7 @@ import { OpenVidu } from "openvidu-browser";
 import { OPENVIDU_SERVER_URL} from '@/config/index.js'
 import { jobs } from './gameUtil.js'
 import router from '@/router/index.js'
+import * as tmPose from '@teachablemachine/pose'
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -39,9 +40,8 @@ const gameStore = {
     receivedCard: '선택 중',
 
     //mission
-    mission: 0,
+    mission: -1,
     random_int: 0,
-    record: false,
     //거짓 명함 낼 수 있는 횟수(미션 달성 횟수)
     missionSuccessCount: 0,
     //히든 미션 달성 횟수
@@ -65,6 +65,14 @@ const gameStore = {
 
     //chatting
     messages: [],
+
+    // Pose
+    url : "https://teachablemachine.withgoogle.com/models/Zcd4DPpuu/",
+    modelURL: 'https://teachablemachine.withgoogle.com/models/Zcd4DPpuu/model.json',
+    metadataURL: 'https://teachablemachine.withgoogle.com/models/Zcd4DPpuu/metadata.json',
+    model: undefined,
+    webcam: undefined,
+    size: 200,
   },
   
   mutations: {
@@ -186,8 +194,15 @@ const gameStore = {
     // 게임 끝나는 화면 선택
     WINNER(state, winner) {
       state.winner = winner
-    }
+    },
     
+    // 포즈 관련 
+    SET_POSE_MODEL(state,res){
+      state.model = res
+    },
+    SET_POSE_WEBCAM(state,res){
+      state.webcam = res
+    },
   },
 
   actions: {
@@ -719,9 +734,6 @@ const gameStore = {
     missionReset({commit}){
       commit('MISSION_RESET')
     },
-    recordReset({commit}){
-      commit('RECORD_RESET')
-    },
     missionSuccess({commit}, count){
       commit('SET_MISSION_SUCCESS', count)
     },
@@ -758,7 +770,17 @@ const gameStore = {
         }
       }
     },
-
+    async init ({state,commit}) {
+      console.log('0!!!!')
+      const model = await tmPose.load(state.modelURL, state.metadataURL)
+      const flip = true
+      const webcam = new tmPose.Webcam(state.size, state.size, flip)
+      commit('SET_POSE_MODEL',model)
+      commit('SET_POSE_WEBCAM',webcam)
+      await state.webcam.setup()
+      console.log("!!!")
+      await state.webcam.play()
+    },
   },
 
 }
