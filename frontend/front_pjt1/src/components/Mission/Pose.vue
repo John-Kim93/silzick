@@ -31,21 +31,20 @@
 </template>
 <script>
 // import * as tf from '@tensorflow/tfjs'
-import * as tmPose from '@teachablemachine/pose'
+// import * as tmPose from '@teachablemachine/pose'
 
 import { mapState, mapActions } from 'vuex'
 import ExchangeTimer from './ExchangeTimer.vue'
 
 const gameStore = 'gameStore'
  
-let model, webcam
 export default {
   components: { ExchangeTimer },
   data () {
     return {
       loading: true,
       loadingTime: 0,
-      maxLoadingTime: 50,
+      maxLoadingTime: 100,
 
       url : "https://teachablemachine.withgoogle.com/models/Zcd4DPpuu/",
       modelURL: '',
@@ -54,9 +53,11 @@ export default {
       impormation: '',
       similiarity: '',
 
-      timerCount:15,
+      timerCount:17,
       success:false,
-      timer:true
+      timer:true,
+
+      loop_state:false
     }
   },
   watch: {
@@ -65,7 +66,7 @@ export default {
       handler(value) {
         //미션 성공시
           //시간이 흐름.
-        if (value > 0) {
+        if (value > 0 && value < 17) {
           console.log(value)
           setTimeout(() => {
             this.timerCount--;
@@ -75,39 +76,51 @@ export default {
     },    
   },
   computed: {
-    ...mapState(gameStore, ['mission','random_int','isNormalMission']),
+    ...mapState(gameStore, ['mission','random_int','isNormalMission','model','webcam']),
   },
   created(){
     this.randomInt({min:1,max:4})
-    this.init()
+    this.inits()
     
   },
   methods: {
-    ...mapActions(gameStore, ['missionReset','randomInt','missionSuccess','numberOfSkillUse']),
+    ...mapActions(gameStore, ['missionReset','randomInt','missionSuccess','numberOfSkillUse','init']),
 
-    async init () {
-      this.modelURL = this.url + "model.json"
-      this.metadataURL = this.url + "metadata.json"
-      model = await tmPose.load(this.modelURL, this.metadataURL)
-      // maxPredictions = model.getTotalClasses()
-      const size = 200
-      const flip = true
-      webcam = new tmPose.Webcam(size, size, flip)
-      // webcam = new tmImage.Webcam(width, height, flip)
-      await webcam.setup()
-      await webcam.play()
+    async inits () {
+      // this.modelURL = this.url + "model.json"
+      // this.metadataURL = this.url + "metadata.json"
+      // console.log('0!!!!')
+      // model = await tmPose.load(this.modelURL, this.metadataURL)
+      // // maxPredictions = model.getTotalClasses()
+      // const size = 200
+      // const flip = true
+      // console.log('1!!!!')
+      // webcam = new tmPose.Webcam(size, size, flip)
+      // // webcam = new tmImage.Webcam(width, height, flip)
+      // console.log('2!!!!')
+      // await this.webcam.setup()
+      
+      // console.log(window.navigator.mediaDevices.getUserMedia({video:true}))
+      // console.log(this.webcam)
+      // await this.webcam.play()
+      console.log('4!!!!')
       this.timerCount -=1
       // document.getElementById("webcam-container").appendChild(webcam.canvas)
+      console.log('?!!!!')
       window.requestAnimationFrame(this.loop)
+      console.log('??!!!!')
+      this.loop_state =true
       const canvas = document.getElementById("canvas")
-      canvas.width = size
-      canvas.height = size
+      canvas.width = this.size
+      canvas.height = this.size
       // ctx = canvas.getContext("2d")
     },
     async loop() {
-      webcam.update()
-      await this.predict()
-      window.requestAnimationFrame(this.loop)
+      if(this.loop_state){
+        this.webcam.update()
+        await this.predict()
+        window.requestAnimationFrame(this.loop)
+      }
     },
     
     // drawPose(pose) {
@@ -118,8 +131,8 @@ export default {
     //     }
     // },
     async predict() {
-      const { posenetOutput } = await model.estimatePose(webcam.canvas)
-      const prediction = await model.predict(posenetOutput)
+      const { posenetOutput } = await this.model.estimatePose(this.webcam.canvas)
+      const prediction = await this.model.predict(posenetOutput)
       this.impormation = prediction[this.random_int].className
       this.similiarity = '정확도 :' + parseInt(prediction[this.random_int].probability.toFixed(2) *100) + '%'
       if (this.timerCount > 0 ){
@@ -130,10 +143,14 @@ export default {
         }else {
           console.log('!')
           this.loading = false
+          this.success = true
+          this.loop_state =false
           this.impormation=''
           this.similiarity = ''
-          this.success = true
-          webcam.stop()
+          this.loadingTime = 0
+          this.timerCount = 17
+          // this.webcam.stop()
+          // // this.init()
           //loading진행바가 true면 끝남.
           //성공한게 노멀미션이면 명교횟수 +1
           if(this.isNormalMission){
@@ -143,18 +160,21 @@ export default {
             this.numberOfSkillUse(+1)
           }
           setTimeout(()=>{
-            this.loadingTime = 0
             this.missionReset()
           },2000)
         }
       }else{
+        console.log("check")
         this.loading = false
+        this.success = false
+        this.loop_state =false
         this.impormation=''
         this.similiarity = ''
-        webcam.stop()
-        this.success = false
+        // this.webcam.stop()
+        // this.init()
+        this.loadingTime = 0
+        this.timerCount = 17
         setTimeout(()=>{
-          this.loadingTime = 0
           this.missionReset()
         },2000)
       }
