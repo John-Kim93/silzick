@@ -299,6 +299,7 @@ public class KurentoSessionManager extends SessionManager {
                                             GameService.alivePolices.remove(sessionId);
                                             GameService.kiraAndL.remove(sessionId);
                                             GameService.deathNoteList.remove(sessionId);
+                                            GameService.readySetting.remove(sessionId);
 
                                             if (deathNoteThread != null) {
                                                 deathNoteThread.interrupt();
