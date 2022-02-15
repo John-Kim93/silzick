@@ -3,6 +3,7 @@ import { OpenVidu } from "openvidu-browser";
 import { OPENVIDU_SERVER_URL} from '@/config/index.js'
 import { jobs } from './gameUtil.js'
 import router from '@/router/index.js'
+import { createRoom, nickNameCheck, joinRoom } from '@/api/user.js'
 import * as tmPose from '@teachablemachine/pose'
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
@@ -14,6 +15,7 @@ const gameStore = {
     // customed
     join: false,
     isHost: false,
+    hostId: undefined,
     nickname: undefined,
     isReady: false,
     activeGameStart: false,
@@ -134,6 +136,9 @@ const gameStore = {
       state.subSubscribers = []
       state.subOVToken = undefined
     },
+    SET_HOST_ID(state, hostId){
+      state.hostId = hostId
+    },
     
     //미션 관련 기능
     RANDOM_INT(state,res){
@@ -206,12 +211,22 @@ const gameStore = {
   },
 
   actions: {
-    // Attend에서 참가 누르면 닉네임 받아옴. 닉네임 받아서 조인세션허고 직업 리스트 요청
-    nicknameUpdate ({ commit, dispatch }, res) {
-      commit('NICKNAME_UPDATE', res.nickname)
-      commit('SET_SESSIONID', res.sessionId)
-      dispatch('subJoinSession')
-      dispatch('joinSession')
+    //해당 세션에 사용하고자 하는 닉네임이 사용중인지 체크. 사용중이 아니라면 joinSession, subJoinSession하고 닉네임 업데이트.
+    nicknameUpdate ({ state, commit, dispatch }, nickName) {
+      const validateName = {
+        nickName: nickName,
+        roomCode: state.sessionId
+      }
+      nickNameCheck(
+        validateName,
+        ()=>{
+          commit('NICKNAME_UPDATE', nickName)
+          dispatch('subJoinSession')
+          dispatch('joinSession')
+        },
+        ()=>{
+          alert("이미 사용중인 닉네임 입니다!!")
+        })
     },
     // ★★★★★★★★★★★★★★겁나 중요함★★★★★★★★★★★★★★★★★
     // 오픈바이두 연결하는 세션만드는 함수, 닉네입 입력 후 참가 누르면 동작함
@@ -781,8 +796,37 @@ const gameStore = {
       console.log("!!!")
       await state.webcam.play()
     },
-  },
 
+    //입장 관련 기능
+    createRoomRequest({commit}, userId){
+      createRoom(
+        userId,
+        ({data})=>{
+          //호스트로 바꾸기.
+          commit('IS_HOST')
+          commit('SET_HOST_ID', userId)
+          commit('SET_SESSIONID',data)
+          router.push({ name : 'Join' })
+      },
+      (err)=>{
+        console.log(err)
+      })
+    },
+
+    guestJoinRoom({commit}, hostId){
+      joinRoom(
+        hostId,
+        ({data})=>{
+          commit('SET_SESSIONID', data)
+          commit('SET_HOST_ID', hostId)
+          router.push({ name : 'Join' })
+        },
+        (err)=>{
+          console.log(err)
+        })
+    }
+
+  },
 }
 
 export default gameStore;

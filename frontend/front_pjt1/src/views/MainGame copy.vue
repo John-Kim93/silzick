@@ -26,13 +26,12 @@
           v-for="subscriber in subscribers"
           :key="subscriber.stream.connection.connectionId"
         >
-          <div class="p-1">
-            <user-video
-              id="base-border"
-              class="pt-1 px-1"
-              :stream-manager="subscriber"
-            />
-          </div>
+        <div class="p-1">
+          <user-video
+            id="base-border"
+            class="pt-1 px-1"
+            :stream-manager="subscriber"
+          />
         </div>
       </div>
 
@@ -50,6 +49,7 @@
             <div class="col-4">
               <exchange-timer></exchange-timer>
             </div>
+            <!--2.인풋과 라벨로만 만들기-->
             <div class="offset-1 col-7">
               <input type="checkbox" id="popup">
               <label for="popup">MEMO</label>
@@ -62,10 +62,29 @@
             </div>
           </div>
         </div>
+      </div>
+    <!--미션 및 히든 미션 : mission-->
+    <div class="mission">
+      미션 및 히든 미션
+      <mission/>
+    </div>
 
-        <!--미션 및 히든 미션 : mission-->
-        <div id="base-border" class="m-1">
-          <mission/>
+
+        <!-- 미션 및 히든 미션-->
+        <div id="base-border" class="row d-flex justify-content-center m-1">
+          <div class="py-1" style="text-align:center;">
+            <button id="btn-color" class="btn">MISSION</button>
+          </div>
+          <hr class="mb-1">
+          <!-- 타이머 & 미션제시 -->
+          <div class="row justify-content-center align-items-center">
+            <div class="col-4">
+              <mission-timer/>
+            </div>
+            <div class="offset-1 col-7">
+              미션사진
+            </div>
+          </div>
         </div>
 
         <!--채팅 전체 : chat-->
@@ -76,6 +95,8 @@
       <div class="col-1 d-flex row align-items-center">
         <toggle/>
       </div>
+
+
     </div>
   </div>
 </template>
@@ -83,10 +104,11 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import UserVideo from '@/components/Attend/UserVideo.vue'
+import Mission from '@/components/MainGame/Mission.vue';
 import Toggle from '@/components/MainGame/Toggle.vue'
 import Chatting from '@/components/MainGame/Chatting.vue'
 import ExchangeTimer from '../components/MainGame/ExchangeTimer.vue'
-import Mission from '@/components/MainGame/Mission.vue'
+import MissionTimer from '../components/MainGame/MissionTimer.vue'
 
 const gameStore = 'gameStore'
 
@@ -94,10 +116,11 @@ export default {
   name : 'MainGame',
   components: {
     UserVideo,
+    Mission,
     Toggle,
     Chatting,
     ExchangeTimer,
-    Mission,
+    MissionTimer,
   },
   data () {
     return {
@@ -106,9 +129,12 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages',])
+    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession',
+                            'session', 'messages','missionSuccessCount','numberOfSkillUse'])
   },
-
+  created(){
+    console.log("메인게임까지는 왔습니다.!!")
+  },
   methods : {
     ...mapActions(gameStore, ['sendMessage']),
     enterCard () {
@@ -182,9 +208,9 @@ input[id*="popup"] + label {
 	cursor:pointer;
 	color:#DDDDDD;
 	font-family:'CBNUJIKJI';
-	/* font-size:17px; */
+	font-size:15px;
 	font-weight:bold;
-	padding:10px 23px;
+	padding:8px 20px;
 	text-decoration:none;
 }
 /* 버튼 클릭 후 div 전체화면인듯?*/
@@ -200,7 +226,7 @@ input[id*="popup"] + label + div {
 input[id*="popup"] + label + div > div {
   position: absolute;
   top: 50%;
-  left: 75%;
+  left: 67%;
   transform:translate(-50%, -50%);
   width: 30%;
   height: 30%;
@@ -390,7 +416,15 @@ input[id*="popup"]:checked + label + div {
   width: 90%;
   height: 15%;
 }
-
+.mission {
+  position: fixed;
+  top: 60%;
+  left: 57.5%;
+  border-style: solid;
+  border-color: white;
+  width: 15%;
+  height: 27%;
+}
 .explain {
   position: fixed;
   top: 29%;
@@ -416,18 +450,6 @@ input[id*="popup"]:checked + label + div {
   flex-wrap: wrap;
 }
 
-.counts {
-  position: fixed;
-  top: 72%;
-  left: 45%;
-  border-style: solid;
-  border-color: white;
-  width: 10%;
-  height: 15%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
 .explain_job {
   font-size: 120%;
   height: 15%;

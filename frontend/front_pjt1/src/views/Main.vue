@@ -7,11 +7,15 @@
     <router-link to="/Signup" v-if="!isLogin">
       <b-button class="btn-2nd-position" variant="outline-light">회원가입</b-button>
     </router-link>
+    <!-- css작업 -->
+    <router-link to="/Invite" v-if="!isLogin">
+      <b-button class="btn-3rd-position" variant="outline-light">게스트 방 참가</b-button>
+    </router-link>
     <b-button
       v-if="isLogin"
       class="btn-1st-position"
       variant="outline-light"
-      @click="createRoom"
+      @click="createRoomRequest(userName)"
     > 방생성
     </b-button>
     <b-button
@@ -21,43 +25,40 @@
       @click='logout'
     > 로그아웃
     </b-button>
-    
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 import cookies from 'vue-cookies'
 
-
 const gameStore = 'gameStore'
+const userStore = 'userStore'
 
 export default {
   name: 'Main',
   computed: {
-    ...mapState(['username']),
+    ...mapState(userStore, ['userName']),
     isLogin () {
       return cookies.isKey("JWT-AUTHENTICATION")
     }
   },
   methods: {
-    ...mapMutations(gameStore, ['IS_HOST']),
-    ...mapMutations(gameStore, ['RESET_USER', 'GAME_CHECKOUT']),
+    ...mapMutations(gameStore, ['GAME_CHECKOUT']),
+    ...mapMutations(userStore, ['RESET_USER']),
+    ...mapActions(gameStore, ['createRoomRequest']),
+    ...mapActions(userStore, ['saveUser']),
     logout () {
       if (cookies.isKey('JWT-AUTHENTICATION')) {
         cookies.remove('JWT-AUTHENTICATION')
         this.RESET_USER()
-        this.$router.go(this.$router.currentRoute)
+        this.$router.go();
       }
     },
-    createRoom () {
-      this.IS_HOST()
-      this.$router.push({ name : 'Join' })
-    }
-
   },
   created () {
     this.GAME_CHECKOUT()
+    this.saveUser()
   }
 }
 </script>
@@ -74,4 +75,9 @@ export default {
         top: 73%;
         left: 47.5%;
     }
+.btn-3rd-position {
+    position: fixed;
+    top: 81%;
+    left: 47.5%;
+}
 </style>

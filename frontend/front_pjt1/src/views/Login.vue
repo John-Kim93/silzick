@@ -43,10 +43,12 @@ import { mapActions, mapState } from 'vuex'
 import cookies from 'vue-cookies'
 import { login } from '@/api/user.js'
 
+const userStore = 'userStore'
+
 export default {
   name: 'Login',
   computed: {
-    ...mapState(['user'])
+    ...mapState(userStore, ['user'])
   },
   data() {
     return {
@@ -62,14 +64,14 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['saveUser']),
+    ...mapActions(userStore, ['saveUser']),
     login () {
       const user = this.requestInfo
       login(
         user,
         () => {
           this.saveUser()
-          this.$router.go(-1)
+          this.$router.push({ name: "Main" });
           alert("로그인에 성공했습니다.")
         },
         (err) => {

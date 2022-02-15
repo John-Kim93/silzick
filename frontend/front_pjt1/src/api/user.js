@@ -10,4 +10,16 @@ function signup (user, success, fail) {
  api.post('/user/signup', JSON.stringify(user)).then(success).catch(fail);
 }
 
-export { login, signup, }
+function createRoom(userId, success, fail){
+  api.get(`room/create/${userId}`).then(success).catch(fail);
+}
+
+function joinRoom(hostId, success, fail){
+  api.get(`room/join/${hostId}`).then(success).catch(fail);
+}
+
+function nickNameCheck(validateName, success, fail){
+  api.post('room/nickName', JSON.stringify(validateName)).then(success).catch(fail);
+}
+
+export { login, signup, createRoom, joinRoom, nickNameCheck}

@@ -406,6 +406,10 @@ public class GameService {
                             rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                         }
+
+                        if (alivePolices.getOrDefault(sessionId, 0) < 1) {
+                            finishGame(participant, sessionId, participants, params, data, "KIRA");
+                        }
                         //보호 중이면.
                     } else {
                         //보호 풀기
@@ -482,7 +486,6 @@ public class GameService {
                     rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                             ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                 }
-
                 break;
             case "protect":
                 target = getTarget(data, cList);
@@ -628,6 +631,11 @@ public class GameService {
 
                 //사용후 데스노트 목록 비우기.
                 deathNoteList.compute(sessionId, (k, v) -> v = new ArrayList<Characters>());
+
+                if (alivePolices.getOrDefault(sessionId, 0) < 1) {
+                    finishGame(participant, sessionId, participants, params, data, "KIRA");
+                }
+
                 break;
 
             case "announceToL":
@@ -640,14 +648,6 @@ public class GameService {
                 rpcNotificationService.sendNotification(L.getParticipantPrivateId(),
                         ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                 break;
-        }
-
-        //키라 사망 or 경찰 수 0명시 게임 종료
-        for (Characters c : cList) {
-            if (alivePolices.getOrDefault(sessionId, 0) < 1) {
-                finishGame(participant, sessionId, participants, params, data, "KIRA");
-                break;
-            }
         }
     }
 

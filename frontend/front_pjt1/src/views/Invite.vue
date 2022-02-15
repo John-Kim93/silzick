@@ -3,15 +3,15 @@
     <b-container id="card-bg" class="justify-content-center b-row">
       <b-form-row id="background-black" class="col-8 offset-2 card justify-content-center align-items-center py-4">
         <b-col cols="10" align-self="center">
-          <h3 id="base-font" class="m-2">Nickname</h3>
+          <h3 id="base-font" class="mt-5">SessionId</h3>
           <input
           type="text"
-          v-model="nickname"
+          v-model="hostId"
           class="form-control m-2"
-          placeholder="사용하실 닉네임을 입력해주세요."
+          placeholder="호스트의 회원 아이디를 입력해주세요."
           required
           >
-          <button id="btn-color" class="btn mt-4 px-5" @click="nicknameUpdate(nickname)">참가</button>
+          <button id="btn-color" class="btn mt-4 px-5" @click="guestJoinRoom(hostId)">참가</button>
         </b-col>
       </b-form-row>
     </b-container>
@@ -19,24 +19,20 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from 'vuex';
+import { mapActions } from 'vuex';
 
 const gameStore = 'gameStore';
 
 export default {
-  name: 'Join',
+  name: 'Invite',
   data () {
     return{
-      nickname: ''
+      hostId : '',
     }
   },
   methods:  {
-    ...mapActions(gameStore, ['nicknameUpdate']),
-    ...mapMutations(gameStore, ['GAME_CHECKIN']),
+    ...mapActions(gameStore, ['setSessionID', 'guestJoinRoom']),
   },
-  created () {
-    this.GAME_CHECKIN()
-  }
 };
 </script>
 

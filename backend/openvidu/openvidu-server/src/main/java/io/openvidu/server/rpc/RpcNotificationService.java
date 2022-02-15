@@ -24,6 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.google.gson.JsonParser;
 import io.openvidu.server.game.GameService;
 import org.kurento.commons.exception.KurentoException;
 import org.kurento.jsonrpc.Session;
@@ -36,6 +37,12 @@ import com.google.gson.JsonObject;
 
 import io.openvidu.client.OpenViduException;
 import io.openvidu.server.core.IdentifierPrefixes;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class RpcNotificationService {
 
@@ -160,7 +167,14 @@ public class RpcNotificationService {
             if (deathNoteThread != null) {
                 deathNoteThread.interrupt();
             }
-            //API서버로 PUT요청으로 방 비활성화 시키기.
+
+            //세션 종료되면 방 비활성화.
+            String apiUrl = "http://localhost:8080/room/finish/"+sessionId;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders httpHeaders = new HttpHeaders();
+            UriComponents uri = UriComponentsBuilder.fromHttpUrl(apiUrl).build();
+            HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
+            restTemplate.exchange(uri.toString(), HttpMethod.PUT, httpEntity, String.class);
 
             log.info("Closed rpc session for participant with private id {}", participantPrivateId);
             this.showRpcConnections();
