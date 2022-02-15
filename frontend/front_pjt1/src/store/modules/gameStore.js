@@ -18,13 +18,14 @@ const gameStore = {
     isHost: false,
     hostId: undefined,
     nickname: undefined,
-    isReady: false,
-    activeGameStart: false,
+    // isReady: false,
+    // activeGameStart: false,
     readyStatus: false,
     participants: [],
     publisherId: undefined,
     winner: undefined,
-    publisherReady : false,
+    mainGameTimerSevenOrThirty: 30,
+    turn : 0,
     
     // Ovenvidu
     OV: undefined,
@@ -46,9 +47,9 @@ const gameStore = {
     mission: -1,
     random_int: 0,
     //거짓 명함 낼 수 있는 횟수(미션 달성 횟수)
-    missionSuccessCount: 0,
+    missionSuccessCount: 10,
     //히든 미션 달성 횟수
-    numberOfSkillUse: 0,
+    numberOfSkillUsed: 10,
     //그냥 미션인지 히든인지 구분.
     isNormalMission: true,
     options: [
@@ -82,6 +83,15 @@ const gameStore = {
     box_height: 0,
     box_width: 0
   },
+  getters: {
+    getSessionId : function(state){
+      return state.sessionId;
+    },
+    getIsHost : function(state){
+      return state.isHost;
+    }
+
+  },
   
   mutations: {
     GAME_CHECKIN (state) {
@@ -92,6 +102,17 @@ const gameStore = {
     },
     NICKNAME_UPDATE (state, res) {
         state.nickname = res
+    },
+    //각 참여자의 nickName, id 담는 리스트.
+    SET_PARTICIPANTS(state, res){
+      state.participants = res
+    },
+    //참여자 전원이 레디를 했는지 판단.
+    SET_READY_STATUS(state, res){
+      state.readyStatus = res
+    },
+    IS_ALIVE(state, res){
+      state.isAlive = res
     },
     // 메인페이지에서 "방생성" 누르고 들어오면 isHost = true
     IS_HOST (state) {
@@ -118,7 +139,9 @@ const gameStore = {
     SET_MY_PUBLISHER_ID (state, id) {
       state.publisherId = id
     },
-
+    SET_MY_JOB(state, job){
+      state.myJob = job
+    },
     // 명교방 state 설정하기
     SET_SUB_PUBLISHER (state, res) {
       state.subPublisher = res
@@ -138,12 +161,17 @@ const gameStore = {
     EXCHANGE_OFF (state) {
       state.subOV = undefined
       state.subPublisher = undefined
-      state.subSession = undefined
       state.subSubscribers = []
-      state.subOVToken = undefined
     },
     SET_HOST_ID(state, hostId){
       state.hostId = hostId
+    },
+    COUNT_TURN(state) {
+      state.turn ++
+    },
+    // 명교방 갔다 나오면 타이머 7초로 설정
+    SET_MAINGAME_TIMER(state, res) {
+      state.mainGameTimerSevenOrThirty = res
     },
     
     //미션 관련 기능
@@ -152,14 +180,19 @@ const gameStore = {
       const max = Math.floor(res.max)
       state.random_int = Math.floor(Math.random()*(max-min+1))+min
     },
+    SET_RANDOM_INT(state, res){
+      state.random_int = res
+    },
     MISSION_SELECT(state){
-      console.log('랜덤인트 잘 뽑히는지 확인')
-      console.log(state.random_int)
       state.mission = state.random_int
       state.random_int = 0
     },
     MISSION_RESET(state){
       state.mission = 0
+    },
+    //위에거랑 똑같은데 로직이 어디서 꼬인지 몰라서 일단 두개 만들었음.(-1로 초기화용)
+    SET_MISSION(state, res){
+      state.mission = res
     },
     RECORD_RESET(state){
       state.record = !state.record
@@ -172,10 +205,13 @@ const gameStore = {
     },
     //스킬 사용 횟수
     SET_NUMBER_OF_SKILL_USE(state, count){
-      state.numberOfSkillUse += count
+      state.numberOfSkillUsed += count
     },
-    CHECK_IS_KIRA_OR_L(state, res){
+    IS_KIRA_OR_L(state, res){
       state.isKIRAorL = res
+    },
+    SET_OPTIONS(state, options){
+      state.options = options
     },
 
 
@@ -183,6 +219,9 @@ const gameStore = {
     // 채팅 관련 기능
     SET_MESSAGES(state, res) {
       state.messages.push(res)
+    },
+    RESET_MESSAGES(state){
+      state.messages = []
     },
 
     // 게임 관련 기능
@@ -205,7 +244,7 @@ const gameStore = {
       state.receivedCard = card
     },
     // 게임 끝나는 화면 선택
-    WINNER(state, winner) {
+    SET_WINNER(state, winner) {
       state.winner = winner
     },
     
@@ -314,13 +353,13 @@ const gameStore = {
           })
           state.publisher.ready = event.data[state.publisherId]
           if (event.data.readyStatus) {
-            state.readyStatus = true
+            commit('SET_READY_STATUS', true)
           } else {
-            state.readyStatus = false
+            commit('SET_READY_STATUS', false)
           }
         // 내 직업 받고 게임 스타트
         } else if (event.data.gameStatus === 4) {
-          state.myJob = event.data.jobName
+          commit('SET_MY_JOB', event.data.jobName)
           dispatch('checkIsKIRAorL', event.data.jobName)
           router.push({
             name: 'MainGame'
@@ -354,15 +393,14 @@ const gameStore = {
                     // 스크린샷 끝
                     state.session.unpublish(state.publisher)
                     commit('SET_PUBLISHER', undefined)
-                    state.isAlive = false
                   } else if (state.subPublisher && state.publisherId == connectionId){
                     // 스크리샷 추가
                     dispatch('screenShot',connectionId)
                     // 스크린샷 끝
                     state.subSession.unpublish(state.subPublisher)
                     commit('SET_SUB_PUBLISHER', undefined)
-                    state.isAlive = false
                   }
+                  commit('IS_ALIVE', false)
                   dispatch('removeParticipant', connectionId)
                   state.messages.push('System : ' + clientData + '가 심장마비로 사망하였습니다.')
                 }
@@ -411,15 +449,14 @@ const gameStore = {
                 // 스크린샷 끝
                 state.session.unpublish(state.publisher)
                 commit('SET_PUBLISHER', undefined)
-                state.isAlive = false
               } else if (state.subPublisher &&state.publisherId == connectionId){
                 // 스크리샷 추가
                 dispatch('screenShot',connectionId)
                 // 스크린샷 끝
                 state.subSession.unpublish(state.subPublisher)
                 commit('SET_SUB_PUBLISHER', undefined)
-                state.isAlive = false
               }
+              commit('IS_ALIVE', false)
               break
             }
             case 'kill': {
@@ -438,15 +475,14 @@ const gameStore = {
                   // 스크린샷 끝
                   state.session.unpublish(state.publisher)
                   commit('SET_PUBLISHER', undefined)
-                  state.isAlive = false
                 } else if (state.subPublisher && state.publisherId == connectionId){
                   // 스크리샷 추가
                   dispatch('screenShot',connectionId)
                   // 스크린샷 끝
                   state.subSession.unpublish(state.subPublisher)
                   commit('SET_SUB_PUBLISHER', undefined)
-                  state.isAlive = false
                 } 
+                commit('IS_ALIVE', false)
                 state.messages.push('System : ' + clientData + '가 심장마비로 사망하였습니다.')
               }
               break
@@ -463,16 +499,23 @@ const gameStore = {
           }
         } else if (event.data.gameStatus === 8) {
           const winner = event.data.winner
-          commit('WINNER', winner)
+          commit('SET_WINNER', winner)
           router.push({ name: 'GameEnd' })
         }
       });
       // 명함교환 방 자동 이동 & 미션 자동 분배
-      session.on("signal:autoSyste", (event) => {
+      session.on("signal:autoSystem", (event) => {
         // const action = JSON.parse(event.data).action
         const { action } = event.data
         switch(action){
+          // 명교방 안가는 사람들한테 turn 1씩 증가시키기
+          case 'exchangeName': {
+            commit('COUNT_TURN')
+            break
+          }
+          // 명교방 가는 사람한테만 보냄
           case 'exchangeNameStart': {
+            commit('COUNT_TURN')
             state.session.unpublish(state.publisher)
             commit('SET_PUBLISHER', undefined)
             let subPublisher = OV.initPublisher(undefined, {
@@ -500,56 +543,94 @@ const gameStore = {
             break;
           } 
           case 'missionStart':{
-            //리셋하고
-            dispatch('missionReset')
-            //히든미션으로 다시 미션 시작.
-            dispatch('missionSelect',false)
-            break;
+            if (state.isKIRAorL == false) {
+              //리셋하고
+              dispatch('missionReset')
+              //히든미션으로 다시 미션 시작.
+              dispatch('missionSelect',false)
+              break;
+            }
           }
       }
         // 두명 중 하나가 퍼블리셔면 언퍼블리시하고 라우터푸시 조인세션?
       })
 
-      // --- Connect to the session with a valid user token ---
-      // 'getToken' method is simulating what your server-side should do.
-      // 'token' parameter should be retrieved and returned by your own backend
-      await dispatch("getToken", state.sessionId).then((token) => {
-        session
-        .connect(token, { clientData: state.nickname })
-        .then(() => {
-          // --- Get your own camera stream with the desired properties ---
-          let publisher = OV.initPublisher(undefined, {
-            audioSource: undefined, // The source of audio. If undefined default microphone
-            videoSource: undefined, // The source of video. If undefined default webcam
-            publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-            publishVideo: true, // Whether you want to start publishing with your video enabled or not
-            resolution: "1280×720", // The resolution of your video
-            frameRate: 30, // The frame rate of your video
-            insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
-            mirror: false, // Whether to mirror your local video or not
-          });
-          publisher.ready = false
-          commit('SET_OV', OV)
-          commit('SET_PUBLISHER', publisher)
-          commit('SET_SESSION', session)
-          commit('SET_SUBSCRIBERS', subscribers)
-          commit('SET_OVTOKEN', token)
-          // --- Publish your stream ---
-          session.publish(state.publisher)
-          commit('SET_MY_PUBLISHER_ID', state.publisher.stream.connection.connectionId)
-          router.push({
-            name: 'Attend',
-            params: { hostname: state.sessionId}
+      //방장이면 sessionCreate부터 해야하므로 getToken으로, 이미 세션 만들어져 있으면 createToken으로 토큰만 만듬.
+      if(state.sessionId){
+        await dispatch("getToken", state.sessionId).then((token) => {
+          session
+          .connect(token, { clientData: state.nickname })
+          .then(() => {
+            // --- Get your own camera stream with the desired properties ---
+            let publisher = OV.initPublisher(undefined, {
+              audioSource: undefined, // The source of audio. If undefined default microphone
+              videoSource: undefined, // The source of video. If undefined default webcam
+              publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+              publishVideo: true, // Whether you want to start publishing with your video enabled or not
+              resolution: "1280×720", // The resolution of your video
+              frameRate: 30, // The frame rate of your video
+              insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+              mirror: false, // Whether to mirror your local video or not
+            });
+            publisher.ready = false
+            commit('SET_OV', OV)
+            commit('SET_PUBLISHER', publisher)
+            commit('SET_SESSION', session)
+            commit('SET_SUBSCRIBERS', subscribers)
+            commit('SET_OVTOKEN', token)
+            // --- Publish your stream ---
+            session.publish(state.publisher)
+            commit('SET_MY_PUBLISHER_ID', state.publisher.stream.connection.connectionId)
+            router.push({
+              name: 'Attend',
+            })
           })
-        })
-          .catch((error) => {
-            console.log(
-              "There was an error connecting to the session:",
-              error.code,
-              error.message
-            );
-          });
-      });
+            .catch((error) => {
+              console.log(
+                "There was an error connecting to the session:",
+                error.code,
+                error.message
+              );
+            });
+        });
+      }else{
+        await dispatch("createToken", state.sessionId).then((token) => {
+          session
+          .connect(token, { clientData: state.nickname })
+          .then(() => {
+            // --- Get your own camera stream with the desired properties ---
+            let publisher = OV.initPublisher(undefined, {
+              audioSource: undefined, // The source of audio. If undefined default microphone
+              videoSource: undefined, // The source of video. If undefined default webcam
+              publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+              publishVideo: true, // Whether you want to start publishing with your video enabled or not
+              resolution: "1280×720", // The resolution of your video
+              frameRate: 30, // The frame rate of your video
+              insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+              mirror: false, // Whether to mirror your local video or not
+            });
+            publisher.ready = false
+            commit('SET_OV', OV)
+            commit('SET_PUBLISHER', publisher)
+            commit('SET_SESSION', session)
+            commit('SET_SUBSCRIBERS', subscribers)
+            commit('SET_OVTOKEN', token)
+            // --- Publish your stream ---
+            session.publish(state.publisher)
+            commit('SET_MY_PUBLISHER_ID', state.publisher.stream.connection.connectionId)
+            router.push({
+              name: 'Attend',
+            })
+          })
+            .catch((error) => {
+              console.log(
+                "There was an error connecting to the session:",
+                error.code,
+                error.message
+              );
+            });
+        });
+      }
       window.addEventListener("beforeunload", this.leaveSession);
     },
     getToken({ dispatch }, mySessionId) {
@@ -670,29 +751,48 @@ const gameStore = {
         dispatch('receiveCard', receivedCard)
       })
       
-      // --- Connect to the session with a valid user token ---
       
-      // 'getToken' method is simulating what your server-side should do.
-      // 'token' parameter should be retrieved and returned by your own backend
-      dispatch("getToken", 'sub' + state.sessionId).then((subToken) => {
-        subSession
-        .connect(subToken, { clientData: state.nickname })
-        .then(() => {
-          // --- Get your own camera stream with the desired properties ---
-          commit('SET_SUB_OV', subOV)
-          commit('SET_SUB_SESSION', subSession)
-          commit('SET_SUB_OVTOKEN', subToken)
-          commit('SET_SUB_SUBSCRIBERS', subSubscribers)
-          })
-          .catch((error) => {
-            console.log(
-              "There was an error connecting to the session:",
-              error.code,
-              error.message
-            );
-          });
-      });
-      // window.addEventListener("beforeunload", this.leaveSession);
+      //방장이면 sessionCreate부터 해야하므로 getToken으로, 이미 세션 만들어져 있으면 createToken으로 토큰만 만듬.
+      if(state.sessionId){
+        dispatch("getToken", 'sub' + state.sessionId).then((subToken) => {
+          subSession
+          .connect(subToken, { clientData: state.nickname })
+          .then(() => {
+            // --- Get your own camera stream with the desired properties ---
+            commit('SET_SUB_OV', subOV)
+            commit('SET_SUB_SESSION', subSession)
+            commit('SET_SUB_OVTOKEN', subToken)
+            commit('SET_SUB_SUBSCRIBERS', subSubscribers)
+            })
+            .catch((error) => {
+              console.log(
+                "There was an error connecting to the session:",
+                error.code,
+                error.message
+              );
+            });
+        });
+      }else{
+        dispatch("createToken", 'sub' + state.sessionId).then((subToken) => {
+          subSession
+          .connect(subToken, { clientData: state.nickname })
+          .then(() => {
+            // --- Get your own camera stream with the desired properties ---
+            commit('SET_SUB_OV', subOV)
+            commit('SET_SUB_SESSION', subSession)
+            commit('SET_SUB_OVTOKEN', subToken)
+            commit('SET_SUB_SUBSCRIBERS', subSubscribers)
+            })
+            .catch((error) => {
+              console.log(
+                "There was an error connecting to the session:",
+                error.code,
+                error.message
+              );
+            });
+        });
+      }
+      window.addEventListener("beforeunload", this.leaveSession);
     },
 
 
@@ -747,6 +847,8 @@ const gameStore = {
       })
     },
     exitCard({state, commit}) {
+      // 메인게임 화면 타이머 7초짜리로 변경
+      commit('SET_MAINGAME_TIMER', false)
       state.subSession.unpublish(state.subPublisher)
       commit('SET_SUB_PUBLISHER', undefined)
       let publisher = state.OV.initPublisher(undefined, {
@@ -777,7 +879,7 @@ const gameStore = {
     },
     missionSelect({commit,dispatch},isNormalMission){
       //미션 종류 선택
-      dispatch('randomInt',{min:2,max:2})
+      dispatch('randomInt',{min:1,max:2})
       commit('MISSION_SELECT')
       //미션이 일반미션인지, 히든인지.
       commit('IS_NORMAL_MISSION',isNormalMission)
@@ -793,10 +895,9 @@ const gameStore = {
     },
     checkIsKIRAorL({commit}, jobName){
       if(jobName == 'KIRA' || jobName == 'L'){
-        console.log("키라랑 엘 바꾸기!")
-        commit('CHECK_IS_KIRA_OR_L', true);
+        commit('IS_KIRA_OR_L', true);
       }else{
-        commit('CHECK_IS_KIRA_OR_L', false);
+        commit('IS_KIRA_OR_L', false);
       }
     },
     changeOption({state}){
@@ -822,18 +923,17 @@ const gameStore = {
       }
     },
     async init ({state,commit}) {
-      console.log('0!!!!')
       const model = await tmPose.load(state.modelURL, state.metadataURL)
       const flip = true
       const webcam = new tmPose.Webcam(state.size, state.size, flip)
       commit('SET_POSE_MODEL',model)
       commit('SET_POSE_WEBCAM',webcam)
       await state.webcam.setup()
-      console.log("!!!")
       await state.webcam.play()
     },
 
     //입장 관련 기능
+    //방장이 방 생성
     createRoomRequest({commit}, userId){
       createRoom(
         userId,
@@ -849,6 +949,7 @@ const gameStore = {
       })
     },
 
+    //게스트 참여
     guestJoinRoom({commit}, hostId){
       joinRoom(
         hostId,
@@ -894,13 +995,67 @@ const gameStore = {
 
 
     //게임 종료 후 되돌아가기 
-    // gameReset({commit}){
-    // commit
-    // router.push({
-      // name: 'Attend',
-      // params: { hostname: state.sessionId}
-    // })
-    // }
+    gameReset({state, commit}){
+      if(!state.subPublisher){
+        const OV = new OpenVidu();
+        let subPublisher = OV.initPublisher(undefined, {
+          audioSource: undefined, // The source of audio. If undefined default microphone
+          videoSource: undefined, // The source of video. If undefined default webcam
+          publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+          publishVideo: true, // Whether you want to start publishing with your video enabled or not
+          resolution: "1280×720", // The resolution of your video
+          frameRate: 30, // The frame rate of your video
+          insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+          mirror: false, // Whether to mirror your local video or not
+        });
+        state.subSession.publish(subPublisher)
+        commit('SET_SUB_PUBLISHER', subPublisher)
+      }
+      if(!state.publisher){
+        const OV = new OpenVidu();
+        let Publisher = OV.initPublisher(undefined, {
+          audioSource: undefined, // The source of audio. If undefined default microphone
+          videoSource: undefined, // The source of video. If undefined default webcam
+          publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+          publishVideo: true, // Whether you want to start publishing with your video enabled or not
+          resolution: "1280×720", // The resolution of your video
+          frameRate: 30, // The frame rate of your video
+          insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+          mirror: false, // Whether to mirror your local video or not
+        });
+        state.session.publish(Publisher)
+        commit('SET_PUBLISHER', Publisher)
+        state.publisher.ready = false
+      }else{
+        state.publisher.ready = false
+      }
+      //게임 종료 후 초기화
+      commit('SET_READY_STATUS', false)
+      commit('SET_PARTICIPANTS', [])
+      commit('SET_MY_PUBLISHER_ID', undefined)
+      commit('SET_WINNER', undefined)
+      commit('SET_MISSION', -1)
+      commit('SET_RANDOM_INT', 0)
+      commit('SET_MISSION_SUCCESS',0)
+      commit('SET_NUMBER_OF_SKILL_USE',0)
+      commit('IS_NORMAL_MISSION',true)
+      commit('SET_OPTIONS', [
+        { value: 'KIRA', text: '노트주인'},
+        { value: 'CRIMINAL', text: '추종자'},
+        { value: 'L', text: '경찰총장'},
+        { value: 'POLICE', text: '경찰'},
+        { value: 'GUARD', text: '보디가드'},
+        { value: 'BROADCASTER', text: '방송인'},
+      ])
+      commit('IS_KIRA_OR_L', false)
+      commit('IS_ALIVE', true)
+      commit('SET_MY_JOB', undefined)
+      commit('RESET_MESSAGES')
+      commit('GET_JOB_PROPS',jobs)
+      router.push({
+        name: 'Attend',
+      })
+    }
 
   },
 }

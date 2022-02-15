@@ -79,6 +79,13 @@ import io.openvidu.server.utils.GeoLocation;
 import io.openvidu.server.utils.JsonUtils;
 import io.openvidu.server.utils.RecordingUtils;
 import io.openvidu.server.utils.SDPMunging;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class KurentoSessionManager extends SessionManager {
 
@@ -218,10 +225,22 @@ public class KurentoSessionManager extends SessionManager {
 
                     session.leave(participant.getParticipantPrivateId(), reason);
 
-                    //방을 나가면 레디 목록에서 사라지게 함.
-                    HashMap<String, Boolean> readyState = GameService.readySetting.get(sessionId);
-                    readyState.remove(participant.getParticipantPublicId());
-                    GameService.readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
+                    if (!"sub".contains(sessionId)) {
+                        //방을 나가면 레디 목록에서 사라지게 함.
+                        HashMap<String, Boolean> readyState = GameService.readySetting.get(sessionId);
+                        readyState.remove(participant.getParticipantPublicId());
+                        GameService.readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
+
+                        String nickName = participant.getClientMetadata().substring(15, participant.getClientMetadata().length() - 2);
+                        //세션 종료되면 방 비활성화.
+                        String url = "http://localhost:8080/room/delete/" + sessionId + "?nickName=" + nickName;
+                        RestTemplate restTemplate = new RestTemplate();
+                        HttpHeaders headers = new HttpHeaders();
+                        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+                        HttpEntity<?> httpEntity = new HttpEntity<>(headers);
+                        restTemplate.exchange(uri.toString(), HttpMethod.DELETE, httpEntity, String.class);
+
+                    }
 
                     // Update control data structures
                     if (sessionidParticipantpublicidParticipant.get(sessionId) != null) {
@@ -282,6 +301,31 @@ public class KurentoSessionManager extends SessionManager {
                                             if (session.isClosed()) {
                                                 return false;
                                             }
+                                            //게임 자원 반납.
+                                            Thread deathNoteThread = GameService.gameThread.get(sessionId);
+                                            GameService.gameThread.remove(sessionId);
+                                            GameService.gameRoles.remove(sessionId);
+                                            GameService.roleMatching.remove(sessionId);
+                                            GameService.participantsList.remove(sessionId);
+                                            GameService.alivePolices.remove(sessionId);
+                                            GameService.kiraAndL.remove(sessionId);
+                                            GameService.deathNoteList.remove(sessionId);
+                                            GameService.readySetting.remove(sessionId);
+
+                                            if (deathNoteThread != null) {
+                                                deathNoteThread.interrupt();
+                                            }
+
+                                            if (!"sub".contains(sessionId)) {
+                                                //세션 종료되면 방 비활성화.
+                                                String apiUrl = "http://localhost:8080/room/finish/" + sessionId;
+                                                RestTemplate restTemplate = new RestTemplate();
+                                                HttpHeaders httpHeaders = new HttpHeaders();
+                                                UriComponents uri = UriComponentsBuilder.fromHttpUrl(apiUrl).build();
+                                                HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
+                                                restTemplate.exchange(uri.toString(), HttpMethod.PUT, httpEntity, String.class);
+                                            }
+
                                             log.info("No more participants in session '{}', removing it and closing it",
                                                     sessionId);
                                             this.closeSessionAndEmptyCollections(session, reason, true);

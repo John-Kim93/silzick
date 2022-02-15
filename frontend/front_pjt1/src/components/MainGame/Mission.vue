@@ -1,14 +1,30 @@
 <template>
   <div class="d-flex row justify-content-center align-content-start m-1" style="height:23vh">
-    <p id="base-font" class="col-12 m-1" style="font-size:1.5rem">MISSION</p>
+    <p
+      v-if="isNormalMission"
+      id="base-font"
+      class="col-12 m-1"
+      style="font-size:1.5rem"
+    >MISSION</p>
+    <p
+      v-else
+      id="base-font"
+      class="col-12 m-1"
+      style="font-size:1.5rem"
+    >HIDDEN MISSION</p>
     <hr class="m-0 col-12">
     <!-- 미션 스타트 버튼 -->
     <div class="row d-flex justify-content-center" v-if="!mission && webcam">
+
       <button
         id="btn-color"
         class="btn btn-lg col-4 mt-5"
         @click="missionSelect(true)"
+        v-if="isKIRAorL == false"
       >start</button>
+      <p v-else>KIRA와L은 미션을 수행할수 없습니다</p>
+      가짜명함:{{missionSuccessCount}}
+      스킬횟수:{{numberOfSkillUsed}}
     </div>
     <!-- 버튼 클릭 시 미션 시작 -->
     <div v-else>
@@ -43,7 +59,7 @@ export default {
     },2000)
   },
   computed: {
-    ...mapState(gameStore, ['mission','webcam']),
+    ...mapState(gameStore, ['mission','webcam', 'isKIRAorL', 'numberOfSkillUsed', 'missionSuccessCount', 'isNormalMission',]),
   },
   methods:{
     ...mapActions(gameStore, ['missionSelect','init','missionReset']),

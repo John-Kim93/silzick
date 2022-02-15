@@ -1,8 +1,18 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from "@/store/index.js";
 
 Vue.use(VueRouter)
 
+const SessionIdCheck = (to, from, next) => {
+  const sessionId = store.getters["gameStore/getSessionId"];
+  const isHost = store.getters["gameStore/getIsHost"]
+  if (isHost || sessionId) {
+    next()
+  }else{
+    router.push({ name: "Invite" });
+  }
+};
 
 const routes = [
   {
@@ -20,6 +30,7 @@ const routes = [
     path: '/Join',
     name: 'Join',
     component: () => import("../views/Join.vue"),
+    beforeEnter : SessionIdCheck,
   },
   {
     path: '/Invite',

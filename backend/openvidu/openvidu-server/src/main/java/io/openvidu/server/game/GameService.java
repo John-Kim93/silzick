@@ -37,7 +37,6 @@ public class GameService {
     static final int GAMESTART = 4;
     static final int USESKILL = 5;
     static final int CHECKPARTICIPANTS = 7;
-    static final int GAMEOVER = 8;
 
 
     private static final Logger log = LoggerFactory.getLogger(GameService.class);
@@ -480,6 +479,10 @@ public class GameService {
                         }
                     }
                     alivePolices.compute(sessionId, (k, v) -> v - 1);
+
+                    if (alivePolices.getOrDefault(sessionId, 0) < 1) {
+                        finishGame(participant, sessionId, participants, params, data, "KIRA");
+                    }
                 }
 
                 for (Participant p : participants) {
@@ -728,6 +731,7 @@ public class GameService {
         kiraAndL.remove(sessionId);
         //노트 자원 반납.
         deathNoteList.remove(sessionId);
+        readySetting.remove(sessionId);
 
 
         if (deathNoteThread != null) {
