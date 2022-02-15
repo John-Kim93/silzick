@@ -48,7 +48,7 @@
           <!-- 타이머 & 메모 -->
           <div class="row justify-content-center align-items-center">
             <div class="col-4">
-              <exchange-timer></exchange-timer>
+              <exchange-timer/>
             </div>
             <div class="offset-1 col-7">
               <input type="checkbox" id="popup">

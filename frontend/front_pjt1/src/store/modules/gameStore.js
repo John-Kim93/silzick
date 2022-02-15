@@ -434,7 +434,7 @@ const gameStore = {
         }
       });
       // 명함교환 방 자동 이동 & 미션 자동 분배
-      session.on("signal:autoSyste", (event) => {
+      session.on("signal:autoSystem", (event) => {
         // const action = JSON.parse(event.data).action
         const { action } = event.data
         switch(action){
