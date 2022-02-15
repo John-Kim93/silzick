@@ -15,15 +15,15 @@ export default {
       pic_string:''
     }
   },
-  props:{
-    idx:Number
-  },
+  // props:{
+  //   idx:Number
+  // },
   computed:{
     ...mapState(gameStore,['pic_list','box_width','box_height']),
   },
   mounted(){
-    this.drawImg(this.pic_list[this.idx],this.box_width,this.box_height)
-    this.saveAs(this.pic_list[this.idx],'filename.jpg')
+    this.drawImg(this.pic_list,this.box_width,this.box_height)
+    // this.saveAs(this.pic_list[this.idx],'filename.jpg')
   },
   methods: {
     ...mapActions(gameStore, ['screenShot',]),
@@ -53,16 +53,16 @@ export default {
       console.log('완료')   
       });
     },
-    saveAs(uri, filename) {
-      var link = document.createElement('a');
-      if (typeof link.download === 'string') {
-        link.href = uri; link.download = filename;
-        document.body.appendChild(link); 
-        link.click();
-        document.body.removeChild(link); 
-      }else { window.open(uri); 
-      }
-    },
+    // saveAs(uri, filename) {
+    //   var link = document.createElement('a');
+    //   if (typeof link.download === 'string') {
+    //     link.href = uri; link.download = filename;
+    //     document.body.appendChild(link); 
+    //     link.click();
+    //     document.body.removeChild(link); 
+    //   }else { window.open(uri); 
+    //   }
+    // },
   }
 }
 </script>
