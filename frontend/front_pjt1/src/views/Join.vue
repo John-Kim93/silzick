@@ -1,7 +1,24 @@
 <template>
-  <div id="background-black" class="full-screen">
-    <b-container id="card-bg" class="justify-content-center b-row">
-      <b-form-row id="background-black" class="col-8 offset-2 card justify-content-center align-items-center py-4">
+  <div id="background-black" class="full-screen d-flex justify-content-center align-items-center">
+    <div id="base-border" class="container d-flex flex-row justify-content-center align-content-center row col-7" style="height:40vh">
+      <div class="col-11 row d-flex align-content-center" style="height:13vh">
+        <h3 id="base-font" class="m-2">Nickname</h3>
+          <input
+          type="text"
+          v-model="nickname"
+          class="form-control m-2"
+          placeholder="사용하실 닉네임을 입력해주세요."
+          required
+          >
+      </div>
+      <div class="col-8 row d-flex align-content-center" style="height:13vh">
+        <button id="btn-color" class="btn mt-4 px-5" @click="nicknameUpdate(nickname)">참가</button>
+      </div>
+    </div>
+  </div>
+  <!-- <div id="background-black" class="full-screen d-flex justify-content-center align-items-center">
+    <b-container id="card-bg" class="d-flex flex-row justify-content-center b-row row col-7">
+      <b-form-row id="background-black" class="m-0 col-8 offset-2 card justify-content-center align-items-center py-4">
         <b-col cols="10" align-self="center">
           <h3 id="base-font" class="m-2">Nickname</h3>
           <input
@@ -15,7 +32,7 @@
         </b-col>
       </b-form-row>
     </b-container>
-  </div>
+  </div> -->
 </template>
 
 <script>
