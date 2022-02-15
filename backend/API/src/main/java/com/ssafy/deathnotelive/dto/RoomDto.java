@@ -21,4 +21,14 @@ public class RoomDto {
         private String nickName;
     }
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class userInfo {
+        @ApiModelProperty(name = "roomCode")
+        private String roomCode;
+        @ApiModelProperty(name = "nickName")
+        private String nickName;
+    }
 }

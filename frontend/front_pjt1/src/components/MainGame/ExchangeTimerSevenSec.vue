@@ -21,10 +21,6 @@
 </template>
 
 <script>
-// import { mapState } from 'vuex';
-
-// const gameStore = "gameStore"
-
 export default {
 	name: 'ExchangeTimer',
 	data(){
@@ -34,6 +30,7 @@ export default {
         containerClasses: [],
         circleClasses: [],
         interval: 1000,
+        stopConditions: {'1' : 0},
         mainCircleId: '1',
         triggerUpdate: true,
         circles: [
@@ -41,7 +38,7 @@ export default {
             id: '1',
             classList: [ 'item' ],
             startValue: 0,
-            value: 30,
+            value: 5,
             size: 60,
             strokeWidth: 5,
             strokeColor: '#DDDDDD',
@@ -58,14 +55,5 @@ export default {
       }
     }
 	},
-  // computed: {
-  //   ...mapState(gameStore, ['turn']),
-  // },
-  // watch: {
-  //   turn(cur) {
-  //     console.log('turn : ' + cur)
-  //     this.$forceUpdate()
-  //   }
-  // }
 };
 </script>

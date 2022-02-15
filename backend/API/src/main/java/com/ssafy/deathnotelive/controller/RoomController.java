@@ -103,6 +103,25 @@ public class RoomController {
 
         return new ResponseEntity("Success", HttpStatus.OK);
     }
+
+    @DeleteMapping("delete")
+    @ApiOperation(value = "", notes = "해당 세션의 해당 닉네임을 삭제한다.", response = String.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공"),
+            @ApiResponse(code = 400, message = "잘못된 요청"),
+            @ApiResponse(code = 403, message = "인증 실패"),
+            @ApiResponse(code = 404, message = "사용자 없음"),
+            @ApiResponse(code = 500, message = "서버 오류")
+    })
+    private ResponseEntity<String> deleteParticipant(
+            @ApiParam(value = "종료시킬 룸 코드", required = true) @RequestBody RoomDto.userInfo userInfo) {
+        String sessionId = userInfo.getRoomCode();
+        String nickName = userInfo.getNickName();
+        //룸 활성화 끄기 + 해당 룸의 참여자 닉네임 초기화
+        roomService.deleteParticipant(sessionId, nickName);
+
+        return new ResponseEntity("Success", HttpStatus.OK);
+    }
 }
 
 

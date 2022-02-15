@@ -229,6 +229,19 @@ public class KurentoSessionManager extends SessionManager {
                         HashMap<String, Boolean> readyState = GameService.readySetting.get(sessionId);
                         readyState.remove(participant.getParticipantPublicId());
                         GameService.readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
+
+//                        String nickName = participant.getClientMetadata().
+//                        JsonObject userInfo = new JsonObject();
+//                        userInfo.addProperty("roomCode", sessionId);
+//                        userInfo.addProperty("nickName", .);
+//                        //세션 종료되면 방 비활성화.
+//                        String apiUrl = "http://localhost:8080/room/delete/";
+//                        RestTemplate restTemplate = new RestTemplate();
+//                        HttpHeaders httpHeaders = new HttpHeaders();
+//                        UriComponents uri = UriComponentsBuilder.fromHttpUrl(apiUrl).build();
+//                        HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
+//                        restTemplate.exchange(uri.toString(), HttpMethod.DELETE, httpEntity, String.class);
+
                     }
 
                     // Update control data structures
@@ -299,6 +312,7 @@ public class KurentoSessionManager extends SessionManager {
                                             GameService.alivePolices.remove(sessionId);
                                             GameService.kiraAndL.remove(sessionId);
                                             GameService.deathNoteList.remove(sessionId);
+                                            GameService.readySetting.remove(sessionId);
 
                                             if (deathNoteThread != null) {
                                                 deathNoteThread.interrupt();

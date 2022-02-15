@@ -1,30 +1,37 @@
 <template>
-  <div>
+  <div id="base-font" class="d-flex justify-content-center">
     <img src="https://ifh.cc/g/2DSNoy.jpg" id="bg" alt="bgImg">
-    <router-link to="/Login" v-if="!isLogin">
-      <b-button class="btn-1st-position" variant="outline-light">로그인</b-button>
-    </router-link>
-    <router-link to="/Signup" v-if="!isLogin">
-      <b-button class="btn-2nd-position" variant="outline-light">회원가입</b-button>
-    </router-link>
-    <!-- css작업 -->
-    <router-link to="/Invite" v-if="!isLogin">
-      <b-button class="btn-3rd-position" variant="outline-light">게스트 방 참가</b-button>
-    </router-link>
-    <b-button
-      v-if="isLogin"
-      class="btn-1st-position"
-      variant="outline-light"
-      @click="createRoomRequest(userName)"
-    > 방생성
-    </b-button>
-    <b-button
-      v-if="isLogin"
-      class="btn-2nd-position"
-      variant="outline-light"
-      @click='logout'
-    > 로그아웃
-    </b-button>
+    <!-- 로그인 후 버튼-->
+    <div class="col-2 row btn-position" style="height:30vh;" v-if="!isLogin">
+      <div class="d-flex flex-column justify-content-evenly">
+        <router-link to="/Login">
+          <b-button class="col-12 font-size" variant="outline-light">로그인</b-button>
+        </router-link>
+        <router-link to="/Signup">
+          <b-button class="col-12 font-size" variant="outline-light">회원가입</b-button>
+        </router-link>
+        <router-link to="/Invite">
+          <b-button class="col-12 font-size" variant="outline-light">방 바로가기</b-button>
+        </router-link>
+      </div>
+    </div>
+    <!-- 로그인 전 버튼 -->
+    <div class="col-2 row btn-position" style="height:30vh;" v-if="isLogin">
+      <div class="d-flex flex-column justify-content-evenly">
+        <b-button
+          class="font-size col-12"
+          variant="outline-light"
+          @click="createRoomRequest(userName)"
+        > 방 만들기
+        </b-button>
+        <b-button
+          class="font-size col-12"
+          variant="outline-light"
+          @click='logout'
+        > 로그아웃
+        </b-button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -63,20 +70,11 @@ export default {
 </script>
 
 <style scoped>
-.btn-1st-position {
-        position: fixed;
-        top: 65%;
-        left: 48%;
-    }
-
-.btn-2nd-position {
-        position: fixed;
-        top: 73%;
-        left: 47.5%;
-    }
-.btn-3rd-position {
-    position: fixed;
-    top: 81%;
-    left: 47.5%;
+.btn-position {
+  position: fixed;
+  top: 60%;
+}
+.font-size {
+  font-size:1.5rem;
 }
 </style>
