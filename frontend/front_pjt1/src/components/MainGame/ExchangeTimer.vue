@@ -56,6 +56,13 @@ export default {
       }
     }
 	},
+  watch: {
+    value (cur) {
+      if (cur === 0) {
+        this.circles[0].value = 30
+      }
+    }
+  }
 };
 </script>
 
