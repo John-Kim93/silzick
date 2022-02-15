@@ -38,7 +38,7 @@ export default {
             id: '1',
             classList: [ 'item' ],
             startValue: 0,
-            value: 5,
+            value: 10,
             size: 60,
             strokeWidth: 5,
             strokeColor: '#DDDDDD',

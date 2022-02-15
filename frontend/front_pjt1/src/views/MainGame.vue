@@ -165,7 +165,7 @@ export default {
     if (this.mainGameTimerSevenOrThirty === false) {
       setTimeout(() => {
         this.SET_MAINGAME_TIMER(true)
-      }, 7000)
+      }, 10000)
     }
   }
 }

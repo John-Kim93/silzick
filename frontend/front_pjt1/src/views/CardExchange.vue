@@ -82,8 +82,8 @@ export default {
     return {
       //가짜 명교 가능 여부
       chatMessage: '',
-      timerCount:20,
-      timerExit:23,
+      timerCount:15,
+      timerExit:20,
       text: '',
       selected: '',
       confirm: false,
