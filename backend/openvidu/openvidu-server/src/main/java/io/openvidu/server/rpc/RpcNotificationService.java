@@ -140,7 +140,6 @@ public class RpcNotificationService {
     }
 
     public RpcConnection immediatelyCloseRpcSession(String participantPrivateId) {
-        String sessionId = rpcConnections.get(participantPrivateId).getSessionId();
 
         RpcConnection rpcSession = rpcConnections.remove(participantPrivateId);
         if (rpcSession == null || rpcSession.getSession() == null) {
@@ -154,27 +153,6 @@ public class RpcNotificationService {
 
         try {
             s.close();
-            //게임 자원 반납.
-            Thread deathNoteThread = GameService.gameThread.get(sessionId);
-            GameService.gameThread.remove(sessionId);
-            GameService.gameRoles.remove(sessionId);
-            GameService.roleMatching.remove(sessionId);
-            GameService.participantsList.remove(sessionId);
-            GameService.alivePolices.remove(sessionId);
-            GameService.kiraAndL.remove(sessionId);
-            GameService.deathNoteList.remove(sessionId);
-
-            if (deathNoteThread != null) {
-                deathNoteThread.interrupt();
-            }
-
-            //세션 종료되면 방 비활성화.
-            String apiUrl = "http://localhost:8080/room/finish/"+sessionId;
-            RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders httpHeaders = new HttpHeaders();
-            UriComponents uri = UriComponentsBuilder.fromHttpUrl(apiUrl).build();
-            HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
-            restTemplate.exchange(uri.toString(), HttpMethod.PUT, httpEntity, String.class);
 
             log.info("Closed rpc session for participant with private id {}", participantPrivateId);
             this.showRpcConnections();
