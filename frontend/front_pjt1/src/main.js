@@ -11,7 +11,6 @@ import VueCookies from "vue-cookies"
 import CircularCountDownTimer from "vue-circular-count-down-timer"
 import VueWebSpeech from 'vue-web-speech'
 import VueSpeech from '../src/install.js'
-import vueAwesomeCountdown from 'vue-awesome-countdown'
 
 Vue.prototype.$axios = axios
 
@@ -21,7 +20,6 @@ Vue.use(BootstrapVueIcons)
 Vue.use(CircularCountDownTimer)
 Vue.use(VueWebSpeech)
 Vue.use(VueSpeech)
-Vue.use(vueAwesomeCountdown,'vac')
 Vue.config.productionTip = false
 Vue.$cookies.config("1d")
 // axios.defaults.withCredentials = true
