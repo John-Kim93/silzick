@@ -44,10 +44,10 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(gameStore, ['GAME_CHECKOUT']),
     ...mapMutations(userStore, ['RESET_USER']),
+    ...mapMutations(gameStore, ['GAME_CHECKOUT']),
     ...mapActions(gameStore, ['createRoomRequest']),
-    ...mapActions(userStore, ['saveUser']),
+
     logout () {
       if (cookies.isKey('JWT-AUTHENTICATION')) {
         cookies.remove('JWT-AUTHENTICATION')
@@ -58,7 +58,6 @@ export default {
   },
   created () {
     this.GAME_CHECKOUT()
-    this.saveUser()
   }
 }
 </script>

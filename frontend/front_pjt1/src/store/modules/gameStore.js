@@ -824,7 +824,17 @@ const gameStore = {
         (err)=>{
           console.log(err)
         })
-    }
+    },
+
+
+    //게임 종료 후 되돌아가기 
+    // gameReset({commit}){
+    // commit
+    // router.push({
+      // name: 'Attend',
+      // params: { hostname: state.sessionId}
+    // })
+    // }
 
   },
 }
