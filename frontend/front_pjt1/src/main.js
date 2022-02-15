@@ -11,6 +11,9 @@ import VueCookies from "vue-cookies"
 import CircularCountDownTimer from "vue-circular-count-down-timer"
 import VueWebSpeech from 'vue-web-speech'
 import VueSpeech from '../src/install.js'
+import VueJwtDecode from 'vue-jwt-decode'
+//유저 정보 가져오기 관련
+import userStore from "./store/modules/userStore";
 
 Vue.prototype.$axios = axios
 
@@ -27,6 +30,15 @@ Vue.$cookies.config("1d")
 new Vue({
   router,
   store,
+  async beforeCreate() {
+    let cookie = VueCookies.get('JWT-AUTHENTICATION')
+    if(cookie){
+      let userName = VueJwtDecode.decode(cookie).sub;
+      if (userStore.state.userName == null) {
+        await store.commit("userStore/SAVE_USER", userName);
+      }
+    }
+  },
   render: h => h(App),
   CSS,
 }).$mount('#app')

@@ -6,15 +6,24 @@
       </div>
       <hr id="red-hr" class="col-11 my-3">
       <div class="col-8 row d-flex align-content-center" style="height:13vh">
-        <button id="btn-color-kira" class="btn col">돌아가기</button>
+        <button id="btn-color-kira" class="btn col" @click="gameReset">돌아가기</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
+const gameStore = 'gameStore';
+
 export default {
-  name: 'KiraWin'
+  name: 'KiraWin',
+  
+   methods: {
+    ...mapActions(gameStore, [ 'gameReset']),
+
+  }
 }
 </script>
 

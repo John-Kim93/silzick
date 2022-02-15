@@ -17,6 +17,14 @@ public class LoginDto {
         private String password;
     }
 
+//    나중에 httponly로 바꾸게 되면 사용할 DTO
+//    @Data
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class LoginInfo {
+//        private String userId;
+//    }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
