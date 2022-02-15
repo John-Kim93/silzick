@@ -1,6 +1,17 @@
 <template>
   <div class="d-flex row justify-content-center align-content-start m-1" style="height:23vh">
-    <p id="base-font" class="col-12 m-1" style="font-size:1.5rem">MISSION</p>
+    <p
+      v-if="isNormalMission"
+      id="base-font"
+      class="col-12 m-1"
+      style="font-size:1.5rem"
+    >MISSION</p>
+    <p
+      v-else
+      id="base-font"
+      class="col-12 m-1"
+      style="font-size:1.5rem"
+    >HIDDEN MISSION</p>
     <hr class="m-0 col-12">
     <!-- 미션 스타트 버튼 -->
     <div class="row d-flex justify-content-center" v-if="!mission && webcam">
@@ -43,7 +54,7 @@ export default {
     },2000)
   },
   computed: {
-    ...mapState(gameStore, ['mission','webcam']),
+    ...mapState(gameStore, ['mission','webcam', 'isNormalMission']),
   },
   methods:{
     ...mapActions(gameStore, ['missionSelect','init','missionReset']),
