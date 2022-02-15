@@ -155,16 +155,16 @@
           <b-button
             size="sm"
             class="skill_button_note my-3"
-            :disabled='numberOfSkillUse==0'
+            :disabled='numberOfSkillUsed==0'
             @click="kill"
           >
-            Kill (사용가능 : {{numberOfSkillUse}})
+            Kill (사용가능 : {{numberOfSkillUsed}})
           </b-button>
         </div>
       </template>
     </b-modal>
     <!-- 4.보디가드 -->
-    <b-modal v-model="show" v-if='myJob == "GAURD"' 
+    <b-modal v-model="show" v-if='myJob == "GUARD"' 
       id='skill' 
       size="lg"
       variant='outline-primary' 
@@ -219,10 +219,10 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
-            :disabled='numberOfSkillUse==0'
+            :disabled='numberOfSkillUsed==0'
             @click="protect"
           >
-            PROTECT!(사용가능 : {{numberOfSkillUse}})
+            PROTECT!(사용가능 : {{numberOfSkillUsed}})
           </b-button>
         </div>
       </template>
@@ -275,10 +275,10 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
-            :disabled='numberOfSkillUse==0'
+            :disabled='numberOfSkillUsed==0'
             @click="broadcast"
           >
-            BROADCAST!(사용가능 : {{numberOfSkillUse}})
+            BROADCAST!(사용가능 : {{numberOfSkillUsed}})
           </b-button>
         </div>
       </template>
@@ -334,10 +334,10 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
-            :disabled='Math.floor(numberOfSkillUse/2)==0'
+            :disabled='Math.floor(numberOfSkillUsed/2)==0'
             @click="arrest"
           >
-            ARREST!(사용가능 : {{numberOfSkillUse/2}})
+            ARREST!(사용가능 : {{numberOfSkillUsed/2}})
           </b-button>
         </div>
       </template>
@@ -361,10 +361,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants','missionSuccess','numberOfSkillUse'])
+    ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants','missionSuccess','numberOfSkillUsed'])
   },
   methods: {
-    ...mapActions(gameStore, ['skillUse']),
+    ...mapActions(gameStore, ['numberOfSkillUse']),
 
     noteWrite () {
       this.show = false
@@ -394,7 +394,7 @@ export default {
       })
     },
     broadcast () {
-      if(this.numberOfSkillUse>0){
+      if(this.numberOfSkillUsed>0){
         this.show = false
         this.session.signal({
           type: 'game',
@@ -406,11 +406,11 @@ export default {
           to: [],
         })
         this.broadcastMessage = ''
-        this.skillUse(-1)
+        this.numberOfSkillUse(-1)
       }
     },
     arrest () {
-      if(this.numberOfSkillUse>0){
+      if(this.numberOfSkillUsed>0){
         this.show = false
         this.session.signal({
           type: 'game',
@@ -422,11 +422,11 @@ export default {
           to: [],
         })
         this.selectParticipant = '참가자 목록'
-        this.skillUse(-2)
+        this.numberOfSkillUse(-2)
       }
     },
     protect () {
-      if(this.numberOfSkillUse>0){
+      if(this.numberOfSkillUsed>0){
         this.show = false
         this.session.signal({
           type: 'game',
@@ -438,11 +438,11 @@ export default {
           to: [],
         })
         this.selectParticipant = '참가자 목록'
-        this.skillUse(-1)
+        this.numberOfSkillUse(-1)
       }
     },
     kill () {
-      if(this.numberOfSkillUse>0){
+      if(this.numberOfSkillUsed>0){
         this.show = false
         this.session.signal({
           type: 'game',
@@ -456,7 +456,7 @@ export default {
         })
         this.selectParticipant = '참가자 목록'
         this.selectJobName = '직업'
-        this.skillUse(-1)
+        this.numberodSkillUse(-1)
       }
     }
   },

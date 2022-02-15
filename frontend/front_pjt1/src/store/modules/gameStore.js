@@ -46,9 +46,9 @@ const gameStore = {
     mission: -1,
     random_int: 0,
     //거짓 명함 낼 수 있는 횟수(미션 달성 횟수)
-    missionSuccessCount: 0,
+    missionSuccessCount: 10,
     //히든 미션 달성 횟수
-    numberOfSkillUse: 0,
+    numberOfSkillUsed: 10,
     //그냥 미션인지 히든인지 구분.
     isNormalMission: true,
     options: [
@@ -199,7 +199,7 @@ const gameStore = {
     },
     //스킬 사용 횟수
     SET_NUMBER_OF_SKILL_USE(state, count){
-      state.numberOfSkillUse += count
+      state.numberOfSkillUsed += count
     },
     IS_KIRA_OR_L(state, res){
       state.isKIRAorL = res

@@ -119,12 +119,20 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages', 'mainGameTimerSevenOrThirty', 'turn'])
+    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages', 'mainGameTimerSevenOrThirty', 'turn', 'isKIRAorL']),
+    turn () {
+      if(this.isKIRAorL == true) {
+        if(this.turn % 2 == 0) {
+          this.numberofSkillUse(+1)
+        }
+      }
+      return 0
+    },
   },
 
   methods : {
     ...mapMutations(gameStore, ['SET_MAINGAME_TIMER', 'COUNT_TURN']),
-    ...mapActions(gameStore, ['sendMessage']),
+    ...mapActions(gameStore, ['sendMessage', 'numberofSkillUse']),
     test() {
       console.log('턴 증가')
       this.COUNT_TURN()
