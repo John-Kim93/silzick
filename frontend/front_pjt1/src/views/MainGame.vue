@@ -7,17 +7,19 @@
         style="height: 84vh"
       >
         <!--6명 이하 6분할-->
-        <div
+        <div id ='my'
           class="col-6"
           v-if="subscribers.length < 6"
         > 
           <!-- 내 비디오 -->
-          <div class="p-1">
+          <div  class="p-1 h-100">
             <user-video
               id="base-border"
               class="pt-1 px-1"
               :stream-manager="publisher"
+              v-if="isAlive"
             />
+            <screen-shot v-else id="base-border" class="pt-1 px-1" :idx="idx"/>
           </div>
         </div>
         <!-- 다른 사람 비디오 -->
@@ -26,7 +28,7 @@
           v-for="subscriber in subscribers"
           :key="subscriber.stream.connection.connectionId"
         >
-          <div class="p-1">
+          <div class="p-1 h-100">
             <user-video
               id="base-border"
               class="pt-1 px-1"
@@ -35,13 +37,15 @@
           </div>
         </div>
         <!-- screenShot -->
-        <div
+        <!-- <div
           class="col-6"
-          v-for="pic in pic_list"
-          :key="pic"
-        >
-          <screen-shot/>
-        </div>
+          v-for="(pic,idx) in pic_list"
+          :key="idx"
+        > 
+          <div class="p-1">
+            <screen-shot id="base-border" class="pt-1 px-1" :idx="idx"/>
+          </div>
+        </div> -->
       </div>
 
       <!-- 타이머 & 직업 & 메모 & 채팅 div -->
@@ -116,11 +120,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages','pic_list'])
+    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages','pic_list','isAlive'])
   },
 
   methods : {
-    ...mapActions(gameStore, ['sendMessage']),
+    ...mapActions(gameStore, ['sendMessage','boxSizing']),
     enterCard () {
       console.log(this.publisher.stream.connection.connectionId)
       console.log(this.subscribers[0].stream.connection.connectionId)
@@ -140,6 +144,11 @@ export default {
       }
     },
   },
+  mounted(){
+    console.log('박스사이징')
+    this.boxSizing()
+    console.log('박스사이징 종료')
+  }
 }
 </script>
 

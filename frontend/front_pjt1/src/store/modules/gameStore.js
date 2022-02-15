@@ -78,7 +78,9 @@ const gameStore = {
     size: 200,
 
     //screenShot
-    pic_list : ['1']
+    pic_list : [],
+    box_height: 0,
+    box_width: 0
   },
   
   mutations: {
@@ -218,6 +220,12 @@ const gameStore = {
     SCREEN_SHOT(state,canvas){
       state.pic_list.push(canvas)
     },
+    SET_BOX_WIDTH(state,size){
+      state.box_width = size
+    },
+    SET_BOX_HEIGHT(state,size){
+      state.box_height = size
+    },
   },
 
   actions: {
@@ -341,10 +349,16 @@ const gameStore = {
                   state.messages.push('System : ' + clientData + '가 보디가드에 의해 보호되었습니다.')
                 } else {
                   if (state.publisher && state.publisherId == connectionId){
+                    // 스크리샷 추가
+                    dispatch('screenShot',connectionId)
+                    // 스크린샷 끝
                     state.session.unpublish(state.publisher)
                     commit('SET_PUBLISHER', undefined)
                     state.isAlive = false
                   } else if (state.subPublisher && state.publisherId == connectionId){
+                    // 스크리샷 추가
+                    dispatch('screenShot',connectionId)
+                    // 스크린샷 끝
                     state.subSession.unpublish(state.subPublisher)
                     commit('SET_SUB_PUBLISHER', undefined)
                     state.isAlive = false
@@ -381,7 +395,7 @@ const gameStore = {
             }
             // 경찰의 검거 능력, 키라측이면 죽임
             case 'arrest': {
-              const { isCriminal, userId, connectionId } = event.data
+              const { isCriminal, userId, connectionId} = event.data
               const { clientData } = JSON.parse(userId)
               if (isCriminal == true) {
                 state.messages.push('System : 추종자 ' + clientData + '가 검거되었습니다.')
@@ -392,10 +406,16 @@ const gameStore = {
               dispatch('removeParticipant', connectionId)
               // 퍼블리셔 지우기
               if (state.publisher && state.publisherId == connectionId){
+                // 스크리샷 추가
+                dispatch('screenShot',connectionId)
+                // 스크린샷 끝
                 state.session.unpublish(state.publisher)
                 commit('SET_PUBLISHER', undefined)
                 state.isAlive = false
               } else if (state.subPublisher &&state.publisherId == connectionId){
+                // 스크리샷 추가
+                dispatch('screenShot',connectionId)
+                // 스크린샷 끝
                 state.subSession.unpublish(state.subPublisher)
                 commit('SET_SUB_PUBLISHER', undefined)
                 state.isAlive = false
@@ -413,10 +433,16 @@ const gameStore = {
               } else {
                 dispatch('removeParticipant', connectionId)
                 if (state.publisher && state.publisherId == connectionId){
+                  // 스크리샷 추가
+                  dispatch('screenShot',connectionId)
+                  // 스크린샷 끝
                   state.session.unpublish(state.publisher)
                   commit('SET_PUBLISHER', undefined)
                   state.isAlive = false
                 } else if (state.subPublisher && state.publisherId == connectionId){
+                  // 스크리샷 추가
+                  dispatch('screenShot',connectionId)
+                  // 스크린샷 끝
                   state.subSession.unpublish(state.subPublisher)
                   commit('SET_SUB_PUBLISHER', undefined)
                   state.isAlive = false
@@ -835,37 +861,35 @@ const gameStore = {
           console.log(err)
         })
     },
-    screenShot({commit},connectionId) { 
-      // const id = 'local-video-'+connectionId
-      console.log(connectionId)
-      html2canvas(document.getElementById(connectionId),) 
+    screenShot({commit,state},connectionId) {
+      console.log('스크린샷 시작')
+      console.log(state.publisher)
+      let id
+      if (state.publisher && state.publisherId == connectionId){
+        console.log('메인화면 중')
+        id = state.publisher.videos[0].id
+      } else if (state.subPublisher && state.publisherId == connectionId){
+        console.log('명교 중')
+        id = state.subPublisher.videos[0].id
+      }
+      console.log('id를 잘받아왔나?')
+      console.log(id)
+      html2canvas(document.getElementById(id),) 
       .then ((canvas) =>{
-        commit('SCREEN_SHOT',canvas)
-        // dispatch('drawImg',canvas.toDataURL('image/png'));  
+        console.log('스크린샷')
+        commit('SCREEN_SHOT',canvas.toDataURL('image/jpeg'))
         })
       .catch((err)=> {
         console.log(err); 
         }) 
     },
-    // drawImg({commit,},imgData) {
-    //   console.log(imgData); 
-    //   return new Promise(function reslove() {
-    //   const canvas = document.getElementById('dead');
-    //   const target = document.getElementById('dead-box')
-    //   const ctx = canvas.getContext('2d'); 
-    //   ctx.clearRect(0, 0, target.width, target.height);
-    //   const imageObj = new Image();
-    //   imageObj.onload = function () {
-    //     ctx.drawImage(document.getElementById('frame'),0,0,target.width,target.height) 
-    //     ctx.globalAlpha = 0.5
-    //     // ctx.fillstyle ="black"
-    //     // ctx.fillRect(0, 0,canvas.width,canvas.height)
-    //     ctx.drawImage(imageObj, 0, 0,target.width,target.height);
-    //     };
-    //   imageObj.src = imgData;
-    //   console.log('완료')   
-    //   });
-    // },
+    boxSizing({commit}){
+      const box_size = document.querySelector('#my')
+        console.log(box_size.offsetWidth)
+        console.log(box_size.offsetHeight)
+        commit('SET_BOX_WIDTH',box_size.offsetWidth)
+        commit('SET_BOX_HEIGHT',box_size.offsetHeight)
+    },
 
 
 
