@@ -32,9 +32,6 @@ public class GameRunnable implements Runnable {
             String type = "signal:autoSystem";
             params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_TYPE_PARAM, type);
 
-//            //모든 참가자 목록 가져오기(랜덤 2명)
-//            ArrayList<Participant> pList = participantsList;
-
 
             while (true) {
                 //처음 30초 sleep
@@ -201,13 +198,14 @@ public class GameRunnable implements Runnable {
         for (int i = 0; i < 2; i++) {
             rpcNotificationService.sendNotification(roles.get(i).getParticipant().getParticipantPrivateId(),
                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+            System.out.println(roles.get(i).getParticipant().getParticipantPublicId());
         }
 
-        data.addProperty("action", "exchangeName");
+        data.addProperty("action", "nameTurn");
         params.add("data", data);
 
-        for (Participant p : participantsList) {
-            rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+        for (Characters c : roles) {
+            rpcNotificationService.sendNotification(c.getParticipant().getParticipantPrivateId(),
                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
         }
 

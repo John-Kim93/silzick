@@ -261,7 +261,7 @@ public class GameService {
             }
         }
 
-        if (participants.size() >= 2 && participants.size() == cnt) {
+        if (participants.size() >= 4 && participants.size() == cnt) {
             data.addProperty("readyStatus", true);
         }
 
@@ -617,7 +617,6 @@ public class GameService {
 
                 roleMatching.compute(sessionId, (k, v) -> v = cList);
 
-
                 //죽은 사람 정보는 모든 유저에게 보낸다.
                 data.addProperty("cnt", aliveCnt);
                 params.add("data", data);
@@ -635,6 +634,7 @@ public class GameService {
                 //사용후 데스노트 목록 비우기.
                 deathNoteList.compute(sessionId, (k, v) -> v = new ArrayList<Characters>());
 
+                //데스노트 사용후 경찰 수 체크
                 if (alivePolices.getOrDefault(sessionId, 0) < 1) {
                     finishGame(participant, sessionId, participants, params, data, "KIRA");
                 }

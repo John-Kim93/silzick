@@ -72,15 +72,16 @@
             size="sm"
             class="skill_button_note  my-3"
             @click="noteWrite"
+            :disabled="numberOfSkillUsed < 1"
           >
-            <h5>노트에 적는다</h5>
+            노트에 적는다(사용가능 : {{numberOfSkillUsed}})
           </b-button>
           <b-button
             size="sm"
             class="skill_button_note my-3"
             @click="noteUse"
           >
-            <h5>Kill'em all</h5>
+            모두 죽이기
           </b-button>
         </div>
       </template>
@@ -155,7 +156,7 @@
           <b-button
             size="sm"
             class="skill_button_note my-3"
-            :disabled='numberOfSkillUsed==0'
+            :disabled='numberOfSkillUsed < 1'
             @click="kill"
           >
             Kill (사용가능 : {{numberOfSkillUsed}})
@@ -219,7 +220,7 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
-            :disabled='numberOfSkillUsed==0'
+            :disabled='numberOfSkillUsed < 1'
             @click="protect"
           >
             PROTECT!(사용가능 : {{numberOfSkillUsed}})
@@ -275,7 +276,7 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
-            :disabled='numberOfSkillUsed==0'
+            :disabled='numberOfSkillUsed < 1'
             @click="broadcast"
           >
             BROADCAST!(사용가능 : {{numberOfSkillUsed}})
@@ -334,10 +335,10 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
-            :disabled='Math.floor(numberOfSkillUsed/2)==0'
+            :disabled="numberOfSkillUsed < 2"
             @click="arrest"
           >
-            ARREST!(사용가능 : {{numberOfSkillUsed/2}})
+            ARREST!(사용가능 : {{Math.floor(numberOfSkillUsed/2)}})
           </b-button>
         </div>
       </template>

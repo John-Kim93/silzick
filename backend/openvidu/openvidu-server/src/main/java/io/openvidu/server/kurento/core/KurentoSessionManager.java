@@ -222,9 +222,6 @@ public class KurentoSessionManager extends SessionManager {
         try {
             if (session.joinLeaveLock.tryLock(15, TimeUnit.SECONDS)) {
                 try {
-
-                    session.leave(participant.getParticipantPrivateId(), reason);
-
                     if (!"sub".contains(sessionId)) {
                         //방을 나가면 레디 목록에서 사라지게 함.
                         HashMap<String, Boolean> readyState = GameService.readySetting.get(sessionId);
@@ -239,8 +236,9 @@ public class KurentoSessionManager extends SessionManager {
                         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
                         HttpEntity<?> httpEntity = new HttpEntity<>(headers);
                         restTemplate.exchange(uri.toString(), HttpMethod.DELETE, httpEntity, String.class);
-
                     }
+
+                    session.leave(participant.getParticipantPrivateId(), reason);
 
                     // Update control data structures
                     if (sessionidParticipantpublicidParticipant.get(sessionId) != null) {
@@ -285,6 +283,32 @@ public class KurentoSessionManager extends SessionManager {
                         // recording. Will be stopped after in method
                         // "SessionManager.closeSessionAndEmptyCollections"
                         if (remainingParticipants.isEmpty()) {
+
+                            //게임 자원 반납.
+                            Thread deathNoteThread = GameService.gameThread.get(sessionId);
+                            GameService.gameThread.remove(sessionId);
+                            GameService.gameRoles.remove(sessionId);
+                            GameService.roleMatching.remove(sessionId);
+                            GameService.participantsList.remove(sessionId);
+                            GameService.alivePolices.remove(sessionId);
+                            GameService.kiraAndL.remove(sessionId);
+                            GameService.deathNoteList.remove(sessionId);
+                            GameService.readySetting.remove(sessionId);
+
+                            if (deathNoteThread != null) {
+                                deathNoteThread.interrupt();
+                            }
+
+                            if (!"sub".contains(sessionId)) {
+                                //세션 종료되면 방 비활성화.
+                                String apiUrl = "http://localhost:8080/room/finish/" + sessionId;
+                                RestTemplate restTemplate = new RestTemplate();
+                                HttpHeaders httpHeaders = new HttpHeaders();
+                                UriComponents uri = UriComponentsBuilder.fromHttpUrl(apiUrl).build();
+                                HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
+                                restTemplate.exchange(uri.toString(), HttpMethod.PUT, httpEntity, String.class);
+                            }
+
                             if (openviduConfig.isRecordingModuleEnabled()
                                     && MediaMode.ROUTED.equals(session.getSessionProperties().mediaMode())
                                     && (this.recordingManager.sessionIsBeingRecorded(sessionId))) {
@@ -300,30 +324,6 @@ public class KurentoSessionManager extends SessionManager {
                                         try {
                                             if (session.isClosed()) {
                                                 return false;
-                                            }
-                                            //게임 자원 반납.
-                                            Thread deathNoteThread = GameService.gameThread.get(sessionId);
-                                            GameService.gameThread.remove(sessionId);
-                                            GameService.gameRoles.remove(sessionId);
-                                            GameService.roleMatching.remove(sessionId);
-                                            GameService.participantsList.remove(sessionId);
-                                            GameService.alivePolices.remove(sessionId);
-                                            GameService.kiraAndL.remove(sessionId);
-                                            GameService.deathNoteList.remove(sessionId);
-                                            GameService.readySetting.remove(sessionId);
-
-                                            if (deathNoteThread != null) {
-                                                deathNoteThread.interrupt();
-                                            }
-
-                                            if (!"sub".contains(sessionId)) {
-                                                //세션 종료되면 방 비활성화.
-                                                String apiUrl = "http://localhost:8080/room/finish/" + sessionId;
-                                                RestTemplate restTemplate = new RestTemplate();
-                                                HttpHeaders httpHeaders = new HttpHeaders();
-                                                UriComponents uri = UriComponentsBuilder.fromHttpUrl(apiUrl).build();
-                                                HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
-                                                restTemplate.exchange(uri.toString(), HttpMethod.PUT, httpEntity, String.class);
                                             }
 
                                             log.info("No more participants in session '{}', removing it and closing it",

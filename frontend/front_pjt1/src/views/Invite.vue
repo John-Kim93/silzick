@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 
 const gameStore = 'gameStore';
 
@@ -36,7 +36,11 @@ export default {
   },
   methods:  {
     ...mapActions(gameStore, ['setSessionID', 'guestJoinRoom']),
+    ...mapMutations(gameStore, ['GAME_CHECKIN']),
   },
+  created () {
+    this.GAME_CHECKIN()
+  }
 };
 </script>
 
