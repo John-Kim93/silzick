@@ -522,7 +522,7 @@ const gameStore = {
       })
 
       //방장이면 sessionCreate부터 해야하므로 getToken으로, 이미 세션 만들어져 있으면 createToken으로 토큰만 만듬.
-      if(state.isHost){
+      if(state.sessionId){
         await dispatch("getToken", state.sessionId).then((token) => {
           session
           .connect(token, { clientData: state.nickname })
@@ -719,7 +719,7 @@ const gameStore = {
       
       
       //방장이면 sessionCreate부터 해야하므로 getToken으로, 이미 세션 만들어져 있으면 createToken으로 토큰만 만듬.
-      if(state.ishost){
+      if(state.sessionId){
         dispatch("getToken", 'sub' + state.sessionId).then((subToken) => {
           subSession
           .connect(subToken, { clientData: state.nickname })
@@ -758,7 +758,7 @@ const gameStore = {
             });
         });
       }
-      // window.addEventListener("beforeunload", this.leaveSession);
+      window.addEventListener("beforeunload", this.leaveSession);
     },
 
 
