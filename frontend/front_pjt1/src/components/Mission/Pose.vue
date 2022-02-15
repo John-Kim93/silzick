@@ -7,11 +7,11 @@
     <!-- 미션게이지와 미션완료시 아이콘 표시 -->
     <div v-if="impormation" class="d-flex row flex-wrap justify-content-center mb-3">
       <p class="my-1 col-12">{{similiarity}}</p>
-      <div class="col-12">
+      <div class="col-12 d-flex row justify-content-around">
         <exchange-timer class="col-3"/>
         <!-- 모션 설명하는 이미지 -->
         <img
-          class="offset-3 col-6 my-1"
+          class="col-4 my-1"
           :src="require(`@/assets/img/이모지/${impormation}.jpg`)"
           alt="모션"
         >
