@@ -23,6 +23,8 @@ const gameStore = {
     participants: [],
     publisherId: undefined,
     winner: undefined,
+    mainGameTimerSevenOrThirty: 30,
+    turn : 0,
     
     // Ovenvidu
     OV: undefined,
@@ -153,12 +155,17 @@ const gameStore = {
     EXCHANGE_OFF (state) {
       state.subOV = undefined
       state.subPublisher = undefined
-      state.subSession = undefined
       state.subSubscribers = []
-      state.subOVToken = undefined
     },
     SET_HOST_ID(state, hostId){
       state.hostId = hostId
+    },
+    COUNT_TURN(state) {
+      state.turn ++
+    },
+    // 명교방 갔다 나오면 타이머 7초로 설정
+    SET_MAINGAME_TIMER(state, res) {
+      state.mainGameTimerSevenOrThirty = res
     },
     
     //미션 관련 기능
@@ -171,8 +178,6 @@ const gameStore = {
       state.random_int = res
     },
     MISSION_SELECT(state){
-      console.log('랜덤인트 잘 뽑히는지 확인')
-      console.log(state.random_int)
       state.mission = state.random_int
       state.random_int = 0
     },
@@ -465,11 +470,18 @@ const gameStore = {
         }
       });
       // 명함교환 방 자동 이동 & 미션 자동 분배
-      session.on("signal:autoSyste", (event) => {
+      session.on("signal:autoSystem", (event) => {
         // const action = JSON.parse(event.data).action
         const { action } = event.data
         switch(action){
+          // 명교방 안가는 사람들한테 turn 1씩 증가시키기
+          case 'exchangeName': {
+            commit('COUNT_TURN')
+            break
+          }
+          // 명교방 가는 사람한테만 보냄
           case 'exchangeNameStart': {
+            commit('COUNT_TURN')
             state.session.unpublish(state.publisher)
             commit('SET_PUBLISHER', undefined)
             let subPublisher = OV.initPublisher(undefined, {
@@ -801,6 +813,8 @@ const gameStore = {
       })
     },
     exitCard({state, commit}) {
+      // 메인게임 화면 타이머 7초짜리로 변경
+      commit('SET_MAINGAME_TIMER', false)
       state.subSession.unpublish(state.subPublisher)
       commit('SET_SUB_PUBLISHER', undefined)
       let publisher = state.OV.initPublisher(undefined, {
@@ -831,7 +845,7 @@ const gameStore = {
     },
     missionSelect({commit,dispatch},isNormalMission){
       //미션 종류 선택
-      dispatch('randomInt',{min:2,max:2})
+      dispatch('randomInt',{min:1,max:2})
       commit('MISSION_SELECT')
       //미션이 일반미션인지, 히든인지.
       commit('IS_NORMAL_MISSION',isNormalMission)
@@ -847,7 +861,6 @@ const gameStore = {
     },
     checkIsKIRAorL({commit}, jobName){
       if(jobName == 'KIRA' || jobName == 'L'){
-        console.log("키라랑 엘 바꾸기!")
         commit('IS_KIRA_OR_L', true);
       }else{
         commit('IS_KIRA_OR_L', false);
@@ -876,14 +889,12 @@ const gameStore = {
       }
     },
     async init ({state,commit}) {
-      console.log('0!!!!')
       const model = await tmPose.load(state.modelURL, state.metadataURL)
       const flip = true
       const webcam = new tmPose.Webcam(state.size, state.size, flip)
       commit('SET_POSE_MODEL',model)
       commit('SET_POSE_WEBCAM',webcam)
       await state.webcam.setup()
-      console.log("!!!")
       await state.webcam.play()
     },
 
@@ -959,7 +970,6 @@ const gameStore = {
       commit('SET_PARTICIPANTS', [])
       commit('SET_MY_PUBLISHER_ID', undefined)
       commit('SET_WINNER', undefined)
-      //게임 종료 후 초기화
       commit('SET_MISSION', -1)
       commit('SET_RANDOM_INT', 0)
       commit('SET_MISSION_SUCCESS',0)
