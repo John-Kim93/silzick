@@ -23,17 +23,17 @@
       <h4>
         <p>누구를 죽이시겠습니까?</p>
         <select
-            v-model="selectSubscriber"
+            v-model="selectParticipant"
             id="background-black"
             class="select-btn"
           >
             <option selected disabled>참가자 목록</option>
             <option
-              v-for="sub in subscribers"
-              :key="sub.stream.connection.connectionId"
-              :value="sub.stream.connection.connectionId"
+              v-for="participant, idx in participants"
+              :key="idx"
+              :value="participant.connectionId"
             >
-              {{sub.stream.connection.data.slice(15, -2)}}
+              {{participant.nickname}}
             </option>
           </select>
           은/는 
@@ -55,6 +55,7 @@
     </div>
     <div class="w-100 d-block text-center" >
       <button
+        :disabled="numberOfSkillUse < 1"
         id="btn-color-kira"
         class="btn btn-lg m-3"
         @click="noteWrite"
@@ -122,6 +123,7 @@
     </div>
     <div class="w-100 d-block text-center" >
       <b-button
+        :disabled="numberOfSkillUse < 1"
         id="btn-color-kira"
         size="lg"
         class="my-3"
@@ -133,7 +135,7 @@
   </div>
 
   <!-- 3.경찰총장 -->
-  <div class="border border-dark rounded-3" v-if='myJob == "POLICE"'>
+  <div class="border border-dark rounded-3" v-if='myJob == "L"'>
     <div>
       <h1 class="" style="">
         <font size="7">
@@ -198,6 +200,7 @@
       </div>
     <div class="w-100 d-block text-center" >
       <b-button
+        :disabled="numberOfSkillUse < 1"
         id="btn-color"
         size="lg"
         class="my-3"
@@ -241,6 +244,7 @@
     </div>
     <div class="w-100 d-block text-center" >
       <b-button
+        :disabled="numberOfSkillUse < 1"
         id="btn-color"
         size="lg"
         class="my-3"
@@ -293,6 +297,7 @@
     </div>
     <div class="w-100 d-block text-center" >
       <b-button
+        :disabled="numberOfSkillUse < 2"
         id="btn-color"
         size="lg"
         class="my-3"
@@ -307,7 +312,7 @@
 
 <script src="https://kit.fontawesome.com/ac38071ee5.js" crossorigin="anonymous"></script>
 <script>
-import {mapState} from 'vuex'
+import {mapState, mapActions} from 'vuex'
 
 const gameStore = 'gameStore'
 
@@ -322,10 +327,12 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants'])
+    ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants','numberOfSkillUse',])
   },
   methods: {
+    ...mapActions(gameStore, ['numberOfSkillUse',]),
     noteWrite () {
+      this.numberOfSkillUse(-1)
       this.show = false
       console.log(this.selectParticipant)
       this.session.signal({
@@ -353,6 +360,7 @@ export default {
       })
     },
     broadcast () {
+      this.numberOfSkillUse(-1)
       this.show = false
       this.session.signal({
         type: 'game',
@@ -366,6 +374,7 @@ export default {
       this.broadcastMessage = ''
     },
     arrest () {
+      this.numberOfSkillUse(-2)
       this.show = false
       this.session.signal({
         type: 'game',
@@ -379,6 +388,7 @@ export default {
       this.selectParticipant = '참가자 목록'
     },
     protect () {
+      this.numberOfSkillUse(-1)
       this.show = false
       this.session.signal({
         type: 'game',
@@ -392,6 +402,7 @@ export default {
       this.selectParticipant = '참가자 목록'
     },
     kill () {
+      this.numberOfSkillUse(-1)
       this.show = false
       this.session.signal({
         type: 'game',
