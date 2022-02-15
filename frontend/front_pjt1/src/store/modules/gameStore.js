@@ -466,11 +466,13 @@ const gameStore = {
             break;
           } 
           case 'missionStart':{
-            //리셋하고
-            dispatch('missionReset')
-            //히든미션으로 다시 미션 시작.
-            dispatch('missionSelect',false)
-            break;
+            if (state.isKIRAorL == false) {
+              //리셋하고
+              dispatch('missionReset')
+              //히든미션으로 다시 미션 시작.
+              dispatch('missionSelect',false)
+              break;
+            }
           }
       }
         // 두명 중 하나가 퍼블리셔면 언퍼블리시하고 라우터푸시 조인세션?
