@@ -44,6 +44,7 @@
 import cookies from 'vue-cookies'
 import { mapState } from 'vuex'
 
+
 const gameStore = 'gameStore'
 
 export default {

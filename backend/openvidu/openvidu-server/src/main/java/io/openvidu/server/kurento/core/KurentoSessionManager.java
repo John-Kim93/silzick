@@ -222,7 +222,8 @@ public class KurentoSessionManager extends SessionManager {
         try {
             if (session.joinLeaveLock.tryLock(15, TimeUnit.SECONDS)) {
                 try {
-                    if (!"sub".contains(sessionId)) {
+                    String subSessionId = "sub" + sessionId;
+                    if (!subSessionId.equals(sessionId)) {
                         //방을 나가면 레디 목록에서 사라지게 함.
                         HashMap<String, Boolean> readyState = GameService.readySetting.get(sessionId);
                         readyState.remove(participant.getParticipantPublicId());
@@ -298,8 +299,8 @@ public class KurentoSessionManager extends SessionManager {
                             if (deathNoteThread != null) {
                                 deathNoteThread.interrupt();
                             }
-
-                            if (!"sub".contains(sessionId)) {
+                            subSessionId = "sub" + sessionId;
+                            if (!subSessionId.equals(sessionId)) {
                                 //세션 종료되면 방 비활성화.
                                 String apiUrl = "http://localhost:8080/room/finish/" + sessionId;
                                 RestTemplate restTemplate = new RestTemplate();
