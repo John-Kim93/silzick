@@ -79,7 +79,7 @@ const gameStore = {
     size: 200,
 
     //screenShot
-    pic_list : [],
+    pic_list : '',
     box_height: 0,
     box_width: 0
   },
@@ -257,7 +257,7 @@ const gameStore = {
     },
     // 스크린샷
     SCREEN_SHOT(state,canvas){
-      state.pic_list.push(canvas)
+      state.pic_list=canvas
     },
     SET_BOX_WIDTH(state,size){
       state.box_width = size
