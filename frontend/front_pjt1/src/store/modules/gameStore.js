@@ -75,6 +75,15 @@ const gameStore = {
     webcam: undefined,
     size: 200,
   },
+  getters: {
+    getSessionId : function(state){
+      return state.sessionId;
+    },
+    getIsHost : function(state){
+      return state.isHost;
+    }
+
+  },
   
   mutations: {
     GAME_CHECKIN (state) {
@@ -528,7 +537,6 @@ const gameStore = {
             commit('SET_MY_PUBLISHER_ID', state.publisher.stream.connection.connectionId)
             router.push({
               name: 'Attend',
-              params: { hostname: state.sessionId}
             })
           })
             .catch((error) => {
@@ -566,7 +574,6 @@ const gameStore = {
             commit('SET_MY_PUBLISHER_ID', state.publisher.stream.connection.connectionId)
             router.push({
               name: 'Attend',
-              params: { hostname: state.sessionId}
             })
           })
             .catch((error) => {
@@ -881,6 +888,7 @@ const gameStore = {
     },
 
     //입장 관련 기능
+    //방장이 방 생성
     createRoomRequest({commit}, userId){
       createRoom(
         userId,
@@ -896,6 +904,7 @@ const gameStore = {
       })
     },
 
+    //게스트 참여
     guestJoinRoom({commit}, hostId){
       joinRoom(
         hostId,
@@ -912,35 +921,66 @@ const gameStore = {
 
     //게임 종료 후 되돌아가기 
     gameReset({state, commit}){
-    //게임 종료 후 초기화
-    commit('SET_READY_STATUS', false)
-    commit('SET_PARTICIPANTS', [])
-    commit('SET_MY_PUBLISHER_ID', undefined)
-    commit('SET_WINNER', undefined)
-    //게임 종료 후 초기화
-    commit('SET_MISSION', -1)
-    commit('SET_RANDOM_INT', 0)
-    commit('SET_MISSION_SUCCESS',0)
-    commit('SET_NUMBER_OF_SKILL_USE',0)
-    commit('IS_NORMAL_MISSION',true)
-    commit('SET_OPTIONS', [
-      { value: 'KIRA', text: '노트주인'},
-      { value: 'CRIMINAL', text: '추종자'},
-      { value: 'L', text: '경찰총장'},
-      { value: 'POLICE', text: '경찰'},
-      { value: 'GUARD', text: '보디가드'},
-      { value: 'BROADCASTER', text: '방송인'},
-    ])
-    commit('IS_KIRA_OR_L', false)
-    commit('IS_ALIVE', true)
-    commit('SET_MY_JOB', undefined)
-    commit('RESET_MESSAGES')
-    commit('GET_JOB_PROPS',jobs)
-
-    router.push({
-      name: 'Attend',
-      params: { hostname: state.sessionId}
-    })
+      if(!state.subPublisher){
+        const OV = new OpenVidu();
+        let subPublisher = OV.initPublisher(undefined, {
+          audioSource: undefined, // The source of audio. If undefined default microphone
+          videoSource: undefined, // The source of video. If undefined default webcam
+          publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+          publishVideo: true, // Whether you want to start publishing with your video enabled or not
+          resolution: "1280×720", // The resolution of your video
+          frameRate: 30, // The frame rate of your video
+          insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+          mirror: false, // Whether to mirror your local video or not
+        });
+        state.subSession.publish(subPublisher)
+        commit('SET_SUB_PUBLISHER', subPublisher)
+      }
+      if(!state.publisher){
+        const OV = new OpenVidu();
+        let Publisher = OV.initPublisher(undefined, {
+          audioSource: undefined, // The source of audio. If undefined default microphone
+          videoSource: undefined, // The source of video. If undefined default webcam
+          publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+          publishVideo: true, // Whether you want to start publishing with your video enabled or not
+          resolution: "1280×720", // The resolution of your video
+          frameRate: 30, // The frame rate of your video
+          insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+          mirror: false, // Whether to mirror your local video or not
+        });
+        state.session.publish(Publisher)
+        commit('SET_PUBLISHER', Publisher)
+        state.publisher.ready = false
+      }else{
+        state.publisher.ready = false
+      }
+      //게임 종료 후 초기화
+      commit('SET_READY_STATUS', false)
+      commit('SET_PARTICIPANTS', [])
+      commit('SET_MY_PUBLISHER_ID', undefined)
+      commit('SET_WINNER', undefined)
+      //게임 종료 후 초기화
+      commit('SET_MISSION', -1)
+      commit('SET_RANDOM_INT', 0)
+      commit('SET_MISSION_SUCCESS',0)
+      commit('SET_NUMBER_OF_SKILL_USE',0)
+      commit('IS_NORMAL_MISSION',true)
+      commit('SET_OPTIONS', [
+        { value: 'KIRA', text: '노트주인'},
+        { value: 'CRIMINAL', text: '추종자'},
+        { value: 'L', text: '경찰총장'},
+        { value: 'POLICE', text: '경찰'},
+        { value: 'GUARD', text: '보디가드'},
+        { value: 'BROADCASTER', text: '방송인'},
+      ])
+      commit('IS_KIRA_OR_L', false)
+      commit('IS_ALIVE', true)
+      commit('SET_MY_JOB', undefined)
+      commit('RESET_MESSAGES')
+      commit('GET_JOB_PROPS',jobs)
+      router.push({
+        name: 'Attend',
+      })
     }
 
   },

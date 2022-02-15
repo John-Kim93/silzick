@@ -480,6 +480,10 @@ public class GameService {
                         }
                     }
                     alivePolices.compute(sessionId, (k, v) -> v - 1);
+
+                    if (alivePolices.getOrDefault(sessionId, 0) < 1) {
+                        finishGame(participant, sessionId, participants, params, data, "KIRA");
+                    }
                 }
 
                 for (Participant p : participants) {
