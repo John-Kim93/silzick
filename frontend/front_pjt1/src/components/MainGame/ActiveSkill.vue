@@ -86,7 +86,7 @@
         </div>
       </template>
     </b-modal>
- 
+
     <!-- 2. 추종자 -->
     <b-modal v-model="show" v-if='myJob == "CRIMINAL"'
       id='skill' 
@@ -101,7 +101,7 @@
       centered
       >
       <template #modal-header  >
-       <div></div>
+        <div></div>
         <h1>
           <b-iconstack scale="2" animation="">
             <b-icon stacked icon="receipt" animation="" rotate="180"></b-icon>
@@ -299,9 +299,9 @@
       centered
       >
       <template #modal-header  >
-       <div></div>
-       <!-- 아래 이미지 없음 -->
-       <!-- <img src="../../assets/img/scull.jpg" alt="scull"> -->
+        <div></div>
+        <!-- 아래 이미지 없음 -->
+        <!-- <img src="../../assets/img/scull.jpg" alt="scull"> -->
         <h1 ><font size="7">검거 </font></h1>
         <div></div>
       </template> 
@@ -368,20 +368,23 @@ export default {
     ...mapActions(gameStore, ['numberOfSkillUse']),
 
     noteWrite () {
-      this.show = false
-      console.log(this.selectParticipant)
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 5,
-          skillType: 'noteWrite',
-          target: this.selectParticipant,
-          jobName: this.selectJobName
-        },
-        to: [],
-      })
-      this.selectParticipant = '참가자 목록'
-      this.selectJobName = '직업'
+      if(this.numberOfSkillUsed>0){
+        this.show = false
+        console.log(this.selectParticipant)
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 5,
+            skillType: 'noteWrite',
+            target: this.selectParticipant,
+            jobName: this.selectJobName
+          },
+          to: [],
+        })
+        this.selectParticipant = '참가자 목록'
+        this.selectJobName = '직업'
+        this.numberOfSkillUse(-1)
+      }
     },
     noteUse () {
       this.show = false
