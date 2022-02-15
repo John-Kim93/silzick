@@ -5,15 +5,22 @@
     <!-- 미션이 완료되는동안 확률이 계속 표시되서 게이지가 다 차면 안보이게 수정 -->
 
     <!-- 미션게이지와 미션완료시 아이콘 표시 -->
-    
-    <div v-if="impormation" class="justify-content-center mb-3">
-
-      <p class="m-0">{{impormation}} <br> {{similiarity}}</p>
-      <exchange-timer/>
-      <img width="100px" height="100px" :src="require(`@/assets/img/이모지/${impormation}.jpg`)" alt="모션">
-      <b-progress class="w-75" :max="maxLoadingTime" height="1.5rem">
+    <div v-if="impormation" class="d-flex row flex-wrap justify-content-center mb-3">
+      <p class="my-1 col-12">{{similiarity}}</p>
+      <div class="col-12">
+        <exchange-timer class="col-3"/>
+        <!-- 모션 설명하는 이미지 -->
+        <img
+          class="offset-3 col-6 my-1"
+          :src="require(`@/assets/img/이모지/${impormation}.jpg`)"
+          alt="모션"
+        >
+      </div>
+      <!-- 달성도 표시 -->
+      <b-progress class="p-0 col-10" :max="maxLoadingTime">
         <b-progress-bar :value="loadingTime" :label="`${((loadingTime / maxLoadingTime) * 100).toFixed(2)}%`"></b-progress-bar>
       </b-progress>
+      <div class="col-12"></div>
     </div>
     <div v-if="!loading"> 
       

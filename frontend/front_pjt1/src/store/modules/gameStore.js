@@ -147,6 +147,8 @@ const gameStore = {
       state.random_int = Math.floor(Math.random()*(max-min+1))+min
     },
     MISSION_SELECT(state){
+      console.log('랜덤인트 잘 뽑히는지 확인')
+      console.log(state.random_int)
       state.mission = state.random_int
       state.random_int = 0
     },
@@ -741,7 +743,7 @@ const gameStore = {
     },
     missionSelect({commit,dispatch},isNormalMission){
       //미션 종류 선택
-      dispatch('randomInt',{min:1,max:2})
+      dispatch('randomInt',{min:1,max:1})
       commit('MISSION_SELECT')
       //미션이 일반미션인지, 히든인지.
       commit('IS_NORMAL_MISSION',isNormalMission)

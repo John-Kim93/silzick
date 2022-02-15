@@ -2,17 +2,26 @@
   <div class="d-flex row justify-content-center align-content-start m-1" style="height:23vh">
     <p id="base-font" class="col-12 m-1" style="font-size:1.5rem">MISSION</p>
     <hr class="m-0 col-12">
-    <div class="row d-flex justify-content-center" v-if=!missionStart>
-      <button id="btn-color" class="btn btn-lg col-4 mt-5" v-show="!mission && webcam" @click="missionSelect(true)">start</button>
+    <!-- 미션 스타트 버튼 -->
+    <div class="row d-flex justify-content-center" v-if="!mission && webcam">
+      <button
+        id="btn-color"
+        class="btn btn-lg col-4 mt-5"
+        @click="missionSelect(true)"
+      >start</button>
     </div>
+    <!-- 버튼 클릭 시 미션 시작 -->
     <div v-else>
-      <pose v-if="mission==1" />
-      <vue-web-speech v-if="mission==2"/>
+      <pose v-if="mission==1"/>
+      <div v-if="mission==2">
+        <vue-web-speech></vue-web-speech>
+      </div>
     </div>
   </div>
 </template>
 <script>
 import pose from '../Mission/Pose.vue'
+
 import { mapState, mapActions } from 'vuex'
 
 const gameStore = 'gameStore';
@@ -21,7 +30,7 @@ export default {
   name: 'Mission',
   data () {
     return {
-      missionStart: false,
+      missionShow: false,
     }
   },
   components: { 
@@ -38,8 +47,7 @@ export default {
   },
   methods:{
     ...mapActions(gameStore, ['missionSelect','init','missionReset']),
-  }
-    
+  },    
 }
 </script>
 
