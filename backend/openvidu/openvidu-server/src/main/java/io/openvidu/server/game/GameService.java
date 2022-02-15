@@ -37,7 +37,6 @@ public class GameService {
     static final int GAMESTART = 4;
     static final int USESKILL = 5;
     static final int CHECKPARTICIPANTS = 7;
-    static final int GAMEOVER = 8;
 
 
     private static final Logger log = LoggerFactory.getLogger(GameService.class);

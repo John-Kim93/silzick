@@ -124,7 +124,7 @@ public class GameRunnable implements Runnable {
                             break;
                         }
                     }
-                } else if(missionSize==1) {
+                } else if (missionSize == 1) {
 
                     rpcNotificationService.sendNotification(missionCandidates.get(0).getParticipant().getParticipantPrivateId(),
                             ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
@@ -174,7 +174,7 @@ public class GameRunnable implements Runnable {
         //참가자 목록 섞기
         Collections.shuffle(roles);
 
-        if(roles.get(0).getJobName().equals("KIRA") && roles.get(1).getJobName().equals("CRIMINAL")){
+        if (roles.get(0).getJobName().equals("KIRA") && roles.get(1).getJobName().equals("CRIMINAL")) {
             data.addProperty("action", "meetKIRA");
             params.add("data", data);
 
@@ -182,7 +182,7 @@ public class GameRunnable implements Runnable {
                 rpcNotificationService.sendNotification(roles.get(i).getParticipant().getParticipantPrivateId(),
                         ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
             }
-        }else if(roles.get(1).getJobName().equals("KIRA") && roles.get(0).getJobName().equals("CRIMINAL")){
+        } else if (roles.get(1).getJobName().equals("KIRA") && roles.get(0).getJobName().equals("CRIMINAL")) {
             data.addProperty("action", "meetKIRA");
             params.add("data", data);
 
@@ -200,6 +200,14 @@ public class GameRunnable implements Runnable {
         //2명만 명교 시작.
         for (int i = 0; i < 2; i++) {
             rpcNotificationService.sendNotification(roles.get(i).getParticipant().getParticipantPrivateId(),
+                    ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+        }
+
+        data.addProperty("action", "exchangeName");
+        params.add("data", data);
+
+        for (Participant p : participantsList) {
+            rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
         }
 

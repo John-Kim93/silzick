@@ -93,5 +93,6 @@ public class RoomService {
         Room room = roomRepository.findRoomByRoomCode(sessionId).orElseThrow(() -> new RoomNotFoundException("Error"));
         Participants participants = participantsRepository.findByRoomAndNickName(room, nickName).orElseThrow(()-> new ParticipantsNotFoundException("Error"));
         participantsRepository.delete(participants);
+
     }
 }

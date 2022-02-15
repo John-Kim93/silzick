@@ -82,6 +82,7 @@ import io.openvidu.server.utils.SDPMunging;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -230,17 +231,14 @@ public class KurentoSessionManager extends SessionManager {
                         readyState.remove(participant.getParticipantPublicId());
                         GameService.readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
 
-//                        String nickName = participant.getClientMetadata().
-//                        JsonObject userInfo = new JsonObject();
-//                        userInfo.addProperty("roomCode", sessionId);
-//                        userInfo.addProperty("nickName", .);
-//                        //세션 종료되면 방 비활성화.
-//                        String apiUrl = "http://localhost:8080/room/delete/";
-//                        RestTemplate restTemplate = new RestTemplate();
-//                        HttpHeaders httpHeaders = new HttpHeaders();
-//                        UriComponents uri = UriComponentsBuilder.fromHttpUrl(apiUrl).build();
-//                        HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
-//                        restTemplate.exchange(uri.toString(), HttpMethod.DELETE, httpEntity, String.class);
+                        String nickName = participant.getClientMetadata().substring(15, participant.getClientMetadata().length() - 2);
+                        //세션 종료되면 방 비활성화.
+                        String url = "http://localhost:8080/room/delete/" + sessionId + "?nickName=" + nickName;
+                        RestTemplate restTemplate = new RestTemplate();
+                        HttpHeaders headers = new HttpHeaders();
+                        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+                        HttpEntity<?> httpEntity = new HttpEntity<>(headers);
+                        restTemplate.exchange(uri.toString(), HttpMethod.DELETE, httpEntity, String.class);
 
                     }
 
