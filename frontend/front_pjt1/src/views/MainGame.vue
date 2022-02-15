@@ -34,6 +34,14 @@
             />
           </div>
         </div>
+        <!-- screenShot -->
+        <div
+          class="col-6"
+          v-for="pic in pic_list"
+          :key="pic"
+        >
+          <screen-shot/>
+        </div>
       </div>
 
       <!-- 타이머 & 직업 & 메모 & 채팅 div -->
@@ -87,6 +95,7 @@ import Toggle from '@/components/MainGame/Toggle.vue'
 import Chatting from '@/components/MainGame/Chatting.vue'
 import ExchangeTimer from '../components/MainGame/ExchangeTimer.vue'
 import Mission from '@/components/MainGame/Mission.vue'
+import ScreenShot from '@/components/MainGame/ScreenShot.vue'
 
 const gameStore = 'gameStore'
 
@@ -98,6 +107,7 @@ export default {
     Chatting,
     ExchangeTimer,
     Mission,
+    ScreenShot,
   },
   data () {
     return {
@@ -106,7 +116,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages',])
+    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages','pic_list'])
   },
 
   methods : {

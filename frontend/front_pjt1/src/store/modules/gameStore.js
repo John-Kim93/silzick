@@ -5,6 +5,7 @@ import { jobs } from './gameUtil.js'
 import router from '@/router/index.js'
 import { createRoom, nickNameCheck, joinRoom } from '@/api/user.js'
 import * as tmPose from '@teachablemachine/pose'
+import html2canvas from 'html2canvas';
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -75,6 +76,9 @@ const gameStore = {
     model: undefined,
     webcam: undefined,
     size: 200,
+
+    //screenShot
+    pic_list : ['1']
   },
   
   mutations: {
@@ -209,6 +213,10 @@ const gameStore = {
     },
     SET_POSE_WEBCAM(state,res){
       state.webcam = res
+    },
+    // 스크린샷
+    SCREEN_SHOT(state,canvas){
+      state.pic_list.push(canvas)
     },
   },
 
@@ -827,6 +835,38 @@ const gameStore = {
           console.log(err)
         })
     },
+    screenShot({commit},connectionId) { 
+      // const id = 'local-video-'+connectionId
+      console.log(connectionId)
+      html2canvas(document.getElementById(connectionId),) 
+      .then ((canvas) =>{
+        commit('SCREEN_SHOT',canvas)
+        // dispatch('drawImg',canvas.toDataURL('image/png'));  
+        })
+      .catch((err)=> {
+        console.log(err); 
+        }) 
+    },
+    // drawImg({commit,},imgData) {
+    //   console.log(imgData); 
+    //   return new Promise(function reslove() {
+    //   const canvas = document.getElementById('dead');
+    //   const target = document.getElementById('dead-box')
+    //   const ctx = canvas.getContext('2d'); 
+    //   ctx.clearRect(0, 0, target.width, target.height);
+    //   const imageObj = new Image();
+    //   imageObj.onload = function () {
+    //     ctx.drawImage(document.getElementById('frame'),0,0,target.width,target.height) 
+    //     ctx.globalAlpha = 0.5
+    //     // ctx.fillstyle ="black"
+    //     // ctx.fillRect(0, 0,canvas.width,canvas.height)
+    //     ctx.drawImage(imageObj, 0, 0,target.width,target.height);
+    //     };
+    //   imageObj.src = imgData;
+    //   console.log('완료')   
+    //   });
+    // },
+
 
 
     //게임 종료 후 되돌아가기 
