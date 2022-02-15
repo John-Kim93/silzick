@@ -515,7 +515,6 @@ const gameStore = {
           }
           // 명교방 가는 사람한테만 보냄
           case 'exchangeNameStart': {
-            commit('COUNT_TURN')
             state.session.unpublish(state.publisher)
             commit('SET_PUBLISHER', undefined)
             let subPublisher = OV.initPublisher(undefined, {
