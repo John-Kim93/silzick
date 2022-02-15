@@ -23,6 +23,8 @@
         v-if="isKIRAorL == false"
       >start</button>
       <p v-else>KIRA와L은 미션을 수행할수 없습니다</p>
+      가짜명함:{{missionSuccessCount}}
+      스킬횟수:{{numberOfSkillUse}}
     </div>
     <!-- 버튼 클릭 시 미션 시작 -->
     <div v-else>
@@ -57,7 +59,7 @@ export default {
     },2000)
   },
   computed: {
-    ...mapState(gameStore, ['mission','webcam', 'isNormalMission', 'isKIRAorL']),
+    ...mapState(gameStore, ['mission','webcam', 'isKIRAorL', 'numberOfSkillUse', 'missionSuccessCount', 'isNormalMission',]),
   },
   methods:{
     ...mapActions(gameStore, ['missionSelect','init','missionReset']),
