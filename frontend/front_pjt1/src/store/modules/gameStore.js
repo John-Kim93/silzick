@@ -501,6 +501,9 @@ const gameStore = {
           const winner = event.data.winner
           commit('SET_WINNER', winner)
           router.push({ name: 'GameEnd' })
+          .catch((err) => {
+            console.log(err)
+          })
         }
       });
       // 명함교환 방 자동 이동 & 미션 자동 분배
