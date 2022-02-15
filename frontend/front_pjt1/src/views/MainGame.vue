@@ -8,17 +8,19 @@
       >
         <button @click="test"> test </button>
         <!--6명 이하 6분할-->
-        <div
+        <div id ='my'
           class="col-6"
           v-if="subscribers.length < 6"
         > 
           <!-- 내 비디오 -->
-          <div class="p-1">
+          <div  class="p-1 h-100">
             <user-video
               id="base-border"
               class="pt-1 px-1"
               :stream-manager="publisher"
+              v-if="isAlive"
             />
+            <screen-shot v-else id="base-border" class="pt-1 px-1" :idx="idx"/>
           </div>
         </div>
         <!-- 다른 사람 비디오 -->
@@ -27,7 +29,7 @@
           v-for="subscriber in subscribers"
           :key="subscriber.stream.connection.connectionId"
         >
-          <div class="p-1">
+          <div class="p-1 h-100">
             <user-video
               id="base-border"
               class="pt-1 px-1"
@@ -35,6 +37,16 @@
             />
           </div>
         </div>
+        <!-- screenShot -->
+        <!-- <div
+          class="col-6"
+          v-for="(pic,idx) in pic_list"
+          :key="idx"
+        > 
+          <div class="p-1">
+            <screen-shot id="base-border" class="pt-1 px-1" :idx="idx"/>
+          </div>
+        </div> -->
       </div>
 
       <!-- 타이머 & 직업 & 메모 & 채팅 div -->
@@ -98,6 +110,7 @@ import Chatting from '@/components/MainGame/Chatting.vue'
 import ExchangeTimer from '../components/MainGame/ExchangeTimer.vue'
 import ExchangeTimerSevenSec from '../components/MainGame/ExchangeTimerSevenSec.vue'
 import Mission from '@/components/MainGame/Mission.vue'
+import ScreenShot from '@/components/MainGame/ScreenShot.vue'
 
 const gameStore = 'gameStore'
 
@@ -110,6 +123,7 @@ export default {
     ExchangeTimer,
     ExchangeTimerSevenSec,
     Mission,
+    ScreenShot,
   },
   data () {
     return {
@@ -119,12 +133,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages', 'mainGameTimerSevenOrThirty', 'turn'])
+    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages', 'mainGameTimerSevenOrThirty', 'turn', 'isKIRAorL','pic_list','isAlive']),
   },
-
   methods : {
     ...mapMutations(gameStore, ['SET_MAINGAME_TIMER', 'COUNT_TURN']),
-    ...mapActions(gameStore, ['sendMessage']),
+    ...mapActions(gameStore, ['sendMessage', 'numberofSkillUse','boxSizing']),
     test() {
       console.log('턴 증가')
       this.COUNT_TURN()
@@ -147,6 +160,11 @@ export default {
         this.chatMessage=""
       }
     },
+  },
+  mounted(){
+    console.log('박스사이징')
+    this.boxSizing()
+    console.log('박스사이징 종료')
   },
   created() {
     if (this.mainGameTimerSevenOrThirty === false) {

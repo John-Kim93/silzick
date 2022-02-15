@@ -5,6 +5,7 @@ import { jobs } from './gameUtil.js'
 import router from '@/router/index.js'
 import { createRoom, nickNameCheck, joinRoom } from '@/api/user.js'
 import * as tmPose from '@teachablemachine/pose'
+import html2canvas from 'html2canvas';
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -46,9 +47,9 @@ const gameStore = {
     mission: -1,
     random_int: 0,
     //거짓 명함 낼 수 있는 횟수(미션 달성 횟수)
-    missionSuccessCount: 0,
+    missionSuccessCount: 10,
     //히든 미션 달성 횟수
-    numberOfSkillUse: 0,
+    numberOfSkillUsed: 10,
     //그냥 미션인지 히든인지 구분.
     isNormalMission: true,
     options: [
@@ -76,6 +77,11 @@ const gameStore = {
     model: undefined,
     webcam: undefined,
     size: 200,
+
+    //screenShot
+    pic_list : [],
+    box_height: 0,
+    box_width: 0
   },
   getters: {
     getSessionId : function(state){
@@ -199,7 +205,7 @@ const gameStore = {
     },
     //스킬 사용 횟수
     SET_NUMBER_OF_SKILL_USE(state, count){
-      state.numberOfSkillUse += count
+      state.numberOfSkillUsed += count
     },
     IS_KIRA_OR_L(state, res){
       state.isKIRAorL = res
@@ -248,6 +254,16 @@ const gameStore = {
     },
     SET_POSE_WEBCAM(state,res){
       state.webcam = res
+    },
+    // 스크린샷
+    SCREEN_SHOT(state,canvas){
+      state.pic_list.push(canvas)
+    },
+    SET_BOX_WIDTH(state,size){
+      state.box_width = size
+    },
+    SET_BOX_HEIGHT(state,size){
+      state.box_height = size
     },
   },
 
@@ -372,9 +388,15 @@ const gameStore = {
                   state.messages.push('System : ' + clientData + '가 보디가드에 의해 보호되었습니다.')
                 } else {
                   if (state.publisher && state.publisherId == connectionId){
+                    // 스크리샷 추가
+                    dispatch('screenShot',connectionId)
+                    // 스크린샷 끝
                     state.session.unpublish(state.publisher)
                     commit('SET_PUBLISHER', undefined)
                   } else if (state.subPublisher && state.publisherId == connectionId){
+                    // 스크리샷 추가
+                    dispatch('screenShot',connectionId)
+                    // 스크린샷 끝
                     state.subSession.unpublish(state.subPublisher)
                     commit('SET_SUB_PUBLISHER', undefined)
                   }
@@ -411,7 +433,7 @@ const gameStore = {
             }
             // 경찰의 검거 능력, 키라측이면 죽임
             case 'arrest': {
-              const { isCriminal, userId, connectionId } = event.data
+              const { isCriminal, userId, connectionId} = event.data
               const { clientData } = JSON.parse(userId)
               if (isCriminal == true) {
                 state.messages.push('System : 추종자 ' + clientData + '가 검거되었습니다.')
@@ -422,9 +444,15 @@ const gameStore = {
               dispatch('removeParticipant', connectionId)
               // 퍼블리셔 지우기
               if (state.publisher && state.publisherId == connectionId){
+                // 스크리샷 추가
+                dispatch('screenShot',connectionId)
+                // 스크린샷 끝
                 state.session.unpublish(state.publisher)
                 commit('SET_PUBLISHER', undefined)
               } else if (state.subPublisher &&state.publisherId == connectionId){
+                // 스크리샷 추가
+                dispatch('screenShot',connectionId)
+                // 스크린샷 끝
                 state.subSession.unpublish(state.subPublisher)
                 commit('SET_SUB_PUBLISHER', undefined)
               }
@@ -442,9 +470,15 @@ const gameStore = {
               } else {
                 dispatch('removeParticipant', connectionId)
                 if (state.publisher && state.publisherId == connectionId){
+                  // 스크리샷 추가
+                  dispatch('screenShot',connectionId)
+                  // 스크린샷 끝
                   state.session.unpublish(state.publisher)
                   commit('SET_PUBLISHER', undefined)
                 } else if (state.subPublisher && state.publisherId == connectionId){
+                  // 스크리샷 추가
+                  dispatch('screenShot',connectionId)
+                  // 스크린샷 끝
                   state.subSession.unpublish(state.subPublisher)
                   commit('SET_SUB_PUBLISHER', undefined)
                 } 
@@ -928,6 +962,36 @@ const gameStore = {
           console.log(err)
         })
     },
+    screenShot({commit,state},connectionId) {
+      console.log('스크린샷 시작')
+      console.log(state.publisher)
+      let id
+      if (state.publisher && state.publisherId == connectionId){
+        console.log('메인화면 중')
+        id = state.publisher.videos[0].id
+      } else if (state.subPublisher && state.publisherId == connectionId){
+        console.log('명교 중')
+        id = state.subPublisher.videos[0].id
+      }
+      console.log('id를 잘받아왔나?')
+      console.log(id)
+      html2canvas(document.getElementById(id),) 
+      .then ((canvas) =>{
+        console.log('스크린샷')
+        commit('SCREEN_SHOT',canvas.toDataURL('image/jpeg'))
+        })
+      .catch((err)=> {
+        console.log(err); 
+        }) 
+    },
+    boxSizing({commit}){
+      const box_size = document.querySelector('#my')
+        console.log(box_size.offsetWidth)
+        console.log(box_size.offsetHeight)
+        commit('SET_BOX_WIDTH',box_size.offsetWidth)
+        commit('SET_BOX_HEIGHT',box_size.offsetHeight)
+    },
+
 
 
     //게임 종료 후 되돌아가기 

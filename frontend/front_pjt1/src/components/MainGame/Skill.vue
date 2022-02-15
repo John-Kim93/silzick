@@ -55,7 +55,7 @@
     </div>
     <div class="w-100 d-block text-center" >
       <button
-        :disabled="numberOfSkillUse < 1"
+        :disabled="numberOfSkillUsed < 1"
         id="btn-color-kira"
         class="btn btn-lg m-3"
         @click="noteWrite"
@@ -123,7 +123,7 @@
     </div>
     <div class="w-100 d-block text-center" >
       <b-button
-        :disabled="numberOfSkillUse < 1"
+        :disabled="numberOfSkillUsed < 1"
         id="btn-color-kira"
         size="lg"
         class="my-3"
@@ -200,7 +200,7 @@
       </div>
     <div class="w-100 d-block text-center" >
       <b-button
-        :disabled="numberOfSkillUse < 1"
+        :disabled="numberOfSkillUsed < 1"
         id="btn-color"
         size="lg"
         class="my-3"
@@ -244,7 +244,7 @@
     </div>
     <div class="w-100 d-block text-center" >
       <b-button
-        :disabled="numberOfSkillUse < 1"
+        :disabled="numberOfSkillUsed < 1"
         id="btn-color"
         size="lg"
         class="my-3"
@@ -297,7 +297,7 @@
     </div>
     <div class="w-100 d-block text-center" >
       <b-button
-        :disabled="numberOfSkillUse < 2"
+        :disabled="numberOfSkillUsed < 2"
         id="btn-color"
         size="lg"
         class="my-3"
@@ -327,7 +327,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants','numberOfSkillUse',])
+    ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants','numberOfSkillUsed',])
   },
   methods: {
     ...mapActions(gameStore, ['numberOfSkillUse',]),
