@@ -6,6 +6,7 @@
         class="col-7 scroll-bar container mb-4 d-flex row flex-wrap align-content-start"
         style="height: 84vh"
       >
+        <button @click="test"> test </button>
         <!--6명 이하 6분할-->
         <div
           class="col-6"
@@ -47,8 +48,16 @@
           <hr class="mb-1">
           <!-- 타이머 & 메모 -->
           <div class="row justify-content-center align-items-center">
-            <div class="col-4">
-              <exchange-timer/>
+            <div
+              v-if="mainGameTimerSevenOrThirty"
+              class="col-4"
+            >
+              <exchange-timer :key="turn"/>
+            </div>
+            <div
+              v-else
+              class="col-4">
+              <exchange-timer-seven-sec/>
             </div>
             <div class="offset-1 col-7">
               <input type="checkbox" id="popup">
@@ -60,6 +69,7 @@
                 </div>
               </div>
             </div>
+            <p>명함교환 누적 횟수 : {{turn}}회</p>
           </div>
         </div>
 
@@ -81,11 +91,12 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import UserVideo from '@/components/Attend/UserVideo.vue'
 import Toggle from '@/components/MainGame/Toggle.vue'
 import Chatting from '@/components/MainGame/Chatting.vue'
 import ExchangeTimer from '../components/MainGame/ExchangeTimer.vue'
+import ExchangeTimerSevenSec from '../components/MainGame/ExchangeTimerSevenSec.vue'
 import Mission from '@/components/MainGame/Mission.vue'
 
 const gameStore = 'gameStore'
@@ -97,20 +108,27 @@ export default {
     Toggle,
     Chatting,
     ExchangeTimer,
+    ExchangeTimerSevenSec,
     Mission,
   },
   data () {
     return {
       chatMessage: '',
       memo : false,
+      restart : 30,
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages',])
+    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages', 'mainGameTimerSevenOrThirty', 'turn'])
   },
 
   methods : {
+    ...mapMutations(gameStore, ['SET_MAINGAME_TIMER', 'COUNT_TURN']),
     ...mapActions(gameStore, ['sendMessage']),
+    test() {
+      console.log('턴 증가')
+      this.COUNT_TURN()
+    },
     enterCard () {
       console.log(this.publisher.stream.connection.connectionId)
       console.log(this.subscribers[0].stream.connection.connectionId)
@@ -130,6 +148,13 @@ export default {
       }
     },
   },
+  created() {
+    if (this.mainGameTimerSevenOrThirty === false) {
+      setTimeout(() => {
+        this.SET_MAINGAME_TIMER(true)
+      }, 7000)
+    }
+  }
 }
 </script>
 

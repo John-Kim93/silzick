@@ -24,6 +24,8 @@ const gameStore = {
     publisherId: undefined,
     winner: undefined,
     publisherReady : false,
+    mainGameTimerSevenOrThirty: 30,
+    turn : 0,
     
     // Ovenvidu
     OV: undefined,
@@ -139,6 +141,13 @@ const gameStore = {
     SET_HOST_ID(state, hostId){
       state.hostId = hostId
     },
+    COUNT_TURN(state) {
+      state.turn ++
+    },
+    // 명교방 갔다 나오면 타이머 7초로 설정
+    SET_MAINGAME_TIMER(state, res) {
+      state.mainGameTimerSevenOrThirty = res
+    },
     
     //미션 관련 기능
     RANDOM_INT(state,res){
@@ -147,8 +156,6 @@ const gameStore = {
       state.random_int = Math.floor(Math.random()*(max-min+1))+min
     },
     MISSION_SELECT(state){
-      console.log('랜덤인트 잘 뽑히는지 확인')
-      console.log(state.random_int)
       state.mission = state.random_int
       state.random_int = 0
     },
@@ -438,7 +445,14 @@ const gameStore = {
         // const action = JSON.parse(event.data).action
         const { action } = event.data
         switch(action){
+          // 명교방 안가는 사람들한테 turn 1씩 증가시키기
+          case 'exchangeName': {
+            commit('COUNT_TURN')
+            break
+          }
+          // 명교방 가는 사람한테만 보냄
           case 'exchangeNameStart': {
+            commit('COUNT_TURN')
             state.session.unpublish(state.publisher)
             commit('SET_PUBLISHER', undefined)
             let subPublisher = OV.initPublisher(undefined, {
@@ -713,6 +727,8 @@ const gameStore = {
       })
     },
     exitCard({state, commit}) {
+      // 메인게임 화면 타이머 7초짜리로 변경
+      commit('SET_MAINGAME_TIMER', false)
       state.subSession.unpublish(state.subPublisher)
       commit('SET_SUB_PUBLISHER', undefined)
       let publisher = state.OV.initPublisher(undefined, {
@@ -759,7 +775,6 @@ const gameStore = {
     },
     checkIsKIRAorL({commit}, jobName){
       if(jobName == 'KIRA' || jobName == 'L'){
-        console.log("키라랑 엘 바꾸기!")
         commit('CHECK_IS_KIRA_OR_L', true);
       }else{
         commit('CHECK_IS_KIRA_OR_L', false);
@@ -788,14 +803,12 @@ const gameStore = {
       }
     },
     async init ({state,commit}) {
-      console.log('0!!!!')
       const model = await tmPose.load(state.modelURL, state.metadataURL)
       const flip = true
       const webcam = new tmPose.Webcam(state.size, state.size, flip)
       commit('SET_POSE_MODEL',model)
       commit('SET_POSE_WEBCAM',webcam)
       await state.webcam.setup()
-      console.log("!!!")
       await state.webcam.play()
     },
 
