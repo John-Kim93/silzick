@@ -1,10 +1,12 @@
 
 <template>
   <div>
-    <div v-if="ready">
-      <exchange-timer/>
-      <p>{{ importmation }}</p>
-      <p>{{cnt}}회 / {{s_count}}회</p>
+    <div v-if="ready" class="d-flex row justify-content-center">
+      <h5 class='col-12'>{{cnt}}회 / {{s_count}}회</h5>
+      <div class='col-12 d-flex row justify-content-around'>
+        <exchange-timer class="col-3"/>
+        <p class="col-6">{{ importmation }}</p>
+      </div>
     </div>
     <div v-else>
       <div v-if="success"> 
@@ -64,7 +66,7 @@ export default {
       signal: false,
       textdata: '',
       timerCount: 16,
-      mission_list:['간장 공장 공장장','내가 키라다','안녕하세요 오늘 날씨가 좋죠','혹시 직업이 뭐예요 키라', '왕밤빵','홍합','내가 그린 기린 그림은 안 긴 기린 그림',],
+      mission_list:['간장 공장 공장장','내가 키라다','안녕하세요 오늘 날씨가 좋죠','혹시 직업이 뭐예요', '왕밤빵','홍합','내가 그린 기린 그림은 안 긴 기린 그림',],
       s_mission: '',
       s_count : 20,
       importmation: '',
@@ -142,7 +144,7 @@ export default {
     getmission () {
       this.s_mission = this.mission_list[Math.floor(Math.random()*this.mission_list.length)];
       this.s_count = parseInt(20 / this.s_mission.length)
-      this.importmation = `15초 안에 <${this.s_mission}>을(를) ${this.s_count}번 말하시오`
+      this.importmation = `<${this.s_mission}>을(를) ${this.s_count}번 말하시오`
     },
     initRecognition () {
       const SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
