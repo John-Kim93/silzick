@@ -25,12 +25,15 @@
       <button
         class="btn"
         style="background-color:black;"
-      > <b-icon
-          icon="question-circle"
-          font-scale="2.5"
-          variant="light"
-        >
-        </b-icon>
+      > 
+        <router-link to="/Rule">
+          <b-icon
+              icon="question-circle"
+              font-scale="2.5"
+              variant="light"
+            >
+            </b-icon>
+        </router-link>
       </button>
     </div>
     <router-view/>
