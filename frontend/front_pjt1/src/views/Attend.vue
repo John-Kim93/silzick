@@ -42,7 +42,7 @@
         <!-- 게스트인 경우 레디만 띄움 -->
         <div
           
-          class="offset-6 col-3 row mt-3"
+          class="offset-4 col-3 row mt-3"
           v-else
         >
           <button

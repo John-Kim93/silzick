@@ -15,11 +15,14 @@
     <hr class="m-0 col-12">
     <!-- 미션 스타트 버튼 -->
     <div class="row d-flex justify-content-center" v-if="!mission && webcam">
+
       <button
         id="btn-color"
         class="btn btn-lg col-4 mt-5"
         @click="missionSelect(true)"
+        v-if="isKIRAorL == false"
       >start</button>
+      <p v-else>KIRA와L은 미션을 수행할수 없습니다</p>
     </div>
     <!-- 버튼 클릭 시 미션 시작 -->
     <div v-else>
@@ -54,7 +57,7 @@ export default {
     },2000)
   },
   computed: {
-    ...mapState(gameStore, ['mission','webcam', 'isNormalMission']),
+    ...mapState(gameStore, ['mission','webcam', 'isNormalMission', 'isKIRAorL']),
   },
   methods:{
     ...mapActions(gameStore, ['missionSelect','init','missionReset']),
