@@ -6,7 +6,6 @@
         class="col-7 scroll-bar container mb-4 d-flex row flex-wrap align-content-start"
         style="height: 84vh"
       >
-        <button @click="test"> test </button>
         <!--6명 이하 6분할-->
         <div
           class="col-6"
@@ -120,23 +119,11 @@ export default {
   },
   computed: {
     ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages', 'mainGameTimerSevenOrThirty', 'turn', 'isKIRAorL']),
-    turn () {
-      if(this.isKIRAorL == true) {
-        if(this.turn % 2 == 0) {
-          this.numberofSkillUse(+1)
-        }
-      }
-      return 0
-    },
   },
 
   methods : {
     ...mapMutations(gameStore, ['SET_MAINGAME_TIMER', 'COUNT_TURN']),
     ...mapActions(gameStore, ['sendMessage', 'numberofSkillUse']),
-    test() {
-      console.log('턴 증가')
-      this.COUNT_TURN()
-    },
     enterCard () {
       console.log(this.publisher.stream.connection.connectionId)
       console.log(this.subscribers[0].stream.connection.connectionId)

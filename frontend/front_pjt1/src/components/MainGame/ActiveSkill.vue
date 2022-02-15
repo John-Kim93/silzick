@@ -72,6 +72,7 @@
             size="sm"
             class="skill_button_note  my-3"
             @click="noteWrite"
+            :disabled='numberOfSkillUsed==0'
           >
             <h5>노트에 적는다</h5>
           </b-button>
@@ -367,20 +368,23 @@ export default {
     ...mapActions(gameStore, ['numberOfSkillUse']),
 
     noteWrite () {
-      this.show = false
-      console.log(this.selectParticipant)
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 5,
-          skillType: 'noteWrite',
-          target: this.selectParticipant,
-          jobName: this.selectJobName
-        },
-        to: [],
-      })
-      this.selectParticipant = '참가자 목록'
-      this.selectJobName = '직업'
+      if(this.numberOfSkillUsed>0){
+        this.show = false
+        console.log(this.selectParticipant)
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 5,
+            skillType: 'noteWrite',
+            target: this.selectParticipant,
+            jobName: this.selectJobName
+          },
+          to: [],
+        })
+        this.selectParticipant = '참가자 목록'
+        this.selectJobName = '직업'
+        this.numberOfSkillUse(-1)
+      }
     },
     noteUse () {
       this.show = false
