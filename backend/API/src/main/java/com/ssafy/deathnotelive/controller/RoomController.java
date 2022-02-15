@@ -115,8 +115,10 @@ public class RoomController {
     })
     private ResponseEntity<String> deleteParticipant(
             @ApiParam(value = "종료시킬 룸 코드", required = true) @RequestBody RoomDto.userInfo userInfo) {
+        String sessionId = userInfo.getRoomCode();
+        String nickName = userInfo.getNickName();
         //룸 활성화 끄기 + 해당 룸의 참여자 닉네임 초기화
-        roomService.deleteParticipant(userInfo);
+        roomService.deleteParticipant(sessionId, nickName);
 
         return new ResponseEntity("Success", HttpStatus.OK);
     }

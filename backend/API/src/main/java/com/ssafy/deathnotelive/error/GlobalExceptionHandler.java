@@ -98,6 +98,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
     }
 
+    @ExceptionHandler(ParticipantsNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> handleParticipantsNotFoundException(final ParticipantsNotFoundException e) {
+        log.error("handleParticipantsNotFoundException", e);
+        final ErrorCode errorCode = e.getErrorCode();
+        final ErrorResponse response = ErrorResponse.of(errorCode);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+    }
+
     @ExceptionHandler(UserIdDuplicationException.class)
     protected ResponseEntity<ErrorResponse> handleUserIdDuplicationException(final UserIdDuplicationException e) {
         log.error("handleUserIdDuplicationException", e);
