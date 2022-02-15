@@ -39,7 +39,7 @@ export default {
             id: '1',
             classList: [ 'item' ],
             startValue: 0,
-            value: 20,
+            value: 15,
             size: 80,
             strokeWidth: 5,
             strokeColor: '#DDDDDD',
@@ -47,7 +47,7 @@ export default {
             fillColor: '#222831',
             valueFontSize: 20,
             labelFontSize: 30,
-            steps: 20,
+            steps: 15,
             stepLength: -1,
             label: '',
             labelPosition: 'bottom'
