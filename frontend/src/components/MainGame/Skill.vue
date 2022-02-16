@@ -60,14 +60,14 @@
         class="btn btn-lg m-3"
         @click="noteWrite"
       >
-        노트에 적는다
+        노트에 적는다(사용가능 : {{numberOfSkillUsed}})
       </button>
       <b-button
         id="btn-color-kira"
         class="btn btn-lg m-3"
         @click="noteUse"
       >
-        KILL !
+        모두 죽이기
       </b-button>
     </div>
   </div>
@@ -129,7 +129,7 @@
         class="my-3"
         @click="kill"
       >
-        Kill
+        Kill(사용가능 : {{numberOfSkillUsed}})
       </b-button>
     </div>
   </div>
@@ -206,7 +206,7 @@
         class="my-3"
         @click="protect"
       >
-        PROTECT!
+        PROTECT!(사용가능 : {{numberOfSkillUsed}})
       </b-button>
     </div>
   </div>
@@ -250,7 +250,7 @@
         class="my-3"
         @click="broadcast"
       >
-        BROADCAST!
+        BROADCAST!(사용가능 : {{numberOfSkillUsed}})
       </b-button>
     </div>
   </div>
@@ -303,7 +303,7 @@
         class="my-3"
         @click="arrest"
       >
-        ARREST!
+        ARREST!(사용가능 : {{Math.floor(numberOfSkillUsed/2)}})
       </b-button>
     </div>
   </div>
@@ -332,21 +332,22 @@ export default {
   methods: {
     ...mapActions(gameStore, ['numberOfSkillUse',]),
     noteWrite () {
-      this.numberOfSkillUse(-1)
-      this.show = false
-      console.log(this.selectParticipant)
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 5,
-          skillType: 'noteWrite',
-          target: this.selectParticipant,
-          jobName: this.selectJobName
-        },
-        to: [],
-      })
-      this.selectParticipant = '참가자 목록'
-      this.selectJobName = '직업'
+      if(this.numberOfSkillUsed>0){
+        this.numberOfSkillUse(-1)
+        this.show = false
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 5,
+            skillType: 'noteWrite',
+            target: this.selectParticipant,
+            jobName: this.selectJobName
+          },
+          to: [],
+        })
+        this.selectParticipant = '참가자 목록'
+        this.selectJobName = '직업'
+      }
     },
     noteUse () {
       this.show = false
@@ -360,62 +361,70 @@ export default {
       })
     },
     broadcast () {
-      this.numberOfSkillUse(-1)
-      this.show = false
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 5,
-          skillType: 'announce',
-          announce: this.broadcastMessage,
-        },
-        to: [],
-      })
-      this.broadcastMessage = ''
+      if(this.numberOfSkillUsed>0){
+        this.numberOfSkillUse(-1)
+        this.show = false
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 5,
+            skillType: 'announce',
+            announce: this.broadcastMessage,
+          },
+          to: [],
+        })
+        this.broadcastMessage = ''
+      }
     },
     arrest () {
-      this.numberOfSkillUse(-2)
-      this.show = false
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 5,
-          skillType: 'arrest',
-          target: this.selectParticipant,
-        },
-        to: [],
-      })
-      this.selectParticipant = '참가자 목록'
+      if(this.numberOfSkillUsed>0){
+        this.numberOfSkillUse(-2)
+        this.show = false
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 5,
+            skillType: 'arrest',
+            target: this.selectParticipant,
+          },
+          to: [],
+        })
+        this.selectParticipant = '참가자 목록'
+      }
     },
     protect () {
-      this.numberOfSkillUse(-1)
-      this.show = false
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 5,
-          skillType: 'protect',
-          target: this.selectParticipant,
-        },
-        to: [],
-      })
-      this.selectParticipant = '참가자 목록'
+      if(this.numberOfSkillUsed>0){
+        this.numberOfSkillUse(-1)
+        this.show = false
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 5,
+            skillType: 'protect',
+            target: this.selectParticipant,
+          },
+          to: [],
+        })
+        this.selectParticipant = '참가자 목록'
+      }
     },
     kill () {
-      this.numberOfSkillUse(-1)
-      this.show = false
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 5,
-          skillType: 'kill',
-          target: this.selectParticipant,
-          jobName: this.selectJobName
-        },
-        to: [],
-      })
-      this.selectParticipant = '참가자 목록'
-      this.selectJobName = '직업'
+      if(this.numberOfSkillUsed>0){
+        this.numberOfSkillUse(-1)
+        this.show = false
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 5,
+            skillType: 'kill',
+            target: this.selectParticipant,
+            jobName: this.selectJobName
+          },
+          to: [],
+        })
+        this.selectParticipant = '참가자 목록'
+        this.selectJobName = '직업'
+      }
     }
   },
 }

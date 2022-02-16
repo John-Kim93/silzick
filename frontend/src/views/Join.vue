@@ -40,7 +40,7 @@
           >
         </div>
         <div class="col-8 row d-flex align-content-center" style="height:13vh">
-          <button id="btn-color-kira" class="btn mt-4 px-5" @click="nicknameUpdate(nickname)">만들기</button>
+          <button id="btn-color-kira" class="btn mt-4 px-5" @click="nicknameUpdate(nickname)">입장</button>
         </div>
       </div>
     </div>
@@ -60,7 +60,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['hostId', 'isHost'])
+    ...mapState(gameStore, ['hostId', 'isHost','join'])
   },
   methods:  {
     ...mapActions(gameStore, ['nicknameUpdate']),

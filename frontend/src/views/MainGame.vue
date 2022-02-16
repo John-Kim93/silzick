@@ -6,7 +6,6 @@
         class="col-7 scroll-bar container mb-4 d-flex row flex-wrap align-content-start"
         style="height: 84vh"
       >
-        <button @click="test"> test </button>
         <!--6명 이하 6분할-->
         <div id ='my'
           class="col-6"
@@ -20,7 +19,6 @@
               :stream-manager="publisher"
               v-if="isAlive"
             />
-            <screen-shot v-else id="base-border" class="pt-1 px-1" :idx="idx"/>
           </div>
         </div>
         <!-- 다른 사람 비디오 -->
@@ -37,16 +35,6 @@
             />
           </div>
         </div>
-        <!-- screenShot -->
-        <!-- <div
-          class="col-6"
-          v-for="(pic,idx) in pic_list"
-          :key="idx"
-        > 
-          <div class="p-1">
-            <screen-shot id="base-border" class="pt-1 px-1" :idx="idx"/>
-          </div>
-        </div> -->
       </div>
 
       <!-- 타이머 & 직업 & 메모 & 채팅 div -->
@@ -110,7 +98,6 @@ import Chatting from '@/components/MainGame/Chatting.vue'
 import ExchangeTimer from '../components/MainGame/ExchangeTimer.vue'
 import ExchangeTimerSevenSec from '../components/MainGame/ExchangeTimerSevenSec.vue'
 import Mission from '@/components/MainGame/Mission.vue'
-import ScreenShot from '@/components/MainGame/ScreenShot.vue'
 
 const gameStore = 'gameStore'
 
@@ -123,7 +110,6 @@ export default {
     ExchangeTimer,
     ExchangeTimerSevenSec,
     Mission,
-    ScreenShot,
   },
   data () {
     return {
@@ -133,18 +119,12 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages', 'mainGameTimerSevenOrThirty', 'turn', 'isKIRAorL','pic_list','isAlive']),
+    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages', 'mainGameTimerSevenOrThirty', 'turn', 'isKIRAorL','isAlive']),
   },
   methods : {
     ...mapMutations(gameStore, ['SET_MAINGAME_TIMER', 'COUNT_TURN']),
-    ...mapActions(gameStore, ['sendMessage', 'numberofSkillUse','boxSizing']),
-    test() {
-      console.log('턴 증가')
-      this.COUNT_TURN()
-    },
+    ...mapActions(gameStore, ['sendMessage', 'numberofSkillUse']),
     enterCard () {
-      console.log(this.publisher.stream.connection.connectionId)
-      console.log(this.subscribers[0].stream.connection.connectionId)
       this.session.signal({
         type: 'autoSystem',
         data: JSON.stringify({ action: 'exchangeNameStart' }),
@@ -160,11 +140,6 @@ export default {
         this.chatMessage=""
       }
     },
-  },
-  mounted(){
-    console.log('박스사이징')
-    this.boxSizing()
-    console.log('박스사이징 종료')
   },
   created() {
     if (this.mainGameTimerSevenOrThirty === false) {

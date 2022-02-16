@@ -36,7 +36,7 @@ export default {
 			}
 		},
 		minus () {
-			if (this.job.isChange && this.job.count > 0) {
+			if (this.job.isChange && this.job.count > this.job.minCount) {
 				const jobProps = {
 					gameStatus: 1,
 					jobName: this.job.jobName,

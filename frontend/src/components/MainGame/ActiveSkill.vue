@@ -72,20 +72,21 @@
             size="sm"
             class="skill_button_note  my-3"
             @click="noteWrite"
+            :disabled="numberOfSkillUsed < 1"
           >
-            <h5>노트에 적는다</h5>
+            노트에 적는다(사용가능 : {{numberOfSkillUsed}})
           </b-button>
           <b-button
             size="sm"
             class="skill_button_note my-3"
             @click="noteUse"
           >
-            <h5>Kill'em all</h5>
+            모두 죽이기
           </b-button>
         </div>
       </template>
     </b-modal>
- 
+
     <!-- 2. 추종자 -->
     <b-modal v-model="show" v-if='myJob == "CRIMINAL"'
       id='skill' 
@@ -100,7 +101,7 @@
       centered
       >
       <template #modal-header  >
-       <div></div>
+        <div></div>
         <h1>
           <b-iconstack scale="2" animation="">
             <b-icon stacked icon="receipt" animation="" rotate="180"></b-icon>
@@ -155,7 +156,7 @@
           <b-button
             size="sm"
             class="skill_button_note my-3"
-            :disabled='numberOfSkillUsed==0'
+            :disabled='numberOfSkillUsed < 1'
             @click="kill"
           >
             Kill (사용가능 : {{numberOfSkillUsed}})
@@ -219,7 +220,7 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
-            :disabled='numberOfSkillUsed==0'
+            :disabled='numberOfSkillUsed < 1'
             @click="protect"
           >
             PROTECT!(사용가능 : {{numberOfSkillUsed}})
@@ -275,7 +276,7 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
-            :disabled='numberOfSkillUsed==0'
+            :disabled='numberOfSkillUsed < 1'
             @click="broadcast"
           >
             BROADCAST!(사용가능 : {{numberOfSkillUsed}})
@@ -298,9 +299,9 @@
       centered
       >
       <template #modal-header  >
-       <div></div>
-       <!-- 아래 이미지 없음 -->
-       <!-- <img src="../../assets/img/scull.jpg" alt="scull"> -->
+        <div></div>
+        <!-- 아래 이미지 없음 -->
+        <!-- <img src="../../assets/img/scull.jpg" alt="scull"> -->
         <h1 ><font size="7">검거 </font></h1>
         <div></div>
       </template> 
@@ -334,10 +335,10 @@
             variant="primary"
             size="sm"
             class="skill_button_police my-3"
-            :disabled='Math.floor(numberOfSkillUsed/2)==0'
+            :disabled="numberOfSkillUsed < 2"
             @click="arrest"
           >
-            ARREST!(사용가능 : {{numberOfSkillUsed/2}})
+            ARREST!(사용가능 : {{Math.floor(numberOfSkillUsed/2)}})
           </b-button>
         </div>
       </template>
@@ -367,20 +368,23 @@ export default {
     ...mapActions(gameStore, ['numberOfSkillUse']),
 
     noteWrite () {
-      this.show = false
-      console.log(this.selectParticipant)
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 5,
-          skillType: 'noteWrite',
-          target: this.selectParticipant,
-          jobName: this.selectJobName
-        },
-        to: [],
-      })
-      this.selectParticipant = '참가자 목록'
-      this.selectJobName = '직업'
+      if(this.numberOfSkillUsed>0){
+        this.show = false
+        console.log(this.selectParticipant)
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 5,
+            skillType: 'noteWrite',
+            target: this.selectParticipant,
+            jobName: this.selectJobName
+          },
+          to: [],
+        })
+        this.selectParticipant = '참가자 목록'
+        this.selectJobName = '직업'
+        this.numberOfSkillUse(-1)
+      }
     },
     noteUse () {
       this.show = false

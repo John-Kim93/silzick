@@ -5,7 +5,6 @@ import { jobs } from './gameUtil.js'
 import router from '@/router/index.js'
 import { createRoom, nickNameCheck, joinRoom } from '@/api/user.js'
 import * as tmPose from '@teachablemachine/pose'
-import html2canvas from 'html2canvas';
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -47,9 +46,9 @@ const gameStore = {
     mission: -1,
     random_int: 0,
     //거짓 명함 낼 수 있는 횟수(미션 달성 횟수)
-    missionSuccessCount: 10,
+    missionSuccessCount: 1,
     //히든 미션 달성 횟수
-    numberOfSkillUsed: 10,
+    numberOfSkillUsed: 3,
     //그냥 미션인지 히든인지 구분.
     isNormalMission: true,
     options: [
@@ -78,11 +77,8 @@ const gameStore = {
     webcam: undefined,
     size: 200,
 
-    //screenShot
-    pic_list : '',
-    box_height: 0,
-    box_width: 0
   },
+  //host입력 없이 join으로 바로 못들어가게 막는데 사용
   getters: {
     getSessionId : function(state){
       return state.sessionId;
@@ -166,8 +162,14 @@ const gameStore = {
     SET_HOST_ID(state, hostId){
       state.hostId = hostId
     },
+    SET_TURN(state, res){
+      state.turn = res
+    },
     COUNT_TURN(state) {
       state.turn ++
+      if(state.myJob=="KIRA" && state.turn%2==0){
+        state.numberOfSkillUsed ++
+      }
     },
     // 명교방 갔다 나오면 타이머 7초로 설정
     SET_MAINGAME_TIMER(state, res) {
@@ -206,6 +208,9 @@ const gameStore = {
     //스킬 사용 횟수
     SET_NUMBER_OF_SKILL_USE(state, count){
       state.numberOfSkillUsed += count
+    },
+    RESET_SKILL_USE(state, count){
+      state.numberOfSkillUsed = count
     },
     IS_KIRA_OR_L(state, res){
       state.isKIRAorL = res
@@ -254,16 +259,6 @@ const gameStore = {
     },
     SET_POSE_WEBCAM(state,res){
       state.webcam = res
-    },
-    // 스크린샷
-    SCREEN_SHOT(state,canvas){
-      state.pic_list=canvas
-    },
-    SET_BOX_WIDTH(state,size){
-      state.box_width = size
-    },
-    SET_BOX_HEIGHT(state,size){
-      state.box_height = size
     },
   },
 
@@ -388,19 +383,14 @@ const gameStore = {
                   state.messages.push('System : ' + clientData + '가 보디가드에 의해 보호되었습니다.')
                 } else {
                   if (state.publisher && state.publisherId == connectionId){
-                    // 스크리샷 추가
-                    dispatch('screenShot',connectionId)
-                    // 스크린샷 끝
                     state.session.unpublish(state.publisher)
                     commit('SET_PUBLISHER', undefined)
+                    commit('IS_ALIVE', false)
                   } else if (state.subPublisher && state.publisherId == connectionId){
-                    // 스크리샷 추가
-                    dispatch('screenShot',connectionId)
-                    // 스크린샷 끝
                     state.subSession.unpublish(state.subPublisher)
                     commit('SET_SUB_PUBLISHER', undefined)
+                    commit('IS_ALIVE', false)
                   }
-                  commit('IS_ALIVE', false)
                   dispatch('removeParticipant', connectionId)
                   state.messages.push('System : ' + clientData + '가 심장마비로 사망하였습니다.')
                 }
@@ -444,19 +434,14 @@ const gameStore = {
               dispatch('removeParticipant', connectionId)
               // 퍼블리셔 지우기
               if (state.publisher && state.publisherId == connectionId){
-                // 스크리샷 추가
-                dispatch('screenShot',connectionId)
-                // 스크린샷 끝
                 state.session.unpublish(state.publisher)
                 commit('SET_PUBLISHER', undefined)
+                commit('IS_ALIVE', false)
               } else if (state.subPublisher &&state.publisherId == connectionId){
-                // 스크리샷 추가
-                dispatch('screenShot',connectionId)
-                // 스크린샷 끝
                 state.subSession.unpublish(state.subPublisher)
                 commit('SET_SUB_PUBLISHER', undefined)
+                commit('IS_ALIVE', false)
               }
-              commit('IS_ALIVE', false)
               break
             }
             case 'kill': {
@@ -470,19 +455,14 @@ const gameStore = {
               } else {
                 dispatch('removeParticipant', connectionId)
                 if (state.publisher && state.publisherId == connectionId){
-                  // 스크리샷 추가
-                  dispatch('screenShot',connectionId)
-                  // 스크린샷 끝
                   state.session.unpublish(state.publisher)
                   commit('SET_PUBLISHER', undefined)
+                  commit('IS_ALIVE', false)
                 } else if (state.subPublisher && state.publisherId == connectionId){
-                  // 스크리샷 추가
-                  dispatch('screenShot',connectionId)
-                  // 스크린샷 끝
                   state.subSession.unpublish(state.subPublisher)
                   commit('SET_SUB_PUBLISHER', undefined)
+                  commit('IS_ALIVE', false)
                 } 
-                commit('IS_ALIVE', false)
                 state.messages.push('System : ' + clientData + '가 심장마비로 사망하였습니다.')
               }
               break
@@ -495,7 +475,9 @@ const gameStore = {
           for (let i = 0; i < cnt; i++) {
             const { userId, connectionId } = participantsData[i]
             const { clientData } = JSON.parse(userId)
-            state.participants.push({nickname: clientData, connectionId: connectionId})
+            if(state.publisherId != connectionId){
+              state.participants.push({nickname: clientData, connectionId: connectionId})
+            }
           }
         } else if (event.data.gameStatus === 8) {
           const winner = event.data.winner
@@ -511,10 +493,9 @@ const gameStore = {
         // const action = JSON.parse(event.data).action
         const { action } = event.data
         switch(action){
-          // 명교방 안가는 사람들한테 turn 1씩 증가시키기
-          case 'exchangeName': {
+          case 'nameTurn': {
             commit('COUNT_TURN')
-            break
+            break;
           }
           // 명교방 가는 사람한테만 보냄
           case 'exchangeNameStart': {
@@ -755,45 +736,25 @@ const gameStore = {
       
       
       //방장이면 sessionCreate부터 해야하므로 getToken으로, 이미 세션 만들어져 있으면 createToken으로 토큰만 만듬.
-      if(state.sessionId){
-        dispatch("getToken", 'sub' + state.sessionId).then((subToken) => {
-          subSession
-          .connect(subToken, { clientData: state.nickname })
-          .then(() => {
-            // --- Get your own camera stream with the desired properties ---
-            commit('SET_SUB_OV', subOV)
-            commit('SET_SUB_SESSION', subSession)
-            commit('SET_SUB_OVTOKEN', subToken)
-            commit('SET_SUB_SUBSCRIBERS', subSubscribers)
-            })
-            .catch((error) => {
-              console.log(
-                "There was an error connecting to the session:",
-                error.code,
-                error.message
-              );
-            });
-        });
-      }else{
-        dispatch("createToken", 'sub' + state.sessionId).then((subToken) => {
-          subSession
-          .connect(subToken, { clientData: state.nickname })
-          .then(() => {
-            // --- Get your own camera stream with the desired properties ---
-            commit('SET_SUB_OV', subOV)
-            commit('SET_SUB_SESSION', subSession)
-            commit('SET_SUB_OVTOKEN', subToken)
-            commit('SET_SUB_SUBSCRIBERS', subSubscribers)
-            })
-            .catch((error) => {
-              console.log(
-                "There was an error connecting to the session:",
-                error.code,
-                error.message
-              );
-            });
-        });
-      }
+      dispatch("getToken", 'sub' + state.sessionId).then((subToken) => {
+        subSession
+        .connect(subToken, { clientData: state.nickname })
+        .then(() => {
+          // --- Get your own camera stream with the desired properties ---
+          commit('SET_SUB_OV', subOV)
+          commit('SET_SUB_SESSION', subSession)
+          commit('SET_SUB_OVTOKEN', subToken)
+          commit('SET_SUB_SUBSCRIBERS', subSubscribers)
+          })
+          .catch((error) => {
+            console.log(
+              "There was an error connecting to the session:",
+              error.code,
+              error.message
+            );
+          });
+      });
+      
       window.addEventListener("beforeunload", this.leaveSession);
     },
 
@@ -946,8 +907,8 @@ const gameStore = {
           commit('SET_SESSIONID',data)
           router.push({ name : 'Join' })
       },
-      (err)=>{
-        console.log(err)
+      ()=>{
+        alert("방이 아직 초기화 되지 않았습니다! 잠시후 다시 시도해주세요.")
       })
     },
 
@@ -960,44 +921,39 @@ const gameStore = {
           commit('SET_HOST_ID', hostId)
           router.push({ name : 'Join' })
         },
-        (err)=>{
-          console.log(err)
+        ()=>{
+          alert("호스트가 아직 방을 생성하지 않았습니다!")
         })
     },
-    screenShot({commit,state},connectionId) {
-      console.log('스크린샷 시작')
-      console.log(state.publisher)
-      let id
-      if (state.publisher && state.publisherId == connectionId){
-        console.log('메인화면 중')
-        id = state.publisher.videos[0].id
-      } else if (state.subPublisher && state.publisherId == connectionId){
-        console.log('명교 중')
-        id = state.subPublisher.videos[0].id
-      }
-      console.log('id를 잘받아왔나?')
-      console.log(id)
-      html2canvas(document.getElementById(id),) 
-      .then ((canvas) =>{
-        console.log('스크린샷')
-        commit('SCREEN_SHOT',canvas.toDataURL('image/jpeg'))
-        })
-      .catch((err)=> {
-        console.log(err); 
-        }) 
-    },
-    boxSizing({commit}){
-      const box_size = document.querySelector('#my')
-        console.log(box_size.offsetWidth)
-        console.log(box_size.offsetHeight)
-        commit('SET_BOX_WIDTH',box_size.offsetWidth)
-        commit('SET_BOX_HEIGHT',box_size.offsetHeight)
-    },
-
 
 
     //게임 종료 후 되돌아가기 
     gameReset({state, commit}){
+      //게임 종료 후 초기화
+      commit('SET_READY_STATUS', false)
+      commit('SET_PARTICIPANTS', [])
+      commit('SET_MY_PUBLISHER_ID', undefined)
+      commit('SET_WINNER', undefined)
+      commit('SET_MISSION', -1)
+      commit('SET_RANDOM_INT', 0)
+      commit('SET_MISSION_SUCCESS',0)
+      commit('RESET_SKILL_USE',0)
+      commit('IS_NORMAL_MISSION',true)
+      commit('SET_TURN',0)
+      commit('SET_OPTIONS', [
+        { value: 'KIRA', text: '노트주인'},
+        { value: 'CRIMINAL', text: '추종자'},
+        { value: 'L', text: '경찰총장'},
+        { value: 'POLICE', text: '경찰'},
+        { value: 'GUARD', text: '보디가드'},
+        { value: 'BROADCASTER', text: '방송인'},
+      ])
+      commit('IS_KIRA_OR_L', false)
+      commit('IS_ALIVE', true)
+      commit('SET_MY_JOB', undefined)
+      commit('RESET_MESSAGES')
+      commit('GET_JOB_PROPS',jobs)
+
       if(!state.subPublisher){
         const OV = new OpenVidu();
         let subPublisher = OV.initPublisher(undefined, {
@@ -1031,29 +987,7 @@ const gameStore = {
       }else{
         state.publisher.ready = false
       }
-      //게임 종료 후 초기화
-      commit('SET_READY_STATUS', false)
-      commit('SET_PARTICIPANTS', [])
-      commit('SET_MY_PUBLISHER_ID', undefined)
-      commit('SET_WINNER', undefined)
-      commit('SET_MISSION', -1)
-      commit('SET_RANDOM_INT', 0)
-      commit('SET_MISSION_SUCCESS',0)
-      commit('SET_NUMBER_OF_SKILL_USE',0)
-      commit('IS_NORMAL_MISSION',true)
-      commit('SET_OPTIONS', [
-        { value: 'KIRA', text: '노트주인'},
-        { value: 'CRIMINAL', text: '추종자'},
-        { value: 'L', text: '경찰총장'},
-        { value: 'POLICE', text: '경찰'},
-        { value: 'GUARD', text: '보디가드'},
-        { value: 'BROADCASTER', text: '방송인'},
-      ])
-      commit('IS_KIRA_OR_L', false)
-      commit('IS_ALIVE', true)
-      commit('SET_MY_JOB', undefined)
-      commit('RESET_MESSAGES')
-      commit('GET_JOB_PROPS',jobs)
+      
       router.push({
         name: 'Attend',
       })

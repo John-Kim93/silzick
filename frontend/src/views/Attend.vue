@@ -80,15 +80,19 @@
               </div>
             </div>
 
-            <!-- 직업리스트 -->
-            <div id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar" style="height:44vh">
+            <!-- 직업 선택 리스트 -->
+            <div v-if="isHost" id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar" style="height:44vh">
               <jobs :job="job" v-for="job in jobs" :key="job.jobName"/>          
             </div>
-
-            <!-- 적용직업리스트 -->
-            <div id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar px-2" style="height:44vh">
-              <job-select :job="job" v-for="job in jobs" :key="job.jobName"/>
+            <div v-else id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar px-2" style="height:44vh">
+              직업 선택은 HOST만 할 수 있습니다.
             </div>
+
+            <!-- 결과 리스트 -->
+            <div id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar px-2" style="height:44vh">
+              <job-select  :job="job" v-for="job in jobs" :key="job.jobName"/>
+            </div>
+
             <!-- 룰 또는 영상 -->
             <div id="base-border" class="col-11 mx-2" style="height:35vh">
               <rule/>

@@ -1,7 +1,7 @@
 <template>
   <div id="base-border" class="d-flex flex-column p-3">
     <!--채팅 내역 : chat_list-->
-    <div class="scroll-bar my-1" style="height:28vh; text-align:left;">
+    <div id="chatBar" class="scroll-bar my-1" style="height:28vh; text-align:left;">
       <p
         v-for="message, idx in messages"
         class="m-1"
@@ -52,6 +52,12 @@ export default {
         this.chatMessage=""
       }
     },
+    watch:{
+      messages: function(){
+      var container = this.$el.querySelector("#chatBar");
+      container.scrollTop = container.scrollHeight;
+      }
+    }
   }
 }
 </script>
