@@ -90,7 +90,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['subPublisher', 'subSubscribers', 'myJob', 'subSession',
+    ...mapState(gameStore, ['subPublisher', 'subSubscribers', 'myJob', 'subSession', 'nickname',
                             'receivedCard', 'session', 'messages', 'isAlive','options','isKIRAorL']),
   },
   watch: {
@@ -116,20 +116,22 @@ export default {
             this.timerExit--;
           }, 1000);
         } else {
-          this.RECEIVE_CARD('선택 중')
           this.exitCard()
         }
       },
     immediate: true
     },
     confirm (cur) {
-      const selectedCard = {jobName : this.selected}
+      const selectedCard = {
+        jobName : this.selected,
+        nickname : this.nickname
+      }
       if (cur == true) {
         //상대방에게 보내기
         this.subSession.signal({
           type: 'exchangeCard',
           data: JSON.stringify(selectedCard),
-          to: [this.subSubscribers[0].stream.connection],
+          to: [],
         })
         let checkCardAndJob = false
         if (this.selected == this.myJob) {

@@ -59,50 +59,37 @@
               class="col-4">
               <exchange-timer-seven-sec/>
             </div>
+              <b-button class="col-4 w-50" v-b-modal.modal-1 @click="modalShow=!modalShow">MEMO</b-button>
             <div>
-              <b-button v-b-modal.modal-1 @click="modalPosition()">MEMO</b-button>
 
-              <b-modal id="modal-1" scrollable  title="MEMO"
-              style=""
-              size='sm'
-              header-bg-variant="#00ff0000"
-              header-text-variant="#00ff0000"
-              body-bg-variant="#00ff0000"
-              body-text-variant="#00ff0000"
-              footer-bg-variant="#00ff0000"
-              footer-text-variant="#00ff0000">
-                <template #modal-header="{ close }">
-                  <!-- Emulate built in modal header close button action -->
-                  <h5>MEMO</h5>
-                  <b-button size="sm" variant="outline-danger" @click="close()">
-                    X
-                  </b-button>
-                </template>
+              
+              <b-modal 
+                id="modal-1" 
+                title="MEMO"
+                size='sm'
+                body-bg-variant="secondary"
+                @before-open="modalPosition"
+                scrollable  
+                hide-header
+                hide-backdrop
+                hide-footer
+              >
 
                 <b-form-textarea 
-                v-model="text"
-                style="border:none;" 
+                id='textArea'
                 class="my-4 h-100 w-100" 
+                style="border:none;" 
                 placeholder="이 곳에 메모하세요"
                 rows="10"
-                ></b-form-textarea>
-                <template #modal-footer>
-                  <b-button size="sm" variant="outline-secondary" @click="forget()">
+                v-model="text"
+                autofocus
+                >
+                </b-form-textarea>
+                <b-button size="sm" variant="light" @click="forget()">
                     메모지우기
-                  </b-button>
-                </template>
+                </b-button>
               </b-modal>
             </div>
-            <!-- <div class="offset-1 col-7">
-              <input type="checkbox" id="popup">
-              <label for="popup">MEMO</label>
-              <div>
-                <div class="popup">
-                  <label style="color:#222831" for="popup">X</label>
-                  <textarea name="" style="border:none; color:#DDDDDD;" id="popup" class="textarea_position" cols="30" rows="10"></textarea>
-                </div>
-              </div>
-            </div> -->
             <p>명함교환 누적 횟수 : {{turn}}회</p>
           </div>
         </div>
@@ -150,8 +137,19 @@ export default {
       chatMessage: '',
       text : '',
       restart : 30,
+      modalShow : false,
     }
   },
+  watch:{
+    modalShow(value){
+      console.log(value)
+      setTimeout(()=>{
+        this.modalPosition()
+        this.modalShow = false
+      },10)
+    }
+  },
+
   computed: {
     ...mapState(gameStore, [
       'myJob',
@@ -182,7 +180,10 @@ export default {
     },
     modalPosition(){
       const modal_position = document.querySelector('.modal-content')
-      modal_position.style = 'margin-left: 300px;'  
+      modal_position.style = 'margin-left: 320px; opacity:70%;'
+      const textArea = document.querySelector('#textArea')
+      textArea.style="opacity:100%"  
+      console.log('실행중')
     },
     enterMessage() {
       if (this.chatMessage.trim()) {

@@ -13,6 +13,8 @@
         class="form-control m-2"
         placeholder="호스트의 회원 아이디를 입력해주세요."
         required
+        @keyup.enter="guestJoinRoom(hostId)"
+        ref="cursor"
         >
       </div>
       <div class="col-8 row d-flex align-content-center" style="height:13vh">
@@ -37,9 +39,15 @@ export default {
   methods:  {
     ...mapActions(gameStore, ['setSessionID', 'guestJoinRoom']),
     ...mapMutations(gameStore, ['GAME_CHECKIN']),
+    startCursor() {
+      this.$refs.cursor.focus()
+    },
   },
   created () {
     this.GAME_CHECKIN()
+  },
+  mounted() {
+    this.startCursor()
   }
 };
 </script>
