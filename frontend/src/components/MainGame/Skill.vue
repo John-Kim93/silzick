@@ -112,7 +112,7 @@
         >
           <option selected disabled>직업</option>
           <option
-            v-for="job in jobs"
+            v-for="job in jobs.slice(1,6)"
             :key="job.jobName"
           >
             {{job.jobName}}

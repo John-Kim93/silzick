@@ -130,6 +130,7 @@
             <option
               v-for="participant, idx in participants"
               :key="idx"
+              :disabled="key"
               :value="participant.connectionId"
             >
               {{participant.nickname}}
@@ -142,7 +143,7 @@
           >
             <option selected disabled>직업</option>
             <option
-              v-for="job in jobs"
+              v-for="job in jobs.slice(1,6)"
               :key="job.jobName"
             >
               {{job.jobName}}

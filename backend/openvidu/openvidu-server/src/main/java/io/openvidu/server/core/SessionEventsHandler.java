@@ -418,14 +418,15 @@ public class SessionEventsHandler {
             Set<String> toSet = new HashSet<String>();
 
             if (message.has("to")) {
+
                 JsonArray toJson = message.get("to").getAsJsonArray();
+                System.out.println(toJson.size());
                 for (int i = 0; i < toJson.size(); i++) {
                     JsonElement el = toJson.get(i);
                     if (el.isJsonNull()) {
                         throw new OpenViduException(Code.SIGNAL_TO_INVALID_ERROR_CODE,
                                 "Signal \"to\" field invalid format: null");
                     }
-                    toSet.add(el.getAsString());
                 }
             }
 

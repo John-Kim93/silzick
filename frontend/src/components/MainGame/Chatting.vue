@@ -13,6 +13,20 @@
     <hr>
     <!--채팅 입력 : chat_input-->
     <div>
+      <select
+        v-model="chatSelect"
+        id = "background-black"
+        class="select_list select-btn"
+      >
+        <option selected value="">모두</option>
+        <option
+          v-for="participant, idx in participants"
+          :key="idx"
+          :value="participant.connectionId"
+        >
+          {{participant.nickname}}
+        </option>
+      </select>
       <input
         id=""
         class="col-12"
@@ -34,22 +48,33 @@ export default {
   name: 'Chatting',
   data () {
     return {
-      chatMessage : ""
+      chatMessage : "",
+      chatSelect : "",
     }
   },
   computed: {
-    ...mapState(gameStore, ['messages', 'nickname']),
+    ...mapState(gameStore, ['messages', 'nickname','participants']),
   },
   methods: {
-    ...mapActions(gameStore, ['sendMessage',]),
+    ...mapActions(gameStore, ['sendMessageWhisper','sendMessage']),
     enterMessage() {
       if (this.chatMessage.trim()) {
-        const message ={
-          user: this.nickname,
-          chatMessage: this.chatMessage
+        if(this.chatSelect==""){
+          const messageData ={
+            user: this.nickname,
+            chatMessage: this.chatMessage,
+          }
+          this.sendMessage(messageData)
+          this.chatMessage=""
+        }else{
+          const messageData ={
+            user: this.nickname,
+            chatMessage: this.chatMessage,
+            to: this.chatSelect
+          }
+          this.sendMessageWhisper(messageData)
+          this.chatMessage=""
         }
-        this.sendMessage(message)
-        this.chatMessage=""
       }
     },
     watch:{
@@ -70,5 +95,13 @@ input[type=text] {
 }
 input::placeholder {
   font-size: 0.8rem;
+}
+
+.chat-select-btn {
+    border: 3px solid #30475E;
+    border-radius: 4px;
+    font-size: 1rem;
+    width: 100%;
+    text-align: center
 }
 </style>
