@@ -1,41 +1,5 @@
 <template>
   <div id="app">
-    <!-- <div
-      v-if="isLogin && !join"
-      class="d-flex mx-3 py-3 fix"
-    >
-      <button class="btn" style="background-color:black;">
-        <router-link to="/">
-          <b-icon icon="house" font-scale="2.5" variant="light"></b-icon>
-        </router-link>
-      </button>
-      <button
-        class="btn"
-        style="background-color:black;"
-      >
-        <router-link to="/Request">
-          <b-icon
-            icon="card-text"
-            font-scale="2.7"
-            variant="light"
-          >
-          </b-icon>
-        </router-link>
-      </button>
-      <button
-        class="btn"
-        style="background-color:black;"
-      > 
-        <router-link to="/Rule">
-          <b-icon
-              icon="question-circle"
-              font-scale="2.5"
-              variant="light"
-            >
-            </b-icon>
-        </router-link>
-      </button>
-    </div> -->
     <router-view/>
   </div>
 </template>

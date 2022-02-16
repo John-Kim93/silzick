@@ -10,7 +10,6 @@
       id="sidebar-backdrop"
       title="Sidebar with backdrop"
       ref = "target"
-      :backdrop-variant="variant"
       backdrop
       right
       width="43%"
@@ -35,7 +34,7 @@
                   </font>
                 </h1>
               </div>
-              <div variant="black" class="d-block text-center">
+              <div class="d-block text-center">
                 <b-icon
                   icon="exclamation-triangle"
                   font-scale="4"
@@ -106,7 +105,7 @@
                   노트 조각
                 </font>
               </h1>
-              <div variant="black" class="d-block text-center">
+              <div class="d-block text-center">
                 <b-icon class="mb-3" icon="exclamation-triangle" font-scale="4" variant="warning"></b-icon>
                 <h4 class="link-warning">
                   누구를 죽이시겠습니까?
@@ -171,7 +170,7 @@
                   </font>
                 </h1>
               </div>
-              <div variant="black" class="d-block text-center">
+              <div class="d-block text-center">
                 <b-icon class="mb-3" icon="exclamation-triangle" font-scale="4" variant="warning"></b-icon>
                 <h4 class="link-warning">
                   당신은 특유의 통찰력으로<br>
@@ -195,7 +194,7 @@
                   </font>
                 </h1>
               </div>
-              <div variant="black" class="d-block text-center">
+              <div class="d-block text-center">
                   <h5>
                     <b-icon icon="exclamation-triangle" font-scale="4" variant="warning"></b-icon>
                     <h4 class="link-warning">
@@ -243,7 +242,7 @@
                   </font>
                 </h1>
               </div>
-              <div variant="black" class="d-block text-center">
+              <div class="d-block text-center">
                 <h5>
                   <b-icon class="mb-3" icon="exclamation-triangle" font-scale="4" variant="warning"></b-icon>
                   <h4 class="link-warning">
@@ -290,7 +289,7 @@
                   </font>
                 </h1>
               </div>
-              <div variant="black" class="d-block text-center">
+              <div class="d-block text-center">
                 <b-icon class="mb-3" icon="exclamation-triangle" font-scale="4" variant="warning"></b-icon>
                 <h4 class="link-warning mb-3">
                   당신은 누군가를<br>

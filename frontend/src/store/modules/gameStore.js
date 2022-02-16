@@ -297,6 +297,7 @@ const gameStore = {
     async joinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
       const OV = new OpenVidu();
+      // OV.enableProdMode();
       // --- Init a session ---
       const session = OV.initSession();
 
@@ -791,6 +792,7 @@ const gameStore = {
     subJoinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
       const subOV = new OpenVidu();
+      // subOV.enableProdMode();
       // --- Init a session ---
       const subSession = subOV.initSession();
       const subSubscribers = [];

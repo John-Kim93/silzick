@@ -170,7 +170,6 @@ export default {
     ...mapMutations(gameStore, ['RECEIVE_CARD', 'SET_SUB_PUBLISHER',]),
     setSelfNameIntoSelect(){
       this.selected = this.myJob
-      console.log(this.selected)
     }
   },
 

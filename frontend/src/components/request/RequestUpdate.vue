@@ -63,7 +63,6 @@ export default {
     getRequest(
       this.index,
       (res) => {
-        console.log(res.data)
         this.title = res.data.title
         this.content = res.data.content
       },

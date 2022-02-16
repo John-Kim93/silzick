@@ -58,14 +58,5 @@ export default {
       }
     }
 	},
-  // computed: {
-  //   ...mapState(gameStore, ['turn']),
-  // },
-  // watch: {
-  //   turn(cur) {
-  //     console.log('turn : ' + cur)
-  //     this.$forceUpdate()
-  //   }
-  // }
 };
 </script>

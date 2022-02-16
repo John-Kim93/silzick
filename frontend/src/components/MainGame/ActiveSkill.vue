@@ -374,7 +374,6 @@ export default {
     noteWrite () {
       if(this.numberOfSkillUsed>0 && this.isAlive == true){
         this.show = false
-        console.log(this.selectParticipant)
         this.session.signal({
           type: 'game',
           data: {
