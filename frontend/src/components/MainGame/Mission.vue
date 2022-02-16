@@ -23,11 +23,9 @@
         v-if="isKIRAorL == false"
       >start</button>
       <p v-else>KIRA와L은 미션을 수행할수 없습니다</p>
-      <!-- <p>거짓 직업 가능횟수:{{missionSuccessCount}}</p>
-      <p>스킬 사용 가능횟수:{{skillCnt}}</p> -->
+      <p v-if="isKIRAorL == false">위조명함 개수:{{missionSuccessCount}}</p>
 
-      거짓 직업 가능횟수:{{missionSuccessCount}}<br>
-      스킬 사용 가능횟수:{{skillCnt}}
+      <!-- 위조명함 개수:{{missionSuccessCount}} -->
     </div>
     <!-- 버튼 클릭 시 미션 시작 -->
     <div v-else>
