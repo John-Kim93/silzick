@@ -1,8 +1,7 @@
 <template>
   <main class="form-login box-position">
-    <img src="https://ifh.cc/g/g1KuX0.jpg" id="bg" alt="bgImg">
-    <div class="card bg-dark box-shadow">
-      <div class="card-body p-5">
+    <div id="base-border" class="card">
+      <div id="background-black" class="card-body p-5">
         <!-- <div class="form-group">
             <label>Email address</label>
             <input type="email" class="form-control form-control-lg" placeholder="Email address" />
@@ -51,7 +50,7 @@
             v-model="email"
           >
         </div>
-        <button class="w-100 btn btn-lg btn-secondary" @click="signup">Sign Up</button>
+        <button id="btn-color" class="w-100 btn btn-lg" @click="signup">Sign Up</button>
       </div>
     </div>  
   </main>
@@ -115,30 +114,26 @@ export default {
 </script>
 
 <style scoped>
-  body {
+  /* body {
     display: flex;
     padding-top: 60px;
     padding-bottom: 60px;        
     align-items: center;
     background-color: #f6f6f6;
-  }
+  } */
   .form-login {
     width: 100%;
     max-width: 450px;
     margin: auto;
-    top: 50%;
+    top: 10%;
   }
   label {
     font-weight: 600;
     color: white;
   }
-  .box-shadow {
-    box-shadow: 5px 5px 5px 5px rgb(24, 24, 24) inset;
-    border-radius: 1rem;
-  }
   .box-position {
     position: absolute;
-    top: 15%;
+    top: 7.5%;
     left: 0;
     right: 0;
   }

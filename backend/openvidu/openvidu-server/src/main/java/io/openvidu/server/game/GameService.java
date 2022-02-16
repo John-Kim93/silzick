@@ -379,6 +379,7 @@ public class GameService {
 
                 //skill대상의 직업이 jobName과 일치하는지 체크
                 if (target.getJobName().equals(jobName)) {
+
                     //보호되는 상태가 아니면
                     if (!target.isProtected()) {
 
@@ -389,7 +390,6 @@ public class GameService {
                                 break;
                             }
                         }
-
                         //경찰일시 경찰 수 -1;
                         if (target.getJobName().equals("POLICE")) {
                             alivePolices.compute(sessionId, (k, v) -> v = v - 1);
@@ -413,6 +413,7 @@ public class GameService {
                     } else {
                         //보호 풀기
                         target.setProtected(false);
+
                         //방어됨 소식 알리기.
                         data.addProperty("isAlive", 0);
                         data.addProperty("userId", target.getParticipant().getClientMetadata());
@@ -424,7 +425,7 @@ public class GameService {
                                 ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                     }
                 } else {
-                    //방어됨 소식 알리기.
+                    //적은 사람이 일치하지 않는 소식 알리기.
                     data.addProperty("isAlive", 1);
                     data.addProperty("userId", target.getParticipant().getClientMetadata());
                     data.addProperty("connectionId", target.getParticipant().getParticipantPublicId());
@@ -457,9 +458,9 @@ public class GameService {
                     params.add("data", data);
 
                     //CRIMINAL 사망처리(수정값 적용은 case문 빠져 나간 뒤에)
-                    for (Characters player : cList) {
-                        if (player.getParticipant().getParticipantPublicId().equals(target.getParticipant().getParticipantPublicId())) {
-                            player.setAlive(false);
+                    for (Characters criminal : cList) {
+                        if (criminal.getParticipant().getParticipantPublicId().equals(target.getParticipant().getParticipantPublicId())) {
+                            criminal.setAlive(false);
                             break;
                         }
                     }
@@ -605,7 +606,7 @@ public class GameService {
                         //보호 중이면.
                     } else {
                         //보호막 풀고
-                        c.setProtected(true);
+                        c.setProtected(false);
                         //방어됨 소식 알리기.
                         list.addProperty("isAlive", true);
                         list.addProperty("userId", c.getParticipant().getClientMetadata());
@@ -667,9 +668,6 @@ public class GameService {
                 break;
             }
         }
-        System.out.println(skillTarget);
-        System.out.println("타겟 직업이름");
-        System.out.println(target.getJobName());
         return target;
     }
 

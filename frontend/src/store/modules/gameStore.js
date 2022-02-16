@@ -48,7 +48,7 @@ const gameStore = {
     //거짓 명함 낼 수 있는 횟수(미션 달성 횟수)
     missionSuccessCount: 1,
     //히든 미션 달성 횟수
-    numberOfSkillUsed: 1,
+    numberOfSkillUsed: 3,
     //그냥 미션인지 히든인지 구분.
     isNormalMission: true,
     options: [
@@ -482,7 +482,21 @@ const gameStore = {
         } else if (event.data.gameStatus === 8) {
           const winner = event.data.winner
           commit('SET_WINNER', winner)
-          router.push({ name: 'GameEnd' })
+          if (winner ==='KIRA'){
+            state.messages.push('System : 모든 경찰이 사망했습니다.'+ winner+'측의 승리입니다.')
+          }else{
+            state.messages.push('System : 노트측이 모두 체포되었습니다.'+ winner+'측의 승리입니다.')
+          }
+          state.messages.push('3 초후 결과 창으로 이동합니다')
+          setTimeout(() => {
+            state.messages.push('2 초후 결과 창으로 이동합니다')
+          }, 1000);
+          setTimeout(() => {
+            state.messages.push('1 초후 결과 창으로 이동합니다')
+          }, 2000);
+          setTimeout(() => {
+            router.push({ name: 'GameEnd' })
+          }, 3000);
         }
       });
       // 명함교환 방 자동 이동 & 미션 자동 분배

@@ -1,35 +1,50 @@
 <template>
   <div id="base-font" class="d-flex justify-content-center">
-    <img src="https://ifh.cc/g/2DSNoy.jpg" id="bg" alt="bgImg">
-    <!-- 로그인 후 버튼-->
-    <div class="col-2 row btn-position" style="height:30vh;" v-if="!isLogin">
-      <div class="d-flex flex-column justify-content-evenly">
-        <router-link to="/Login">
-          <b-button class="col-12 font-size" variant="outline-light">로그인</b-button>
-        </router-link>
-        <router-link to="/Signup">
-          <b-button class="col-12 font-size" variant="outline-light">회원가입</b-button>
-        </router-link>
-        <router-link to="/Invite">
-          <b-button class="col-12 font-size" variant="outline-light">방 바로가기</b-button>
-        </router-link>
+    <div class="d-flex row justify-content-center flex-wrap">
+      <div class="col-12">
+        <img
+          src="https://ifh.cc/g/8B83Qk.png"
+          alt="mainLogo"
+          class="blink"
+          style="width:20vw; height:15vh; margin-top:10vh;"
+        >
       </div>
-    </div>
-    <!-- 로그인 전 버튼 -->
-    <div class="col-2 row btn-position" style="height:30vh;" v-if="isLogin">
-      <div class="d-flex flex-column justify-content-evenly">
-        <b-button
-          class="font-size col-12"
-          variant="outline-light"
-          @click="createRoomRequest(userName)"
-        > 방 만들기
-        </b-button>
-        <b-button
-          class="font-size col-12"
-          variant="outline-light"
-          @click='logout'
-        > 로그아웃
-        </b-button>
+      <img
+        src="https://ifh.cc/g/M4suod.png"
+        alt="mainLogo"
+        class="col-12 mt-4"
+        style="width:60vw; height:15vh;"
+      >
+      <!-- 로그인 후 버튼-->
+      <div class="col-5 d-flex row btn-position justify-content-center" style="height:40vh;" v-if="!isLogin">
+        <div class="d-flex flex-column col-12 justify-content-evenly">
+          <router-link to="/Login">
+            <button id="btn-color" class="col-12 btn font-size">로그인</button>
+          </router-link>
+          <router-link to="/Signup">
+            <button id="btn-color" class="col-12 btn font-size">회원가입</button>
+          </router-link>
+          <router-link to="/Invite">
+            <button id="btn-color" class="col-12 btn font-size">방 바로가기</button>
+          </router-link>
+        </div>
+      </div>
+      <!-- 로그인 전 버튼 -->
+      <div class="col-5 d-flex row btn-position justify-content-center" style="height:40vh;" v-if="isLogin">
+        <div class="d-flex flex-column col-12 justify-content-evenly">
+          <button
+            id="btn-color"
+            class="col-12 btn font-size"
+            @click="createRoomRequest(userName)"
+          > 방 만들기
+          </button>
+          <button
+            id="btn-color"
+            class="col-12 btn font-size"
+            @click='logout'
+          > 로그아웃
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -70,9 +85,15 @@ export default {
 </script>
 
 <style scoped>
-.btn-position {
-  position: fixed;
-  top: 60%;
+@keyframes blink-effect {
+  50% {
+    opacity: 0;
+  }
+}
+
+.blink {
+  animation: blink-effect 5s step-end infinite;
+  animation-timing-function: ease-in-out;
 }
 .font-size {
   font-size:1.5rem;
