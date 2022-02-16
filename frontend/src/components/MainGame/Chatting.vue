@@ -77,11 +77,11 @@ export default {
         }
       }
     },
-    watch:{
-      messages: function(){
-      var container = this.$el.querySelector("#chatBar");
-      container.scrollTop = container.scrollHeight;
-      }
+  },
+  watch:{
+    messages: function(){
+    var container = this.$el.querySelector("#chatBar");
+    container.scrollTop = container.scrollHeight;
     }
   }
 }

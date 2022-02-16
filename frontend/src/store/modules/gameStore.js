@@ -202,6 +202,9 @@ const gameStore = {
     SET_MISSION_SUCCESS(state, count){
       state.missionSuccessCount += count
     },
+    RESET_MISSION_SUCCESS(state, res){
+      state.missionSuccessCount = res
+    },
     IS_NORMAL_MISSION(state, res){
       state.isNormalMission = res
     },
@@ -712,17 +715,41 @@ const gameStore = {
     },
     leaveSession({state, commit}) {
       // --- Leave the session by calling 'disconnect' method over the Session object ---
-      if (state.session) state.session.disconnect();
+      if (state.session) {
+        state.session.disconnect();
 
-      commit('SET_SESSION', undefined)
-      commit('SET_PUBLISHER', undefined)
-      commit('SET_OV', undefined)
-      commit('SET_OVTOKEN', undefined)
-      commit('SET_SUBSCRIBERS', [])
-      commit('SET_SESSIONID', undefined)
-      commit('SET_NICKNAME', undefined)
-      commit('NICKNAME_UPDATE', undefined)
-
+        commit('SET_READY_STATUS', false)
+        commit('SET_PARTICIPANTS', [])
+        commit('SET_MY_PUBLISHER_ID', undefined)
+        commit('SET_WINNER', undefined)
+        commit('SET_MISSION', -1)
+        commit('SET_RANDOM_INT', 0)
+        commit('SET_MISSION_SUCCESS',0)
+        commit('RESET_SKILL_USE',0)
+        commit('IS_NORMAL_MISSION',true)
+        commit('SET_TURN',0)
+        commit('SET_OPTIONS', [
+          { value: 'KIRA', text: '노트주인'},
+          { value: 'CRIMINAL', text: '추종자'},
+          { value: 'L', text: '경찰총장'},
+          { value: 'POLICE', text: '경찰'},
+          { value: 'GUARD', text: '보디가드'},
+          { value: 'BROADCASTER', text: '방송인'},
+        ])
+        commit('IS_KIRA_OR_L', false)
+        commit('IS_ALIVE', true)
+        commit('SET_MY_JOB', undefined)
+        commit('RESET_MESSAGES')
+        commit('GET_JOB_PROPS',jobs)
+        commit('SET_SESSION', undefined)
+        commit('SET_PUBLISHER', undefined)
+        commit('SET_OV', undefined)
+        commit('SET_OVTOKEN', undefined)
+        commit('SET_SUBSCRIBERS', [])
+        commit('SET_NICKNAME', undefined)
+        commit('NICKNAME_UPDATE', undefined)
+        commit('RESET_MISSION_SUCCESS',0)
+      }
       // window.removeEventListener("beforeunload", this.leaveSession);
     },
     // 명교방 관련 기능
@@ -974,68 +1001,10 @@ const gameStore = {
 
 
     //게임 종료 후 되돌아가기 
-    gameReset({state, commit}){
-      //게임 종료 후 초기화
-      commit('SET_READY_STATUS', false)
-      commit('SET_PARTICIPANTS', [])
-      commit('SET_MY_PUBLISHER_ID', undefined)
-      commit('SET_WINNER', undefined)
-      commit('SET_MISSION', -1)
-      commit('SET_RANDOM_INT', 0)
-      commit('SET_MISSION_SUCCESS',0)
-      commit('RESET_SKILL_USE',0)
-      commit('IS_NORMAL_MISSION',true)
-      commit('SET_TURN',0)
-      commit('SET_OPTIONS', [
-        { value: 'KIRA', text: '노트주인'},
-        { value: 'CRIMINAL', text: '추종자'},
-        { value: 'L', text: '경찰총장'},
-        { value: 'POLICE', text: '경찰'},
-        { value: 'GUARD', text: '보디가드'},
-        { value: 'BROADCASTER', text: '방송인'},
-      ])
-      commit('IS_KIRA_OR_L', false)
-      commit('IS_ALIVE', true)
-      commit('SET_MY_JOB', undefined)
-      commit('RESET_MESSAGES')
-      commit('GET_JOB_PROPS',jobs)
-
-      if(!state.subPublisher){
-        const OV = new OpenVidu();
-        let subPublisher = OV.initPublisher(undefined, {
-          audioSource: undefined, // The source of audio. If undefined default microphone
-          videoSource: undefined, // The source of video. If undefined default webcam
-          publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-          publishVideo: true, // Whether you want to start publishing with your video enabled or not
-          resolution: "1280×720", // The resolution of your video
-          frameRate: 30, // The frame rate of your video
-          insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
-          mirror: false, // Whether to mirror your local video or not
-        });
-        state.subSession.publish(subPublisher)
-        commit('SET_SUB_PUBLISHER', subPublisher)
-      }
-      if(!state.publisher){
-        const OV = new OpenVidu();
-        let Publisher = OV.initPublisher(undefined, {
-          audioSource: undefined, // The source of audio. If undefined default microphone
-          videoSource: undefined, // The source of video. If undefined default webcam
-          publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-          publishVideo: true, // Whether you want to start publishing with your video enabled or not
-          resolution: "1280×720", // The resolution of your video
-          frameRate: 30, // The frame rate of your video
-          insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
-          mirror: false, // Whether to mirror your local video or not
-        });
-        state.session.publish(Publisher)
-        commit('SET_PUBLISHER', Publisher)
-        state.publisher.ready = false
-      }else{
-        state.publisher.ready = false
-      }
-      
+    gameReset({dispatch}){
+      dispatch('leaveSession')
       router.push({
-        name: 'Attend',
+        name: 'Join',
       })
     }
 
