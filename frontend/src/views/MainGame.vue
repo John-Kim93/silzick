@@ -183,7 +183,6 @@ export default {
       modal_position.style = 'margin-left: 320px; opacity:70%;'
       const textArea = document.querySelector('#textArea')
       textArea.style="opacity:100%"  
-      console.log('실행중')
     },
     enterMessage() {
       if (this.chatMessage.trim()) {

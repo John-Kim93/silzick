@@ -28,11 +28,6 @@ export default {
       return clientData
     }
   },
-  created () {
-    console.log('doubt.vue: subscriber')
-    console.log(this.subscriber)
-  }
-
 }
 </script>
 
