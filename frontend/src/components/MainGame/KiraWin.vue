@@ -1,26 +1,31 @@
 <template>
   <div id="background-black" class="full-screen d-flex justify-content-center align-items-center">
-    <div id="red-border" class="container d-flex flex-row justify-content-center align-content-center row col-7" style="height:40vh">
-      <div class="col-8 row d-flex" style="height:13vh">
+    <div
+      id="red-border"
+      class="container d-flex flex-row justify-content-center align-content-center row col-8"
+      style="height:80vh"
+    >
+      <div class="col-10 row d-flex justify-content-center mb-3">
         <b-icon icon="award-fill" font-scale="7.5" class="col-3" variant="danger" />
-        <h1 class="col-8 align-self-center">노트주인 측 승리 !</h1>
+        <h1 class="col-8 align-self-center" style="text-align:left;">노트주인 측 승리 !</h1>
       </div>
-      <div class="col-8 d-flex row justify-content-start flex-wrap">
-        <h2 class="col-12" style="text-align:left;">Losers</h2>
-        <div
-          class="col-12 d-flex row"
-          v-for="L, idx in LTeam"
-          :key="idx"
-        >
-          <span class="col-2">{{L.nickname}} : {{L.job}}</span>
-        </div>
+      <hr>
+      <div class="col-10 d-flex row justify-content-start flex-wrap">
         <h2 class="col-12" style="text-align:left;">Winners</h2>
         <div
-          class="col-12 d-flex row"
+          class="col-6"
           v-for="Kira, idx in KiraTeam"
           :key="idx"
         >
-          <span class="col-2">{{Kira.nickname}} : {{Kira.job}}</span>
+          <span style="font-size:1rem;">{{Kira.nickname}} : {{Kira.job}}</span>
+        </div>
+        <h2 class="col-12 mt-2" style="text-align:left;">Losers</h2>
+        <div
+          class="col-6"
+          v-for="L, idx in LTeam"
+          :key="idx"
+        >
+          <span style="font-size:1rem;">{{L.nickname}} : {{L.job}}</span>
         </div>
       </div>
       <div class="col-8 row d-flex align-content-center" style="height:13vh">

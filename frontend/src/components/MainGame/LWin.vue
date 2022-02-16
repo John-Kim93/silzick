@@ -1,27 +1,31 @@
 <template>
   <div id="background-black" class="full-screen d-flex justify-content-center align-items-center">
-    <div id="base-border" class="container d-flex row justify-content-center align-content-center col-7 flex-wrap" style="height:60vh">
-      <div class="col-8 row d-flex" style="height:13vh">
+    <div
+      id="base-border"
+      class="container d-flex row justify-content-center align-content-center col-7 flex-wrap"
+      style="height:80vh"
+    >
+      <div class="col-10 row d-flex justify-content-center mb-3">
         <b-icon icon="award-fill" font-scale="7.5" class="col-3" variant="primary" />
-        <h1 class="col-7 align-self-center">경찰 측 승리 !</h1>
+        <h1 class="col-9 align-self-center" style="text-align:left;">경찰 측 승리 !</h1>
       </div>
-      <hr id="blue-hr" class="col-11 my-3">
-      <div class="col-8 d-flex row justify-content-start flex-wrap">
-        <h2 class="col-12" style="text-align:left;">Losers</h2>
-        <div
-          class="col-3"
-          v-for="Kira, idx in KiraTeam"
-          :key="idx"
-        >
-          <span>{{Kira.nickname}} : {{Kira.job}}</span>
-        </div>
+      <hr id="blue-hr">
+      <div class="col-10 d-flex row justify-content-start flex-wrap">
         <h2 class="col-12" style="text-align:left;">Winners</h2>
         <div
-          class="col-3"
+          class="col-6"
           v-for="L, idx in LTeam"
           :key="idx"
         >
-          <span>{{L.nickname}} : {{L.job}}</span>
+          <span style="font-size:1rem;">{{L.nickname}} : {{L.job}}</span>
+        </div>
+        <h2 class="col-12 mt-2" style="text-align:left;">Losers</h2>
+        <div
+          class="col-6"
+          v-for="Kira, idx in KiraTeam"
+          :key="idx"
+        >
+          <span style="font-size:1rem;">{{Kira.nickname}} : {{Kira.job}}</span>
         </div>
       </div>
       <div class="col-8 row d-flex align-content-center" style="height:13vh">
@@ -56,6 +60,8 @@ export default {
       // participantsLog에 넣는 객체 : {nickname: clientData, connectionId: connectionId}
       // finalInfo는 {connectionId:직업}
       const job = this.finalInfo[participant.connectionId]
+      console.log(this.finalInfo)
+      console.log(participant)
       if (job == 'KIRA' || job == 'CRIMINAL') {
         this.KiraTeam.push({nickname:participant.nickname, job:job})
       } else {
