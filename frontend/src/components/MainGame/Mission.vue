@@ -16,12 +16,13 @@
     <!-- 미션 스타트 버튼 -->
     <div class="row d-flex justify-content-center mt-4" v-if="!mission && webcam">
 
-      <button
+      <b-button
         id="btn-color"
-        class="btn btn-lg col-4 mt"
+        class="btn btn-lg w-50 mt"
+        size='sm'
         @click="missionSelect(true)"
         v-if="isKIRAorL == false"
-      >start</button>
+      >start</b-button>
       <p v-else>KIRA와L은 미션을 수행할수 없습니다</p>
       <p v-if="isKIRAorL == false">위조명함 개수:{{missionSuccessCount}}</p>
 
