@@ -5,7 +5,7 @@
     </div>
     <div id="base-border" class="container d-flex flex-row justify-content-center align-content-center row col-7" style="height:40vh">
       <div class="col-11 row d-flex align-content-center" style="height:13vh">
-        <h3 id="base-font" class="m-2">SessionId</h3>
+        <h3 id="base-font" class="m-2">Host Id</h3>
         <input
         id="base-border"
         type="text"
