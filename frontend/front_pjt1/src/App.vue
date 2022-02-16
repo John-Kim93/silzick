@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div
+    <!-- <div
       v-if="isLogin && !join"
       class="d-flex mx-3 py-3 fix"
     >
@@ -35,7 +35,7 @@
             </b-icon>
         </router-link>
       </button>
-    </div>
+    </div> -->
     <router-view/>
   </div>
 </template>
@@ -67,14 +67,14 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: CBNUJIKJI, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #DDDDDD;
   height: 100vh;
-  /* background-color: rgb(26, 26, 26);
-  z-index: -2; */
+  background-color: #222831;
+  z-index: -2;
 }
 
 #nav {
