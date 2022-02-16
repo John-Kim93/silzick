@@ -3,7 +3,7 @@
     <div class="container pt-4 row flex-wrap justify-content-center">
       <!-- 첫번째 라인 -->
       <!-- 본인 화면 -->
-      <div id="base-border" class="col-4">
+      <div id="base-border" class="col-4 p-3">
         <user-video :streamManager="subPublisher"/>
       </div>
       <div class="col-4 row">
@@ -25,7 +25,7 @@
         </div>
       </div>
       <!-- 상대방의 화면 -->
-      <div id="base-border" class="col-4">
+      <div id="base-border" class="col-4 p-3">
         <user-video :streamManager="subSubscribers[0]"/>
       </div>
 

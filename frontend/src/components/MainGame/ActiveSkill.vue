@@ -3,18 +3,21 @@
     <!--disabled 사용해서 skill이 1이상일때만 사용가능하도록-->
     <button id="btn-color" class="btn btn-lg" style="height:10vh; width:15vw" @click="show=true"> Skill</button>
     <!-- 1.노트주인 -->
-    <b-modal v-model='show' v-if='myJob == "KIRA"' 
+    <b-modal
+      v-model='show'
+      v-if='myJob == "KIRA"' 
       id='skill' 
+      header-class="bg-color"
       size="md"
-      variant='outline-primary' 
+      centered
+      >
+      <!-- variant='outline-primary' 
       header-bg-variant="black"
       header-text-variant="danger"
       body-bg-variant="black"
       body-text-variant="light"
       footer-bg-variant="black"
-      footer-text-variant="light"
-      centered
-      >
+      footer-text-variant="light" -->
       <template #modal-header  >
       <div></div>
         <h1>
@@ -27,7 +30,7 @@
               scale="0.35"
               ></b-icon>
           </b-iconstack>
-          DEATH NOTE
+          노트
         </h1>
         <div></div>
       </template> 
@@ -470,17 +473,6 @@ export default {
 </script>
  
 <style scoped>
-.center_position {
-  position: fixed;
-  display: block;
-  width: 50%;
-  height: 50%;
-  top: 38%;
-  left: 25%;
-  justify-content: center;
-  text-align: center;
-  align-items: center;
-}
 .skill_button_police {
 	background-color:#1186cf;
 	border-radius:28px;
@@ -495,7 +487,8 @@ export default {
 	text-shadow:0px 1px 0px #283966;
 }
 .skill_button_police:active {
-	position:relative;
+	position:rela
+  tive;
 	top:1px;
 }
 .skill_button_note {
@@ -516,10 +509,10 @@ export default {
 }
 .select_list {
   background-color: transparent;
-  background: black;
-  color: white;
-  border-radius: 8px;
-  text-align: center;
+  background: #222831;
+  color: #DDDDDD;
+  border-radius: 4px;
+  text-align: start;
 }
 input[type=text] {
   border: solid white;
@@ -532,7 +525,7 @@ input[type=text]:focus {
 }
 .skill_button {
 	background-color:#30475E;
-	border-radius:28px;
+	border-radius:5px;
 	border:1px solid #30475E;
 	display:inline-block;
 	cursor:pointer;

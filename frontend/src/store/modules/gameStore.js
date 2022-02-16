@@ -20,7 +20,13 @@ const gameStore = {
     // isReady: false,
     // activeGameStart: false,
     readyStatus: false,
+    // participants에 넣는 객체 : {nickname: clientData, connectionId: connectionId}
     participants: [],
+    // 마지막에 끝났을 때 승자/패자 정보 보여주기 위한 로그 데이터(participants와 동일), participants는 사망 시 데이터 삭제됨
+    // finalInfo는 {connectionId:직업} 리스트로 받는 변수
+    participantsLog: [],
+    finalInfo: [],
+
     publisherId: undefined,
     winner: undefined,
     mainGameTimerSevenOrThirty: 30,
@@ -102,6 +108,7 @@ const gameStore = {
     //각 참여자의 nickName, id 담는 리스트.
     SET_PARTICIPANTS(state, res){
       state.participants = res
+      state.participantsLog = res
     },
     //참여자 전원이 레디를 했는지 판단.
     SET_READY_STATUS(state, res){
@@ -251,6 +258,11 @@ const gameStore = {
     // 게임 끝나는 화면 선택
     SET_WINNER(state, winner) {
       state.winner = winner
+    },
+    FINAL_INFO(state, data) {
+      console.log('333333333333333333333333333')
+      console.log(data)
+      state.finalInfo = data
     },
     
     // 포즈 관련 
@@ -472,6 +484,7 @@ const gameStore = {
         } else if (event.data.gameStatus === 7) {
           const participantsData = event.data
           const { cnt } = participantsData
+          console.log(cnt)
           for (let i = 0; i < cnt; i++) {
             const { userId, connectionId } = participantsData[i]
             const { clientData } = JSON.parse(userId)
@@ -480,6 +493,7 @@ const gameStore = {
             }
           }
         } else if (event.data.gameStatus === 8) {
+          // 위너 설정하고 게임 끝나는 메세지 띄우기
           const winner = event.data.winner
           commit('SET_WINNER', winner)
           if (winner ==='KIRA'){
@@ -497,6 +511,13 @@ const gameStore = {
           setTimeout(() => {
             router.push({ name: 'GameEnd' })
           }, 3000);
+
+          // 게임 끝났을 때 각 참가자-직업 데이터 받아서 마지막에 띄워주기
+          // data: [{connectionId:직업}, ...]
+          const { data } = event
+          console.log('222222222222222222222')
+          console.log(data)
+          commit('FINAL_INFO', data)
         }
       });
       // 명함교환 방 자동 이동 & 미션 자동 분배
@@ -1003,8 +1024,22 @@ const gameStore = {
         name: 'Attend',
       })
     }
-
   },
+  changeJobNameEToK(context, res){
+    if (res == 'KIRA') {
+      return '노트주인'
+    } else if (res == 'L') {
+      return '경찰총장'
+    } else if (res == 'CRIMINAL') {
+      return '추종자'
+    } else if (res == 'GUARD') {
+      return '보디가드'
+    } else if (res == 'BROADCASTER') {
+      return '방송인'
+    } else if (res == 'POLICE') {
+      return '경찰'
+    } 
+  }
 }
 
 export default gameStore;

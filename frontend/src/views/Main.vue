@@ -1,28 +1,28 @@
 <template>
   <div id="base-font" class="d-flex justify-content-center">
     <div class="d-flex row justify-content-center flex-wrap">
-      <div class="col-12">
+      <!-- <div class="col-12">
         <img
           src="https://ifh.cc/g/8B83Qk.png"
           alt="mainLogo"
           class="blink"
           style="width:20vw; height:15vh; margin-top:10vh;"
         >
-      </div>
+      </div> -->
       <img
-        src="https://ifh.cc/g/M4suod.png"
+        src="https://ifh.cc/g/HQNaf8.png"
         alt="mainLogo"
         class="col-12 mt-4"
-        style="width:60vw; height:15vh;"
+        style="width:60vw; height:40vh; margin-top:15vh;"
       >
       <!-- 로그인 후 버튼-->
       <div class="col-5 d-flex row btn-position justify-content-center" style="height:40vh;" v-if="!isLogin">
-        <div class="d-flex flex-column col-12 justify-content-evenly">
+        <div class="d-flex flex-column col-12 align-content-start">
           <router-link to="/Login">
-            <button id="btn-color" class="col-12 btn font-size">로그인</button>
+            <button id="btn-color" class="col-12 btn font-size ">로그인</button>
           </router-link>
           <router-link to="/Signup">
-            <button id="btn-color" class="col-12 btn font-size">회원가입</button>
+            <button id="btn-color" class="col-12 btn font-size my-5">회원가입</button>
           </router-link>
           <router-link to="/Invite">
             <button id="btn-color" class="col-12 btn font-size">방 바로가기</button>
@@ -31,7 +31,7 @@
       </div>
       <!-- 로그인 전 버튼 -->
       <div class="col-5 d-flex row btn-position justify-content-center" style="height:40vh;" v-if="isLogin">
-        <div class="d-flex flex-column col-12 justify-content-evenly">
+        <div class="d-flex flex-column col-12 align-content-start ">
           <button
             id="btn-color"
             class="col-12 btn font-size"
@@ -40,7 +40,7 @@
           </button>
           <button
             id="btn-color"
-            class="col-12 btn font-size"
+            class="col-12 btn font-size my-5"
             @click='logout'
           > 로그아웃
           </button>
