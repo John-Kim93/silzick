@@ -37,6 +37,7 @@ public class GameService {
     static final int GAMESTART = 4;
     static final int USESKILL = 5;
     static final int CHECKPARTICIPANTS = 7;
+    static final int SECRETMESSAGE = 10;
 
 
     private static final Logger log = LoggerFactory.getLogger(GameService.class);
@@ -100,6 +101,9 @@ public class GameService {
                 return;
             case CHECKPARTICIPANTS:
                 checkParticipants(participant, message, sessionId, participants, params, data, notice);
+                return;
+            case SECRETMESSAGE:
+                sendSecretMessgae(participant, message, sessionId, participants, params, data, notice);
                 return;
         }
     }
@@ -261,7 +265,7 @@ public class GameService {
             }
         }
 
-        if (participants.size() >= 4 && participants.size() == cnt) {
+        if (participants.size() >= 2 && participants.size() == cnt) {
             data.addProperty("readyStatus", true);
         }
 
@@ -361,7 +365,6 @@ public class GameService {
         String skillType = data.get("skillType").getAsString();
         //역할 리스트 가져오기.
         ArrayList<Characters> cList = roleMatching.get(sessionId);
-        System.out.println(cList.size());
 
         String jobName = null;
 
@@ -384,12 +387,8 @@ public class GameService {
                     if (!target.isProtected()) {
 
                         //사망처리.
-                        for (Characters player : cList) {
-                            if (player.getParticipant().getParticipantPublicId().equals(target.getParticipant().getParticipantPublicId())) {
-                                player.setAlive(false);
-                                break;
-                            }
-                        }
+                        target.setAlive(false);
+
                         //경찰일시 경찰 수 -1;
                         if (target.getJobName().equals("POLICE")) {
                             alivePolices.compute(sessionId, (k, v) -> v = v - 1);
@@ -409,6 +408,8 @@ public class GameService {
                         if (alivePolices.getOrDefault(sessionId, 0) < 1) {
                             finishGame(participant, sessionId, participants, params, data, "KIRA");
                         }
+
+
                         //보호 중이면.
                     } else {
                         //보호 풀기
@@ -653,6 +654,11 @@ public class GameService {
                         ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                 break;
         }
+
+        if (alivePolices.getOrDefault(sessionId, 0) < 1) {
+            finishGame(participant, sessionId, participants, params, data, "KIRA");
+        }
+
     }
 
     private Characters getTarget(JsonObject data, ArrayList<Characters> cList) {
@@ -745,5 +751,23 @@ public class GameService {
             rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
         }
+    }
+
+    //귓속말 보내기
+    private void sendSecretMessgae(Participant participant, JsonObject message, String sessionId, Set<Participant> participants, JsonObject params, JsonObject data, RpcNotificationService notice) {
+        String publicId = data.get("to").getAsString();
+        params.add("data", data);
+
+        //자기자신에게 보여주고.
+        rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
+                ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+        for (Participant p : participants) {
+            if (p.getParticipantPublicId().equals(publicId)) {
+                rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+                        ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+                break;
+            }
+        }
+
     }
 }

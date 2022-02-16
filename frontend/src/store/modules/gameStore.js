@@ -202,6 +202,9 @@ const gameStore = {
     SET_MISSION_SUCCESS(state, count){
       state.missionSuccessCount += count
     },
+    RESET_MISSION_SUCCESS(state, res){
+      state.missionSuccessCount = res
+    },
     IS_NORMAL_MISSION(state, res){
       state.isNormalMission = res
     },
@@ -324,64 +327,146 @@ const gameStore = {
       // 게임 관련 시그널 관리
       session.on("signal:game", (event) => {
         // 게임 접속 시 직업 데이터 현황 받기
-        if (event.data.gameStatus === 0){
-          for (let i=0; i<6; i++) {
-            state.jobs.forEach(job => {
-              if (job.jobName == event.data[i].jobName) {
-                job.count = event.data[i].count
-              }
-            })
-          }
-        // job.count 증감 (방장 권한)
-        } else if(event.data.gameStatus === 1){
-          let job = event.data
-          commit('CHANGE_JOB_COUNT', job)
-        // 게임 접속 시 ready 현황 받기
-        } else if (event.data.gameStatus === 2){
-          state.subscribers.forEach(subscriber => {
-            subscriber.ready = event.data[subscriber.stream.connection.connectionId]
-          })
-        // 다른사람이 레디했을 때 정보 받아서 바꾸기 + 6명 이상 레디하면 게임시작 활성화
-        } else if (event.data.gameStatus === 3){
-          state.subscribers.forEach(subscriber => {
-            subscriber.ready = event.data[subscriber.stream.connection.connectionId]
-          })
-          state.publisher.ready = event.data[state.publisherId]
-          if (event.data.readyStatus) {
-            commit('SET_READY_STATUS', true)
-          } else {
-            commit('SET_READY_STATUS', false)
-          }
-        // 내 직업 받고 게임 스타트
-        } else if (event.data.gameStatus === 4) {
-          commit('SET_MY_JOB', event.data.jobName)
-          dispatch('checkIsKIRAorL', event.data.jobName)
-          router.push({
-            name: 'MainGame'
-          })
-        // 직업별 스킬 사용
-        } else if (event.data.gameStatus === 5) {
-          switch (event.data.skillType) {
-            // 키라가 노트에 이름을 적음
-            case 'noteWrite':{
-              const {writeName} = event.data
-              if (writeName) {
-                state.messages.push('System : 누군가의 이름이 노트에 적혔습니다.')
-              } else {
-                state.messages.push('System : 이름과 직업이 일치하지 않습니다.')
-              }
-              break
+        switch(event.data.gameStatus){
+          case 0 :{
+            for (let i=0; i<6; i++) {
+              state.jobs.forEach(job => {
+                if (job.jobName == event.data[i].jobName) {
+                  job.count = event.data[i].count
+                }
+              })
             }
-            // 키라가 노트에 적힌 사람을 모두 죽임
-            case 'noteUse':{
-              const results = event.data
-              const { cnt } = results
-              for (let i = 0; i < cnt; i++) {
-                const {isAlive, userId, connectionId} = results[i]
-                const { clientData } = JSON.parse(userId)
-                if (isAlive) {
-                  state.messages.push('System : ' + clientData + '가 보디가드에 의해 보호되었습니다.')
+            break;
+          }
+          case 1 :{
+            let job = event.data
+            commit('CHANGE_JOB_COUNT', job)
+            break;
+          // 게임 접속 시 ready 현황 받기
+          } 
+          case 2 :{
+            state.subscribers.forEach(subscriber => {
+              subscriber.ready = event.data[subscriber.stream.connection.connectionId]
+            })
+            break;
+          }
+          // 다른사람이 레디했을 때 정보 받아서 바꾸기 + 6명 이상 레디하면 게임시작 활성화
+          case 3 :{
+            state.subscribers.forEach(subscriber => {
+              subscriber.ready = event.data[subscriber.stream.connection.connectionId]
+            })
+            state.publisher.ready = event.data[state.publisherId]
+            if (event.data.readyStatus) {
+              commit('SET_READY_STATUS', true)
+            } else {
+              commit('SET_READY_STATUS', false)
+            }
+            break;
+          // 내 직업 받고 게임 스타트
+          } 
+          case 4 :{
+            commit('SET_MY_JOB', event.data.jobName)
+            dispatch('checkIsKIRAorL', event.data.jobName)
+            router.push({
+              name: 'MainGame'
+            })
+            break;
+          // 직업별 스킬 사용
+          }
+          case 5 :{
+            switch (event.data.skillType) {
+              // 키라가 노트에 이름을 적음
+              case 'noteWrite':{
+                const {writeName} = event.data
+                if (writeName) {
+                  state.messages.push('System : 누군가의 이름이 노트에 적혔습니다.')
                 } else {
+                  state.messages.push('System : 이름과 직업이 일치하지 않습니다.')
+                }
+                break
+              }
+              // 키라가 노트에 적힌 사람을 모두 죽임
+              case 'noteUse':{
+                const results = event.data
+                const { cnt } = results
+                for (let i = 0; i < cnt; i++) {
+                  const {isAlive, userId, connectionId} = results[i]
+                  const { clientData } = JSON.parse(userId)
+                  if (isAlive) {
+                    state.messages.push('System : ' + clientData + '가 보디가드에 의해 보호되었습니다.')
+                  } else {
+                    if (state.publisher && state.publisherId == connectionId){
+                      state.session.unpublish(state.publisher)
+                      commit('SET_PUBLISHER', undefined)
+                      commit('IS_ALIVE', false)
+                    } else if (state.subPublisher && state.publisherId == connectionId){
+                      state.subSession.unpublish(state.subPublisher)
+                      commit('SET_SUB_PUBLISHER', undefined)
+                      commit('IS_ALIVE', false)
+                    }
+                    dispatch('removeParticipant', connectionId)
+                    state.messages.push('System : ' + clientData + '가 심장마비로 사망하였습니다.')
+                  }
+                }
+                break
+              }
+              // 명교 확정 시 L에게 True or False 결과 전달
+              case 'announceToL':{
+                let TF = '거짓'
+                if (event.data.result) {
+                  TF = '진실'
+                }
+                const {clientData} = JSON.parse(event.data.userId)
+                const message = "System : " + clientData + "는 " + TF + '인 명함을 냈습니다.'
+                state.messages.push(message)
+                break
+              }
+              // 방송인의 방송 기능
+              case 'announce':{
+                const message = '경찰측 방송 : ' + event.data.announce
+                state.messages.push(message)
+                break
+              }
+              // 보디가드의 보호 기능은 백에서 구현, 확인 메세지만 출력
+              case 'protect':{
+                const {clientData} = JSON.parse(event.data.userId)
+                const message = "System : " + clientData + '을/를 1회 보호합니다.'
+                state.messages.push(message)
+                break
+              }
+              // 경찰의 검거 능력, 키라측이면 죽임
+              case 'arrest': {
+                const { isCriminal, userId, connectionId} = event.data
+                const { clientData } = JSON.parse(userId)
+                if (isCriminal == true) {
+                  state.messages.push('System : 추종자 ' + clientData + '가 검거되었습니다.')
+                } else {
+                  state.messages.push('System : 경찰 ' + clientData + '가 경찰측 체포를 시도하여 해고당했습니다.')
+                }
+                // 찾아서 죽이기
+                dispatch('removeParticipant', connectionId)
+                // 퍼블리셔 지우기
+                if (state.publisher && state.publisherId == connectionId){
+                  state.session.unpublish(state.publisher)
+                  commit('SET_PUBLISHER', undefined)
+                  commit('IS_ALIVE', false)
+                } else if (state.subPublisher &&state.publisherId == connectionId){
+                  state.subSession.unpublish(state.subPublisher)
+                  commit('SET_SUB_PUBLISHER', undefined)
+                  commit('IS_ALIVE', false)
+                }
+                break
+              }
+              case 'kill': {
+                const result = event.data
+                const { isAlive, userId, connectionId } = result
+                const { clientData } = JSON.parse(userId)
+                if (isAlive == 0) {
+                  state.messages.push('System : ' + clientData + '가 보디가드에 의해 보호되었습니다.')
+                } else if (isAlive == 1) {
+                  state.messages.push('System : ' + clientData + '의 직업 정보가 일치하지 않습니다.')
+                } else {
+                  dispatch('removeParticipant', connectionId)
                   if (state.publisher && state.publisherId == connectionId){
                     state.session.unpublish(state.publisher)
                     commit('SET_PUBLISHER', undefined)
@@ -390,113 +475,53 @@ const gameStore = {
                     state.subSession.unpublish(state.subPublisher)
                     commit('SET_SUB_PUBLISHER', undefined)
                     commit('IS_ALIVE', false)
-                  }
-                  dispatch('removeParticipant', connectionId)
+                  } 
                   state.messages.push('System : ' + clientData + '가 심장마비로 사망하였습니다.')
                 }
+                break
               }
-              break
             }
-            // 명교 확정 시 L에게 True or False 결과 전달
-            case 'announceToL':{
-              let TF = '거짓'
-              if (event.data.result) {
-                TF = '진실'
-              }
-              const {clientData} = JSON.parse(event.data.userId)
-              const message = "System : " + clientData + "는 " + TF + '인 명함을 냈습니다.'
-              state.messages.push(message)
-              break
-            }
-            // 방송인의 방송 기능
-            case 'announce':{
-              const message = '경찰측 방송 : ' + event.data.announce
-              state.messages.push(message)
-              break
-            }
-            // 보디가드의 보호 기능은 백에서 구현, 확인 메세지만 출력
-            case 'protect':{
-              const {clientData} = JSON.parse(event.data.userId)
-              const message = "System : " + clientData + '을/를 1회 보호합니다.'
-              state.messages.push(message)
-              break
-            }
-            // 경찰의 검거 능력, 키라측이면 죽임
-            case 'arrest': {
-              const { isCriminal, userId, connectionId} = event.data
+            break;
+          // 파티스펀트 초기 데이터 받기
+          }
+          case 7 :{
+            const participantsData = event.data
+            const { cnt } = participantsData
+            for (let i = 0; i < cnt; i++) {
+              const { userId, connectionId } = participantsData[i]
               const { clientData } = JSON.parse(userId)
-              if (isCriminal == true) {
-                state.messages.push('System : 추종자 ' + clientData + '가 검거되었습니다.')
-              } else {
-                state.messages.push('System : 경찰 ' + clientData + '가 경찰측 체포를 시도하여 해고당했습니다.')
+              if(state.publisherId != connectionId){
+                state.participants.push({nickname: clientData, connectionId: connectionId})
               }
-              // 찾아서 죽이기
-              dispatch('removeParticipant', connectionId)
-              // 퍼블리셔 지우기
-              if (state.publisher && state.publisherId == connectionId){
-                state.session.unpublish(state.publisher)
-                commit('SET_PUBLISHER', undefined)
-                commit('IS_ALIVE', false)
-              } else if (state.subPublisher &&state.publisherId == connectionId){
-                state.subSession.unpublish(state.subPublisher)
-                commit('SET_SUB_PUBLISHER', undefined)
-                commit('IS_ALIVE', false)
-              }
-              break
             }
-            case 'kill': {
-              const result = event.data
-              const { isAlive, userId, connectionId } = result
-              const { clientData } = JSON.parse(userId)
-              if (isAlive == 0) {
-                state.messages.push('System : ' + clientData + '가 보디가드에 의해 보호되었습니다.')
-              } else if (isAlive == 1) {
-                state.messages.push('System : ' + clientData + '의 직업 정보가 일치하지 않습니다.')
-              } else {
-                dispatch('removeParticipant', connectionId)
-                if (state.publisher && state.publisherId == connectionId){
-                  state.session.unpublish(state.publisher)
-                  commit('SET_PUBLISHER', undefined)
-                  commit('IS_ALIVE', false)
-                } else if (state.subPublisher && state.publisherId == connectionId){
-                  state.subSession.unpublish(state.subPublisher)
-                  commit('SET_SUB_PUBLISHER', undefined)
-                  commit('IS_ALIVE', false)
-                } 
-                state.messages.push('System : ' + clientData + '가 심장마비로 사망하였습니다.')
-              }
-              break
+            break;
+          }
+          case 8 :{
+            const winner = event.data.winner
+            commit('SET_WINNER', winner)
+            if (winner ==='KIRA'){
+              state.messages.push('System : 모든 경찰이 사망했습니다.'+ winner+'측의 승리입니다.')
+            }else{
+              state.messages.push('System : 노트측이 모두 체포되었습니다.'+ winner+'측의 승리입니다.')
             }
+            state.messages.push('3 초후 결과 창으로 이동합니다')
+            setTimeout(() => {
+              state.messages.push('2 초후 결과 창으로 이동합니다')
+            }, 1000);
+            setTimeout(() => {
+              state.messages.push('1 초후 결과 창으로 이동합니다')
+            }, 2000);
+            setTimeout(() => {
+              router.push({ name: 'GameEnd' })
+            }, 3000);
+            break;
           }
-        // 파티스펀트 초기 데이터 받기
-        } else if (event.data.gameStatus === 7) {
-          const participantsData = event.data
-          const { cnt } = participantsData
-          for (let i = 0; i < cnt; i++) {
-            const { userId, connectionId } = participantsData[i]
-            const { clientData } = JSON.parse(userId)
-            if(state.publisherId != connectionId){
-              state.participants.push({nickname: clientData, connectionId: connectionId})
-            }
+          case 10 :{
+            console.log(event.data)
+            const { user, chatMessage } = event.data
+            const data = user + " : " + chatMessage
+            commit('SET_MESSAGES', data)
           }
-        } else if (event.data.gameStatus === 8) {
-          const winner = event.data.winner
-          commit('SET_WINNER', winner)
-          if (winner ==='KIRA'){
-            state.messages.push('System : 모든 경찰이 사망했습니다.'+ winner+'측의 승리입니다.')
-          }else{
-            state.messages.push('System : 노트측이 모두 체포되었습니다.'+ winner+'측의 승리입니다.')
-          }
-          state.messages.push('3 초후 결과 창으로 이동합니다')
-          setTimeout(() => {
-            state.messages.push('2 초후 결과 창으로 이동합니다')
-          }, 1000);
-          setTimeout(() => {
-            state.messages.push('1 초후 결과 창으로 이동합니다')
-          }, 2000);
-          setTimeout(() => {
-            router.push({ name: 'GameEnd' })
-          }, 3000);
         }
       });
       // 명함교환 방 자동 이동 & 미션 자동 분배
@@ -690,17 +715,41 @@ const gameStore = {
     },
     leaveSession({state, commit}) {
       // --- Leave the session by calling 'disconnect' method over the Session object ---
-      if (state.session) state.session.disconnect();
+      if (state.session) {
+        state.session.disconnect();
 
-      commit('SET_SESSION', undefined)
-      commit('SET_PUBLISHER', undefined)
-      commit('SET_OV', undefined)
-      commit('SET_OVTOKEN', undefined)
-      commit('SET_SUBSCRIBERS', [])
-      commit('SET_SESSIONID', undefined)
-      commit('SET_NICKNAME', undefined)
-      commit('NICKNAME_UPDATE', undefined)
-
+        commit('SET_READY_STATUS', false)
+        commit('SET_PARTICIPANTS', [])
+        commit('SET_MY_PUBLISHER_ID', undefined)
+        commit('SET_WINNER', undefined)
+        commit('SET_MISSION', -1)
+        commit('SET_RANDOM_INT', 0)
+        commit('SET_MISSION_SUCCESS',0)
+        commit('RESET_SKILL_USE',0)
+        commit('IS_NORMAL_MISSION',true)
+        commit('SET_TURN',0)
+        commit('SET_OPTIONS', [
+          { value: 'KIRA', text: '노트주인'},
+          { value: 'CRIMINAL', text: '추종자'},
+          { value: 'L', text: '경찰총장'},
+          { value: 'POLICE', text: '경찰'},
+          { value: 'GUARD', text: '보디가드'},
+          { value: 'BROADCASTER', text: '방송인'},
+        ])
+        commit('IS_KIRA_OR_L', false)
+        commit('IS_ALIVE', true)
+        commit('SET_MY_JOB', undefined)
+        commit('RESET_MESSAGES')
+        commit('GET_JOB_PROPS',jobs)
+        commit('SET_SESSION', undefined)
+        commit('SET_PUBLISHER', undefined)
+        commit('SET_OV', undefined)
+        commit('SET_OVTOKEN', undefined)
+        commit('SET_SUBSCRIBERS', [])
+        commit('SET_NICKNAME', undefined)
+        commit('NICKNAME_UPDATE', undefined)
+        commit('RESET_MISSION_SUCCESS',0)
+      }
       // window.removeEventListener("beforeunload", this.leaveSession);
     },
     // 명교방 관련 기능
@@ -777,6 +826,19 @@ const gameStore = {
         data: JSON.stringify({message}),
         to: [],
       })
+    },
+    sendMessageWhisper ({ state }, messageData) {
+      state.session.signal({
+        type: 'game',
+        data: {
+          gameStatus: 10,
+          user: messageData.user,
+          chatMessage: messageData.chatMessage,
+          to: messageData.to
+        },
+        to: [],
+      })
+      
     },
     setReady ({state}) {
       state.session.signal({
@@ -939,68 +1001,10 @@ const gameStore = {
 
 
     //게임 종료 후 되돌아가기 
-    gameReset({state, commit}){
-      //게임 종료 후 초기화
-      commit('SET_READY_STATUS', false)
-      commit('SET_PARTICIPANTS', [])
-      commit('SET_MY_PUBLISHER_ID', undefined)
-      commit('SET_WINNER', undefined)
-      commit('SET_MISSION', -1)
-      commit('SET_RANDOM_INT', 0)
-      commit('SET_MISSION_SUCCESS',0)
-      commit('RESET_SKILL_USE',0)
-      commit('IS_NORMAL_MISSION',true)
-      commit('SET_TURN',0)
-      commit('SET_OPTIONS', [
-        { value: 'KIRA', text: '노트주인'},
-        { value: 'CRIMINAL', text: '추종자'},
-        { value: 'L', text: '경찰총장'},
-        { value: 'POLICE', text: '경찰'},
-        { value: 'GUARD', text: '보디가드'},
-        { value: 'BROADCASTER', text: '방송인'},
-      ])
-      commit('IS_KIRA_OR_L', false)
-      commit('IS_ALIVE', true)
-      commit('SET_MY_JOB', undefined)
-      commit('RESET_MESSAGES')
-      commit('GET_JOB_PROPS',jobs)
-
-      if(!state.subPublisher){
-        const OV = new OpenVidu();
-        let subPublisher = OV.initPublisher(undefined, {
-          audioSource: undefined, // The source of audio. If undefined default microphone
-          videoSource: undefined, // The source of video. If undefined default webcam
-          publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-          publishVideo: true, // Whether you want to start publishing with your video enabled or not
-          resolution: "1280×720", // The resolution of your video
-          frameRate: 30, // The frame rate of your video
-          insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
-          mirror: false, // Whether to mirror your local video or not
-        });
-        state.subSession.publish(subPublisher)
-        commit('SET_SUB_PUBLISHER', subPublisher)
-      }
-      if(!state.publisher){
-        const OV = new OpenVidu();
-        let Publisher = OV.initPublisher(undefined, {
-          audioSource: undefined, // The source of audio. If undefined default microphone
-          videoSource: undefined, // The source of video. If undefined default webcam
-          publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-          publishVideo: true, // Whether you want to start publishing with your video enabled or not
-          resolution: "1280×720", // The resolution of your video
-          frameRate: 30, // The frame rate of your video
-          insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
-          mirror: false, // Whether to mirror your local video or not
-        });
-        state.session.publish(Publisher)
-        commit('SET_PUBLISHER', Publisher)
-        state.publisher.ready = false
-      }else{
-        state.publisher.ready = false
-      }
-      
+    gameReset({dispatch}){
+      dispatch('leaveSession')
       router.push({
-        name: 'Attend',
+        name: 'Join',
       })
     }
 
