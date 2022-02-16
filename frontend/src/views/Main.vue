@@ -30,20 +30,20 @@
         </div>
       </div>
       <!-- 로그인 전 버튼 -->
-      <div class="col-2 row btn-position" style="height:30vh;" v-if="isLogin">
-        <div class="d-flex flex-column justify-content-evenly">
-          <b-button
-            class="font-size col-12"
-            variant="outline-light"
+      <div class="col-5 d-flex row btn-position justify-content-center" style="height:40vh;" v-if="isLogin">
+        <div class="d-flex flex-column col-12 justify-content-evenly">
+          <button
+            id="btn-color"
+            class="col-12 btn font-size"
             @click="createRoomRequest(userName)"
           > 방 만들기
-          </b-button>
-          <b-button
-            class="font-size col-12"
-            variant="outline-light"
+          </button>
+          <button
+            id="btn-color"
+            class="col-12 btn font-size"
             @click='logout'
           > 로그아웃
-          </b-button>
+          </button>
         </div>
       </div>
     </div>

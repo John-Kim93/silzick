@@ -14,15 +14,18 @@
     >HIDDEN MISSION</p>
     <hr class="m-0 col-12">
     <!-- 미션 스타트 버튼 -->
-    <div class="row d-flex justify-content-center" v-if="!mission && webcam">
+    <div class="row d-flex justify-content-center mt-4" v-if="!mission && webcam">
 
       <button
         id="btn-color"
-        class="btn btn-lg col-4 mt-5"
+        class="btn btn-lg col-4 mt"
         @click="missionSelect(true)"
         v-if="isKIRAorL == false"
       >start</button>
       <p v-else>KIRA와L은 미션을 수행할수 없습니다</p>
+      <!-- <p>거짓 직업 가능횟수:{{missionSuccessCount}}</p>
+      <p>스킬 사용 가능횟수:{{skillCnt}}</p> -->
+
       거짓 직업 가능횟수:{{missionSuccessCount}}<br>
       스킬 사용 가능횟수:{{skillCnt}}
     </div>
