@@ -59,7 +59,31 @@
               class="col-4">
               <exchange-timer-seven-sec/>
             </div>
-            <div class="offset-1 col-7">
+            <div>
+              <b-button v-b-modal.modal-1>MEMO</b-button>
+
+              <b-modal id="modal-1" scrollable  title="MEMO"
+              header-bg-variant="dark"
+              header-text-variant="light"
+              body-bg-variant="secondary"
+              body-text-variant="bodyTextVariant"
+              footer-bg-variant="footerBgVariant"
+              footer-text-variant="footerTextVariant">
+                <b-form-textarea 
+                v-model="text"
+                style="border:none;" 
+                class="my-4 h-100 w-100" 
+                placeholder="이 곳에 메모하세요"
+                rows="10"
+                ></b-form-textarea>
+                <template #modal-footer>
+                  <b-button size="sm" variant="outline-secondary" @click="forget()">
+                    메모지우기
+                  </b-button>
+                </template>
+              </b-modal>
+            </div>
+            <!-- <div class="offset-1 col-7">
               <input type="checkbox" id="popup">
               <label for="popup">MEMO</label>
               <div>
@@ -68,7 +92,7 @@
                   <textarea name="" style="border:none; color:#DDDDDD;" id="popup" class="textarea_position" cols="30" rows="10"></textarea>
                 </div>
               </div>
-            </div>
+            </div> -->
             <p>명함교환 누적 횟수 : {{turn}}회</p>
           </div>
         </div>
@@ -114,7 +138,7 @@ export default {
   data () {
     return {
       chatMessage: '',
-      memo : false,
+      text : '',
       restart : 30,
     }
   },
@@ -131,8 +155,8 @@ export default {
         target: [this.publisher.stream.connection.connectionId, this.subscribers[0].stream.connection.connectionId]
       })
     },
-    openmemo () {
-      this.memo = true
+    forget(){
+      this.text = ''
     },
     enterMessage() {
       if (this.chatMessage.trim()) {
