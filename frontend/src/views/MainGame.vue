@@ -60,15 +60,25 @@
               <exchange-timer-seven-sec/>
             </div>
             <div>
-              <b-button v-b-modal.modal-1>MEMO</b-button>
+              <b-button v-b-modal.modal-1 @click="modalPosition()">MEMO</b-button>
 
               <b-modal id="modal-1" scrollable  title="MEMO"
-              header-bg-variant="dark"
-              header-text-variant="light"
-              body-bg-variant="secondary"
-              body-text-variant="bodyTextVariant"
-              footer-bg-variant="footerBgVariant"
-              footer-text-variant="footerTextVariant">
+              style=""
+              size='sm'
+              header-bg-variant="#00ff0000"
+              header-text-variant="#00ff0000"
+              body-bg-variant="#00ff0000"
+              body-text-variant="#00ff0000"
+              footer-bg-variant="#00ff0000"
+              footer-text-variant="#00ff0000">
+                <template #modal-header="{ close }">
+                  <!-- Emulate built in modal header close button action -->
+                  <h5>MEMO</h5>
+                  <b-button size="sm" variant="outline-danger" @click="close()">
+                    X
+                  </b-button>
+                </template>
+
                 <b-form-textarea 
                 v-model="text"
                 style="border:none;" 
@@ -143,7 +153,19 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'nickname', 'subscribers', 'publisher', 'subSession', 'session', 'messages', 'mainGameTimerSevenOrThirty', 'turn', 'isKIRAorL','isAlive']),
+    ...mapState(gameStore, [
+      'myJob',
+      'nickname',
+      'subscribers', 
+      'publisher', 
+      'subSession', 
+      'session', 
+      'messages', 
+      'mainGameTimerSevenOrThirty', 
+      'turn', 
+      'isKIRAorL',
+      'isAlive']),
+    
   },
   methods : {
     ...mapMutations(gameStore, ['SET_MAINGAME_TIMER', 'COUNT_TURN']),
@@ -158,6 +180,10 @@ export default {
     forget(){
       this.text = ''
     },
+    modalPosition(){
+      const modal_position = document.querySelector('.modal-content')
+      modal_position.style = 'margin-left: 300px;'  
+    },
     enterMessage() {
       if (this.chatMessage.trim()) {
         this.sendMessage(this.chatMessage)
@@ -171,7 +197,8 @@ export default {
         this.SET_MAINGAME_TIMER(true)
       }, 10000)
     }
-  }
+    
+  },
 }
 </script>
 
@@ -482,5 +509,8 @@ input[id*="popup"]:checked + label + div {
 }
 .explain_victory {
   height: 30%;
+}
+#modal-1___BV_modal_content_{
+  margin-left: 300px;
 }
 </style>

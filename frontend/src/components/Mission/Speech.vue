@@ -66,7 +66,7 @@ export default {
       signal: false,
       textdata: '',
       timerCount: 16,
-      mission_list:['간장 공장 공장장','내가 키라다','안녕하세요 오늘 날씨가 좋죠','혹시 직업이 뭐예요', '왕밤빵','홍합','내가 그린 기린 그림은 안 긴 기린 그림',],
+      mission_list:['간장 공장 공장장','내가 키라다','안녕하세요 오늘 날씨가 좋죠','혹시 직업이 뭐예요', '왕밤빵','홍합','내가 그린 기린 그림은 안 긴 기린 그림','실례지만 직업과 성함이 어떻게 되시나요'],
       s_mission: '',
       s_count : 20,
       importmation: '',
@@ -143,7 +143,7 @@ export default {
 
     getmission () {
       this.s_mission = this.mission_list[Math.floor(Math.random()*this.mission_list.length)];
-      this.s_count = parseInt(20 / this.s_mission.length)
+      this.s_count = parseInt(25 / this.s_mission.length)
       this.importmation = `<${this.s_mission}>을(를) ${this.s_count}번 말하시오`
     },
     initRecognition () {
