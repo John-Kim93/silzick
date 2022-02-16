@@ -327,12 +327,12 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants','numberOfSkillUsed',])
+    ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants','numberOfSkillUsed', 'isAlive'])
   },
   methods: {
     ...mapActions(gameStore, ['numberOfSkillUse',]),
     noteWrite () {
-      if(this.numberOfSkillUsed>0){
+      if(this.numberOfSkillUsed>0 && this.isAlive == true){
         this.numberOfSkillUse(-1)
         this.show = false
         this.session.signal({
@@ -350,18 +350,20 @@ export default {
       }
     },
     noteUse () {
-      this.show = false
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 5,
-          skillType: 'noteUse',
-        },
-        to: [],
-      })
+      if(this.isAlive == true) {
+        this.show = false
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 5,
+            skillType: 'noteUse',
+          },
+          to: [],
+        })
+      }
     },
     broadcast () {
-      if(this.numberOfSkillUsed>0){
+      if(this.numberOfSkillUsed>0 && this.isAlive == true){
         this.numberOfSkillUse(-1)
         this.show = false
         this.session.signal({
@@ -377,7 +379,7 @@ export default {
       }
     },
     arrest () {
-      if(this.numberOfSkillUsed>0){
+      if(this.numberOfSkillUsed>0 && this.isAlive == true){
         this.numberOfSkillUse(-2)
         this.show = false
         this.session.signal({
@@ -393,7 +395,7 @@ export default {
       }
     },
     protect () {
-      if(this.numberOfSkillUsed>0){
+      if(this.numberOfSkillUsed>0 && this.isAlive == true){
         this.numberOfSkillUse(-1)
         this.show = false
         this.session.signal({
@@ -409,7 +411,7 @@ export default {
       }
     },
     kill () {
-      if(this.numberOfSkillUsed>0){
+      if(this.numberOfSkillUsed>0 && this.isAlive == true){
         this.numberOfSkillUse(-1)
         this.show = false
         this.session.signal({

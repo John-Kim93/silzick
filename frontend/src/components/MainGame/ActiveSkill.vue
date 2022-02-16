@@ -362,13 +362,13 @@ export default {
     }
   },
   computed: {
-    ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants','missionSuccess','numberOfSkillUsed'])
+    ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants','missionSuccess','numberOfSkillUsed','isAlive'])
   },
   methods: {
     ...mapActions(gameStore, ['numberOfSkillUse']),
 
     noteWrite () {
-      if(this.numberOfSkillUsed>0){
+      if(this.numberOfSkillUsed>0 && this.isAlive == true){
         this.show = false
         console.log(this.selectParticipant)
         this.session.signal({
@@ -387,18 +387,20 @@ export default {
       }
     },
     noteUse () {
-      this.show = false
-      this.session.signal({
-        type: 'game',
-        data: {
-          gameStatus: 5,
-          skillType: 'noteUse',
-        },
-        to: [],
-      })
+      if(this.isAlive == true) {
+        this.show = false
+        this.session.signal({
+          type: 'game',
+          data: {
+            gameStatus: 5,
+            skillType: 'noteUse',
+          },
+          to: [],
+        })
+      }
     },
     broadcast () {
-      if(this.numberOfSkillUsed>0){
+      if(this.numberOfSkillUsed>0 && this.isAlive == true){
         this.show = false
         this.session.signal({
           type: 'game',
@@ -414,7 +416,7 @@ export default {
       }
     },
     arrest () {
-      if(this.numberOfSkillUsed>0){
+      if(this.numberOfSkillUsed>0 && this.isAlive == true){
         this.show = false
         this.session.signal({
           type: 'game',
@@ -430,7 +432,7 @@ export default {
       }
     },
     protect () {
-      if(this.numberOfSkillUsed>0){
+      if(this.numberOfSkillUsed>0 && this.isAlive == true){
         this.show = false
         this.session.signal({
           type: 'game',
@@ -446,7 +448,7 @@ export default {
       }
     },
     kill () {
-      if(this.numberOfSkillUsed>0){
+      if(this.numberOfSkillUsed>0 && this.isAlive == true){
         this.show = false
         this.session.signal({
           type: 'game',
