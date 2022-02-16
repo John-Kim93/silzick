@@ -12,7 +12,7 @@
           v-for="L, idx in LTeam"
           :key="idx"
         >
-          <span>{{L.nickname}} : {{L.job}}</span>
+          <span class="col-2">{{L.nickname}} : {{L.job}}</span>
         </div>
         <h2 class="col-12" style="text-align:left;">Winners</h2>
         <div
@@ -20,7 +20,7 @@
           v-for="Kira, idx in KiraTeam"
           :key="idx"
         >
-          <span>{{Kira.nickname}} : {{Kira.job}}</span>
+          <span class="col-2">{{Kira.nickname}} : {{Kira.job}}</span>
         </div>
       </div>
       <div class="col-8 row d-flex align-content-center" style="height:13vh">

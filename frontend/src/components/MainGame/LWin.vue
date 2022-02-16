@@ -9,7 +9,7 @@
       <div class="col-8 d-flex row justify-content-start flex-wrap">
         <h2 class="col-12" style="text-align:left;">Losers</h2>
         <div
-          class="col-12 d-flex row"
+          class="col-3"
           v-for="Kira, idx in KiraTeam"
           :key="idx"
         >
@@ -17,7 +17,7 @@
         </div>
         <h2 class="col-12" style="text-align:left;">Winners</h2>
         <div
-          class="col-12 d-flex row"
+          class="col-3"
           v-for="L, idx in LTeam"
           :key="idx"
         >
