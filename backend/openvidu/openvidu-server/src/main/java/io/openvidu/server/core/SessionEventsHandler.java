@@ -420,7 +420,6 @@ public class SessionEventsHandler {
             if (message.has("to")) {
 
                 JsonArray toJson = message.get("to").getAsJsonArray();
-                System.out.println(toJson.size());
                 for (int i = 0; i < toJson.size(); i++) {
                     JsonElement el = toJson.get(i);
                     if (el.isJsonNull()) {

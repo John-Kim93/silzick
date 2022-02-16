@@ -15,8 +15,8 @@
     <div>
       <select
         v-model="chatSelect"
-        id = "background-black"
-        class="select_list select-btn"
+        id = "chat-select"
+        class="select_list"
       >
         <option selected value="">모두</option>
         <option
@@ -97,11 +97,14 @@ input::placeholder {
   font-size: 0.8rem;
 }
 
-.chat-select-btn {
+#chat-select {
     border: 3px solid #30475E;
     border-radius: 4px;
     font-size: 1rem;
     width: 100%;
-    text-align: center
+    text-align: center;
+    font-family: CBNUJIKJI;
+    background-color: #222831;
+    color: #DDDDDD;
 }
 </style>

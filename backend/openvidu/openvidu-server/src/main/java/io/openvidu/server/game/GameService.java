@@ -25,6 +25,7 @@ import io.openvidu.server.rpc.RpcNotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -53,6 +54,8 @@ public class GameService {
     public static ConcurrentHashMap<String, ArrayList<Roles>> gameRoles = new ConcurrentHashMap<>();
     // 역할 - player 매칭 정보 관리
     public static ConcurrentHashMap<String, ArrayList<Characters>> roleMatching = new ConcurrentHashMap<>();
+    // 종료시에 보낼 정보
+    public static ConcurrentHashMap<String, ArrayList<Characters>> roleInfo = new ConcurrentHashMap<>();
     // 참가자 목록 관리
     public static ConcurrentHashMap<String, ArrayList<Participant>> participantsList = new ConcurrentHashMap<>();
     // 살아있는 경찰 수 관리
@@ -315,6 +318,9 @@ public class GameService {
         }
         //역할 분배된 것 넣기.
         roleMatching.putIfAbsent(sessionId, userRoles);
+
+        ArrayList<Characters> userInfo = new ArrayList<>(userRoles);
+        roleInfo.putIfAbsent(sessionId, userInfo);
 
         //0,1번이 KIRA,L임
         ArrayList<Participant> KIRAandL = new ArrayList<>(players.subList(0, 2));
@@ -655,10 +661,6 @@ public class GameService {
                 break;
         }
 
-        if (alivePolices.getOrDefault(sessionId, 0) < 1) {
-            finishGame(participant, sessionId, participants, params, data, "KIRA");
-        }
-
     }
 
     private Characters getTarget(JsonObject data, ArrayList<Characters> cList) {
@@ -720,6 +722,12 @@ public class GameService {
 
         Thread deathNoteThread = gameThread.get(sessionId);
 
+        ArrayList<Characters> userInfo = roleInfo.get(sessionId);
+
+        for (Characters c : userInfo) {
+            data.addProperty(c.getParticipant().getParticipantPublicId(), c.getJobName());
+        }
+
         //자원 반납
         //쓰래드 자원 반납
         gameThread.remove(sessionId);
@@ -758,7 +766,7 @@ public class GameService {
         String publicId = data.get("to").getAsString();
         params.add("data", data);
 
-        //자기자신에게 보여주고.
+
         rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
                 ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
         for (Participant p : participants) {

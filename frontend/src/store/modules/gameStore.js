@@ -504,23 +504,35 @@ const gameStore = {
             }else{
               state.messages.push('System : 노트측이 모두 체포되었습니다.'+ winner+'측의 승리입니다.')
             }
-            state.messages.push('3 초후 결과 창으로 이동합니다')
+            state.messages.push('5 초후 결과 창으로 이동합니다')
             setTimeout(() => {
-              state.messages.push('2 초후 결과 창으로 이동합니다')
+              state.messages.push('4 초후 결과 창으로 이동합니다')
             }, 1000);
             setTimeout(() => {
-              state.messages.push('1 초후 결과 창으로 이동합니다')
+              state.messages.push('3 초후 결과 창으로 이동합니다')
             }, 2000);
             setTimeout(() => {
-              router.push({ name: 'GameEnd' })
+              state.messages.push('2 초후 결과 창으로 이동합니다')
             }, 3000);
+            setTimeout(() => {
+              state.messages.push('1 초후 결과 창으로 이동합니다')
+            }, 4000);
+            setTimeout(() => {
+              router.push({ name: 'GameEnd' })
+            }, 5000);
+
             break;
           }
           case 10 :{
-            console.log(event.data)
-            const { user, chatMessage } = event.data
-            const data = user + " : " + chatMessage
-            commit('SET_MESSAGES', data)
+            const { user, chatMessage, to } = event.data
+            if(state.publisherId == to){
+              const data = user + "님의 귓속말 : " + chatMessage
+              commit('SET_MESSAGES', data)
+            }else{
+              const data = user + "님에게 귓속말 : " + chatMessage
+              commit('SET_MESSAGES', data)
+            }
+            break;
           }
         }
       });
@@ -535,6 +547,7 @@ const gameStore = {
           }
           // 명교방 가는 사람한테만 보냄
           case 'exchangeNameStart': {
+            commit('RECEIVE_CARD','선택 중')
             state.session.unpublish(state.publisher)
             commit('SET_PUBLISHER', undefined)
             let subPublisher = OV.initPublisher(undefined, {
@@ -746,7 +759,6 @@ const gameStore = {
         commit('SET_OV', undefined)
         commit('SET_OVTOKEN', undefined)
         commit('SET_SUBSCRIBERS', [])
-        commit('SET_NICKNAME', undefined)
         commit('NICKNAME_UPDATE', undefined)
         commit('RESET_MISSION_SUCCESS',0)
       }
@@ -790,11 +802,15 @@ const gameStore = {
       });
 
       subSession.on("signal:exchangeCard", (event) => {
-        const receivedCard = JSON.parse(event.data).jobName
-        dispatch('receiveCard', receivedCard)
+        const receivedCard = JSON.parse(event.data)
+        const jobName = receivedCard.jobName
+        const nickname = receivedCard.nickname
+        if(state.nickname != nickname){
+          dispatch('receiveCard', jobName)
+        }
       })
       
-      
+
       //방장이면 sessionCreate부터 해야하므로 getToken으로, 이미 세션 만들어져 있으면 createToken으로 토큰만 만듬.
       dispatch("getToken", 'sub' + state.sessionId).then((subToken) => {
         subSession
@@ -814,10 +830,8 @@ const gameStore = {
             );
           });
       });
-      
       window.addEventListener("beforeunload", this.leaveSession);
     },
-
 
     // 채팅 관련 통신
     sendMessage ({ state }, message) {
@@ -980,8 +994,12 @@ const gameStore = {
           commit('SET_SESSIONID',data)
           router.push({ name : 'Join' })
       },
-      ()=>{
-        alert("방이 아직 초기화 되지 않았습니다! 잠시후 다시 시도해주세요.")
+      (err)=>{
+        if(err == "Error: Request failed with status code 403"){
+          alert("로그인 에러! 로그아웃 후 다시 로그인해주세요.")
+        }else{
+          alert("방이 아직 초기화 되지 않았습니다! 잠시후 다시 시도해주세요.")
+        }
       })
     },
 

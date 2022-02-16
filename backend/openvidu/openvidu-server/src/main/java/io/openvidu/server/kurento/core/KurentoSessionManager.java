@@ -224,18 +224,20 @@ public class KurentoSessionManager extends SessionManager {
                     String subSessionId = "sub" + sessionId;
                     if (!subSessionId.equals(sessionId)) {
                         //방을 나가면 레디 목록에서 사라지게 함.
-                        HashMap<String, Boolean> readyState = GameService.readySetting.get(sessionId);
-                        readyState.remove(participant.getParticipantPublicId());
-                        GameService.readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
+                        HashMap<String, Boolean> readyState = GameService.readySetting.getOrDefault(sessionId, null);
+                        if (readyState != null) {
+                            readyState.remove(participant.getParticipantPublicId());
+                            GameService.readySetting.computeIfPresent(sessionId, (k, v) -> v = readyState);
 
-                        String nickName = participant.getClientMetadata().substring(15, participant.getClientMetadata().length() - 2);
-                        //세션 종료되면 방 비활성화.
-                        String url = "http://localhost:8080/room/delete/" + sessionId + "?nickName=" + nickName;
-                        RestTemplate restTemplate = new RestTemplate();
-                        HttpHeaders headers = new HttpHeaders();
-                        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-                        HttpEntity<?> httpEntity = new HttpEntity<>(headers);
-                        restTemplate.exchange(uri.toString(), HttpMethod.DELETE, httpEntity, String.class);
+                            String nickName = participant.getClientMetadata().substring(15, participant.getClientMetadata().length() - 2);
+                            //세션 종료되면 방 비활성화.
+                            String url = "http://localhost:8080/room/delete/" + sessionId + "?nickName=" + nickName;
+                            RestTemplate restTemplate = new RestTemplate();
+                            HttpHeaders headers = new HttpHeaders();
+                            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+                            HttpEntity<?> httpEntity = new HttpEntity<>(headers);
+                            restTemplate.delete(uri.toString(), httpEntity, String.class);
+                        }
                     }
 
                     session.leave(participant.getParticipantPrivateId(), reason);
@@ -294,6 +296,7 @@ public class KurentoSessionManager extends SessionManager {
                             GameService.kiraAndL.remove(sessionId);
                             GameService.deathNoteList.remove(sessionId);
                             GameService.readySetting.remove(sessionId);
+                            GameService.roleInfo.remove(sessionId);
 
                             if (deathNoteThread != null) {
                                 deathNoteThread.interrupt();
@@ -306,7 +309,7 @@ public class KurentoSessionManager extends SessionManager {
                                 HttpHeaders httpHeaders = new HttpHeaders();
                                 UriComponents uri = UriComponentsBuilder.fromHttpUrl(apiUrl).build();
                                 HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
-                                restTemplate.exchange(uri.toString(), HttpMethod.PUT, httpEntity, String.class);
+                                restTemplate.put(uri.toString(), httpEntity, String.class);
                             }
 
                             if (openviduConfig.isRecordingModuleEnabled()
