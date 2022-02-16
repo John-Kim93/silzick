@@ -12,7 +12,7 @@
         <!-- 모션 설명하는 이미지 -->
         <img
           class="col-4 my-1"
-          :src="require(`@/assets/img/이모지/${impormation}.jpg`)"
+          :src="require(`@/assets/img/이모지/${impormation}.png`)"
           alt="모션"
         >
       </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex row justify-content-center align-content-start m-1" style="height:23vh">
+  <div class="d-flex row justify-content-center align-content-start m-1" style="height:26vh">
     <p
       v-if="isNormalMission"
       id="base-font"
