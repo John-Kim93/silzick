@@ -15,6 +15,8 @@
           class="form-control m-2"
           placeholder="게임에서 사용하실 닉네임을 입력해주세요."
           required
+          @keyup.enter="nicknameUpdate(nickname)"
+          ref="cursor"
           >
         </div>
         <div class="col-8 row d-flex align-content-center" style="height:13vh">
@@ -37,6 +39,8 @@
           class="form-control m-2"
           placeholder="게임에서 사용하실 닉네임을 입력해주세요."
           required
+          @keyup.enter="nicknameUpdate(nickname)"
+          ref="cursor"
           >
         </div>
         <div class="col-8 row d-flex align-content-center" style="height:13vh">
@@ -65,9 +69,15 @@ export default {
   methods:  {
     ...mapActions(gameStore, ['nicknameUpdate']),
     ...mapMutations(gameStore, ['GAME_CHECKIN']),
+    startCursor() {
+      this.$refs.cursor.focus()
+    },
   },
   created () {
     this.GAME_CHECKIN()
+  },
+  mounted() {
+    this.startCursor()
   }
 };
 </script>
