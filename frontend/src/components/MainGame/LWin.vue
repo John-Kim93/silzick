@@ -9,19 +9,19 @@
       <div class="col-8 d-flex row justify-content-start flex-wrap">
         <h2 class="col-12" style="text-align:left;">Losers</h2>
         <div
-          class="col-12"
+          class="col-12 d-flex row"
           v-for="Kira, idx in KiraTeam"
           :key="idx"
         >
-          <h3>{{Kira.nickName}} : {{Kira.job}}</h3>
+          <span>{{Kira.nickname}} : {{Kira.job}}</span>
         </div>
         <h2 class="col-12" style="text-align:left;">Winners</h2>
         <div
-          class="col-12"
+          class="col-12 d-flex row"
           v-for="L, idx in LTeam"
           :key="idx"
         >
-          <h3>{{L.nickName}} : {{L.job}}</h3>
+          <span>{{L.nickname}} : {{L.job}}</span>
         </div>
       </div>
       <div class="col-8 row d-flex align-content-center" style="height:13vh">
@@ -41,7 +41,7 @@ export default {
   data () {
     return {
       KiraTeam: [],
-      Lteam: [],
+      LTeam: [],
     }
   },
   computed: {
@@ -53,15 +53,14 @@ export default {
   created() {
     this.participantsLog.forEach(participant => {
       // participantsLog(전체 참여자) 받아서 직업확인하고 KIRA팀이면 KiraTeam에 넣고 L팀이면 Lteam에 넣는다.
-      // participants에 넣는 객체 : {nickname: clientData, connectionId: connectionId}
+      // participantsLog에 넣는 객체 : {nickname: clientData, connectionId: connectionId}
       // finalInfo는 {connectionId:직업}
-      console.log('1111111111111')
-      console.log(this.participantsLog)
-      console.log(this.finalInfo)
       const job = this.finalInfo[participant.connectionId]
-      job == 'KIRA' || job == 'CRIMINAL' 
-      ? this.KiraTeam.push({nickName:participant.nickName, job:job})
-      : this.LTeam.push({nickName:participant.nickName, job:job})
+      if (job == 'KIRA' || job == 'CRIMINAL') {
+        this.KiraTeam.push({nickname:participant.nickname, job:job})
+      } else {
+        this.LTeam.push({nickname:participant.nickname, job:job})
+      }
     })
   }
 

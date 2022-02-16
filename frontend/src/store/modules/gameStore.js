@@ -82,7 +82,6 @@ const gameStore = {
     model: undefined,
     webcam: undefined,
     size: 200,
-
   },
   //host입력 없이 join으로 바로 못들어가게 막는데 사용
   getters: {
@@ -263,8 +262,6 @@ const gameStore = {
       state.winner = winner
     },
     FINAL_INFO(state, data) {
-      console.log('333333333333333333333333333')
-      console.log(data)
       state.finalInfo = data
     },
     
@@ -534,6 +531,8 @@ const gameStore = {
               router.push({ name: 'GameEnd' })
             }, 5000);
 
+            const {data} = event
+            commit('FINAL_INFO', data)
             break;
           }
           case 10 :{
@@ -626,6 +625,7 @@ const gameStore = {
             // --- Publish your stream ---
             session.publish(state.publisher)
             commit('SET_MY_PUBLISHER_ID', state.publisher.stream.connection.connectionId)
+            state.participantsLog.push({nickname: state.nickname, connectionId: state.publisher.stream.connection.connectionId})
             router.push({
               name: 'Attend',
             })
