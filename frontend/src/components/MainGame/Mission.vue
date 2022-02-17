@@ -23,7 +23,7 @@
         @click="missionSelect(true)"
         v-if="isKIRAorL == false"
       >start</b-button>
-      <p v-else>KIRA와L은 미션을 수행할수 없습니다</p>
+      <p v-else>노트주인과 경찰총장은 미션을 수행할수 없습니다</p>
       <p v-if="isKIRAorL == false">위조명함 개수:{{missionSuccessCount}}</p>
 
       <!-- 위조명함 개수:{{missionSuccessCount}} -->
