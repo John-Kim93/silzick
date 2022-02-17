@@ -7,6 +7,8 @@
       v-if='myJob == "KIRA"' 
       id="modal-1"
       size="lg"
+      header-class="mt-3"
+      footer-class="my-3"
       variant='outline-primary' 
       body-text-variant="light"
       footer-text-variant="light"
@@ -36,7 +38,8 @@
         <h5>
           <select
             v-model="selectParticipant"
-            class="select_list"
+            id="background-black"
+            class="select-btn"
           >
             <option selected disabled>참가자 목록</option>
             <option
@@ -50,7 +53,8 @@
           은/는 
           <select
             v-model="selectJobName"
-            class="select_list"
+            id="background-black"
+            class="select-btn"
           >
             <option selected disabled>직업</option>
             <option
@@ -64,18 +68,20 @@
         </h5>
       </div>
       <template #modal-footer>
-        <div class="w-100 d-block text-center" >
+        <div class="w-100 d-flex justify-content-center text-center" >
           <b-button
-            size="sm"
+            size="lg"
             id='btn-color-kira'
+            class="mt-3"
             @click="noteWrite"
             :disabled="numberOfSkillUsed < 1"
           >
             노트에 적는다(사용가능 : {{numberOfSkillUsed}})
           </b-button> &nbsp;&nbsp;
           <b-button
-            size="sm"
+            size="lg"
             id='btn-color-kira'
+            class="mt-3"
             @click="noteUse"
           >
             모두 죽이기
@@ -88,7 +94,9 @@
     <b-modal  v-if='myJob == "CRIMINAL"'
       id='modal-1' 
       size="lg"
-      variant='outline-primary' 
+      variant='outline-primary'
+      header-class="mt-3"
+      footer-class="my-3" 
       body-text-variant="light"
       footer-text-variant="light"
       centered
@@ -117,7 +125,8 @@
         <h5>
           <select
             v-model="selectParticipant"
-            class="select_list"
+            id="background-black"
+            class="select-btn"
           >
             <option selected disabled>참가자 목록</option>
             <option
@@ -132,7 +141,8 @@
           은/는 
           <select
             v-model="selectJobName"
-            class="select_list"
+            id="background-black"
+            class="select-btn"
           >
             <option selected disabled>직업</option>
             <option
@@ -148,8 +158,9 @@
       <template #modal-footer>
         <div class="w-100 d-block text-center" >
           <b-button
-            size="sm"
+            size="lg"
             id='btn-color-kira'
+            class="mt-3"
             :disabled='numberOfSkillUsed < 1'
             @click="kill"
           >
@@ -162,7 +173,9 @@
     <b-modal  v-if='myJob == "GUARD"' 
       id='modal-1' 
       size="lg"
-      variant='outline-primary' 
+      variant='outline-primary'
+      header-class="mt-3"
+      footer-class="my-3" 
       header-text-variant="primary"
       body-text-variant="light"
       footer-text-variant="light"
@@ -191,7 +204,8 @@
           </h4>
           <select
             v-model="selectParticipant"
-            class="select_list"
+            id="background-black"
+            class="select-btn"
           >
             <option selected disabled>참가자 목록</option>
             <option
@@ -208,8 +222,9 @@
       <template #modal-footer>
         <div class="w-100 d-block text-center" >
           <b-button
-            size="sm"
+            size="lg"
             id='btn-color'
+            class="mt-3"
             :disabled='numberOfSkillUsed < 1'
             @click="protect"
           >
@@ -222,7 +237,9 @@
     <b-modal v-if='myJob == "BROADCASTER"'
       id='modal-1' 
       size="lg"
-      variant='outline-primary' 
+      variant='outline-primary'
+      header-class="mt-3"
+      footer-class="my-3" 
       header-text-variant="primary"
       body-text-variant="link-warning"
       footer-text-variant="light"
@@ -260,7 +277,8 @@
       <template #modal-footer>
         <div class="w-100 d-block text-center" >
           <b-button
-            size="sm"
+            size="lg"
+            class="mt-3"
             id='btn-color'
             :disabled='numberOfSkillUsed < 1'
             @click="broadcast"
@@ -275,7 +293,9 @@
     <b-modal v-if='myJob == "POLICE"'
       id='modal-1' 
       size="lg"
-      variant='outline-primary' 
+      variant='outline-primary'
+      header-class="mt-3"
+      footer-class="my-3" 
       header-text-variant="light"
       body-text-variant="link-warning"
       footer-text-variant="light"
@@ -302,7 +322,8 @@
         <h5>
           <select
             v-model="selectParticipant"
-            class="select_list"
+            id="background-black"
+            class="select-btn"
           >
             <option selected disabled>참가자 목록</option>
             <option
@@ -319,7 +340,8 @@
       <template #modal-footer>
         <div class="w-100 d-block text-center" >
           <b-button
-            size="sm"
+            size="lg"
+            class="mt-3"
             id='btn-color'
             :disabled="numberOfSkillUsed < 2"
             @click="arrest"
