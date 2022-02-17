@@ -5,7 +5,7 @@
       <div class="my-3">
         <h1>{{ hostId }}의 방으로!</h1>
       </div>
-      <div id="base-border" class="container d-flex flex-row justify-content-center align-content-center row col-7" style="height:40vh">
+      <div id="base-border" class="full-screen container d-flex flex-row justify-content-center align-content-center row col-7" style="height:40vh">
         <div class="col-11 row d-flex align-content-center" style="height:13vh">
           <h3 id="base-font" class="m-2">Nickname</h3>
           <input

@@ -84,6 +84,9 @@ const gameStore = {
     model: undefined,
     webcam: undefined,
     size: 200,
+
+    //memo
+    memo:''
   },
   //host입력 없이 join으로 바로 못들어가게 막는데 사용
   getters: {
@@ -277,6 +280,9 @@ const gameStore = {
     SET_POSE_WEBCAM(state,res){
       state.webcam = res
     },
+    GET_MEMO(state,res){
+      state.memo = res
+    }
   },
 
   actions: {
@@ -1054,7 +1060,9 @@ const gameStore = {
           alert("호스트가 아직 방을 생성하지 않았습니다!")
         })
     },
-
+    getMemo({commit},res){
+      commit('GET_MEMO',res)
+    },
 
     //게임 종료 후 되돌아가기 
     gameReset({dispatch}){
@@ -1085,7 +1093,8 @@ const gameStore = {
         return '방송인'
       }
     }
-  }
+  },
+  
 }
 
 export default gameStore;

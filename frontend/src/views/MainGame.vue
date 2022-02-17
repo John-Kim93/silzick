@@ -81,6 +81,7 @@
                 placeholder="이 곳에 메모하세요"
                 rows="10"
                 v-model="text"
+                :value="memo"
                 autofocus
                 >
                 </b-form-textarea>
@@ -134,9 +135,9 @@ export default {
   data () {
     return {
       chatMessage: '',
-      text : '',
       restart : 30,
       modalShow : false,
+      text:'',
     }
   },
   watch:{
@@ -146,6 +147,10 @@ export default {
         this.modalPosition()
         this.modalShow = false
       },10)
+    },
+    text(value){
+      this.getMemo(value)
+      
     }
   },
 
@@ -161,7 +166,8 @@ export default {
       'mainGameTimerSevenOrThirty', 
       'turn', 
       'isKIRAorL',
-      'isAlive']),
+      'isAlive',
+      'memo']),
     myJobName : function(){
 			switch(this.myJob){
 				case 'KIRA' :{
@@ -188,7 +194,7 @@ export default {
   },
   methods : {
     ...mapMutations(gameStore, ['SET_MAINGAME_TIMER', 'COUNT_TURN']),
-    ...mapActions(gameStore, ['sendMessage', 'numberofSkillUse']),
+    ...mapActions(gameStore, ['sendMessage', 'numberofSkillUse','getMemo']),
     enterCard () {
       this.session.signal({
         type: 'autoSystem',
@@ -213,6 +219,7 @@ export default {
     },
   },
   created() {
+    this.text = this.memo
     if (this.mainGameTimerSevenOrThirty === false) {
       setTimeout(() => {
         this.SET_MAINGAME_TIMER(true)
