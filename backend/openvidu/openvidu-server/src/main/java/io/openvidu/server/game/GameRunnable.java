@@ -115,7 +115,7 @@ public class GameRunnable implements Runnable {
 
                     //미션 수행중인 사람이 police면 추종자에게 알리기.
                     for (int i = 0; i < list.size(); i++) {
-                        if (list.get(i).getJobName().equals("POLICE") &&
+                        if ("POLICE".equals(list.get(i).getJobName()) &&
                                 (list.get(i) == missionCandidates.get(0) || list.get(i) == missionCandidates.get(1))) {
                             isPolice = true;
                             break;
@@ -128,26 +128,23 @@ public class GameRunnable implements Runnable {
 
                     //미션 수행중인 사람이 police면 추종자에게 알리기.
                     for (int i = 0; i < list.size(); i++) {
-                        if (list.get(i).getJobName().equals("POLICE") &&
+                        if ("POLICE".equals(list.get(i).getJobName()) &&
                                 (list.get(i) == missionCandidates.get(0))) {
                             isPolice = true;
                             break;
                         }
                     }
-
                 }
-
 
                 if (isPolice) {
                     //data에 담을 정보.
-                    data.remove("action");
                     data.remove("turn");
-                    data.addProperty("announce", "policeMissionStart");
+                    data.addProperty("action", "policeMissionStart");
                     params.add("data", data);
 
                     //추종자들에게 전달.
                     for (int i = 0; i < roles.size(); i++) {
-                        if (roles.get(i).getJobName().equals("CRIMINAL")) {
+                        if ("CRIMINAL".equals(roles.get(i).getJobName())) {
                             rpcNotificationService.sendNotification(roles.get(i).getParticipant().getParticipantPrivateId(),
                                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                         }

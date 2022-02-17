@@ -302,7 +302,7 @@ const gameStore = {
     async joinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
       const OV = new OpenVidu();
-      OV.enableProdMode();
+      // OV.enableProdMode();
       // --- Init a session ---
       const session = OV.initSession();
 
@@ -592,17 +592,22 @@ const gameStore = {
             const message = "System : 키라측 접선에 성공했습니다."
             state.messages.push(message)
             break;
-          } 
+          }
           case 'missionStart':{
             if (state.isKIRAorL == false) {
               //리셋하고
               dispatch('missionReset')
               //히든미션으로 다시 미션 시작.
               dispatch('missionSelect',false)
-              break;
             }
+            break;
           }
-      }
+          case 'policeMissionStart':{
+            const message = "System : 경찰이 히든미션을 시작했습니다!"
+            state.messages.push(message)
+            break;
+          }
+        }
         // 두명 중 하나가 퍼블리셔면 언퍼블리시하고 라우터푸시 조인세션?
       })
 
@@ -808,7 +813,7 @@ const gameStore = {
     subJoinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
       const subOV = new OpenVidu();
-      subOV.enableProdMode();
+      // subOV.enableProdMode();
       // --- Init a session ---
       const subSession = subOV.initSession();
       const subSubscribers = [];
