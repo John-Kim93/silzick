@@ -5,6 +5,8 @@ import { jobs } from './gameUtil.js'
 import router from '@/router/index.js'
 import { createRoom, nickNameCheck, joinRoom } from '@/api/user.js'
 import * as tmPose from '@teachablemachine/pose'
+// import Swal from 'sweetalert2'
+
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -760,6 +762,8 @@ const gameStore = {
         commit('RESET_SKILL_USE',0)
         commit('IS_NORMAL_MISSION',true)
         commit('SET_TURN',0)
+        commit('RESET_MISSION_SUCCESS',0) 
+        commit('NICKNAME_UPDATE', undefined)
         commit('SET_OPTIONS', [
           { value: 'KIRA', text: '노트주인'},
           { value: 'CRIMINAL', text: '추종자'},
@@ -773,20 +777,18 @@ const gameStore = {
         commit('SET_MY_JOB', undefined)
         commit('RESET_MESSAGES')
         commit('GET_JOB_PROPS',jobs)
-
+        // 오픈바이두 리셋
         commit('SET_SESSION', undefined)
         commit('SET_PUBLISHER', undefined)
         commit('SET_OV', undefined)
         commit('SET_OVTOKEN', undefined)
+        commit('SET_SUBSCRIBERS', [])
 
         commit('SET_SUB_OV', undefined)
         commit('SET_SUB_SESSION', undefined)
         commit('SET_SUB_OVTOKEN', undefined)
-        commit('SET_SUB_SUBSCRIBERS', undefined)
+        commit('SET_SUB_SUBSCRIBERS', [])
 
-        commit('SET_SUBSCRIBERS', [])
-        commit('NICKNAME_UPDATE', undefined)
-        commit('RESET_MISSION_SUCCESS',0)
 
 
       }

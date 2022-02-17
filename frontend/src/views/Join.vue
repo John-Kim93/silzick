@@ -1,7 +1,7 @@
 <template>
-  <div id="background-black">
+  <div id="background-black" class="full-screen">
     <!-- 게스트 입장 시 상단 : hostId의 방으로! -->
-    <div class="full-screen d-flex justify-content-center align-items-center flex-column" v-if="!isHost">
+    <div class=" d-flex justify-content-center align-items-center flex-column" v-if="!isHost">
       <div class="my-3">
         <h1>{{ hostId }}의 방으로!</h1>
       </div>

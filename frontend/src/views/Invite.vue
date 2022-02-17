@@ -35,7 +35,6 @@ export default {
   data () {
     return{
       hostId : '',
-      url : this.$route.push('main/')
     }
   },
   methods:  {
