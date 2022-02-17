@@ -60,8 +60,6 @@ export default {
       // participantsLog에 넣는 객체 : {nickname: clientData, connectionId: connectionId}
       // finalInfo는 {connectionId:직업}
       const job = this.finalInfo[participant.connectionId]
-      console.log(this.finalInfo)
-      console.log(participant)
       if (job == 'KIRA' || job == 'CRIMINAL') {
         this.KiraTeam.push({nickname:participant.nickname, job:job})
       } else {

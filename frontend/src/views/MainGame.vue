@@ -43,7 +43,7 @@
         <div id="base-border" class="row d-flex justify-content-center m-1">
           <!-- 직업 이름 -->
           <h4 class="py-1" style="text-align:left;">
-            직업 : {{ myJob }}
+            직업 : {{ myJobName }}
           </h4>
           <hr class="mb-1">
           <!-- 타이머 & 메모 -->
@@ -162,7 +162,29 @@ export default {
       'turn', 
       'isKIRAorL',
       'isAlive']),
-    
+    myJobName : function(){
+			switch(this.myJob){
+				case 'KIRA' :{
+					return '노트주인'
+				}
+				case 'POLICE' :{
+					return '경찰'
+				}
+				case 'L' :{
+					return '경찰총장'
+				}
+				case 'CRIMINAL' :{
+					return '추종자'
+				}
+				case 'GUARD' :{
+					return '보디가드'
+				}
+				case 'BROADCASTER' :{
+					return '방송인'
+				}
+			}
+			return 'Error'
+		}
   },
   methods : {
     ...mapMutations(gameStore, ['SET_MAINGAME_TIMER', 'COUNT_TURN']),

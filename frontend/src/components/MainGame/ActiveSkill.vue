@@ -60,8 +60,9 @@
             <option
               v-for="job in jobs"
               :key="job.jobName"
+              :value="job.jobName"
             >
-              {{job.jobName}}
+              {{job.koreanName}}
             </option>
           </select>
           이다.
@@ -148,8 +149,9 @@
             <option
               v-for="job in jobs.slice(1,6)"
               :key="job.jobName"
+              :value="job.jobName"
             >
-              {{job.jobName}}
+              {{job.koreanName}}
             </option>
           </select>
           이다.

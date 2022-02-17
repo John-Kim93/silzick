@@ -67,8 +67,9 @@
                       <option
                         v-for="job in jobs"
                         :key="job.jobName"
+                        :value="job.jobName"
                       >
-                        {{job.jobName}}
+                        {{job.koreanName}}
                       </option>
                     </select>
                     이다.
@@ -76,7 +77,7 @@
               </div>
               <div class="w-100 d-block text-center" >
                 <button
-                  :disabled="numberOfSkillUsed < 1"
+                  :disabled="numberOfSkillUsed < 1 || !isAlive"
                   id="btn-color-kira"
                   class="btn btn-lg m-3"
                   @click="noteWrite"
@@ -135,8 +136,9 @@
                     <option
                       v-for="job in jobs.slice(1,6)"
                       :key="job.jobName"
+                      :value="job.jobName"
                     >
-                      {{job.jobName}}
+                      {{job.koreanName}}
                     </option>
                   </select>
                   이다.
@@ -144,7 +146,7 @@
               </div>
               <div class="w-100 d-block text-center" >
                 <b-button
-                  :disabled="numberOfSkillUsed < 1"
+                  :disabled="numberOfSkillUsed < 1 || !isAlive"
                   id="btn-color-kira"
                   size="lg"
                   class="my-3"
@@ -221,7 +223,7 @@
                 </div>
               <div class="w-100 d-block text-center" >
                 <b-button
-                  :disabled="numberOfSkillUsed < 1"
+                  :disabled="numberOfSkillUsed < 1 || !isAlive"
                   id="btn-color"
                   size="lg"
                   class="my-3"
@@ -265,7 +267,7 @@
               </div>
               <div class="w-100 d-block text-center" >
                 <b-button
-                  :disabled="numberOfSkillUsed < 1"
+                  :disabled="numberOfSkillUsed < 1 || !isAlive"
                   id="btn-color"
                   size="lg"
                   class="my-3"
@@ -318,7 +320,7 @@
               </div>
               <div class="w-100 d-block text-center" >
                 <b-button
-                  :disabled="numberOfSkillUsed < 2"
+                  :disabled="numberOfSkillUsed < 2 || !isAlive"
                   id="btn-color"
                   size="lg"
                   class="my-3"

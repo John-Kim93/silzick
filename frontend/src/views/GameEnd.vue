@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="background-black" class="full-screen d-flex justify-content-center align-items-center">
     <kira-win
       v-if="winner=='KIRA'"
     />

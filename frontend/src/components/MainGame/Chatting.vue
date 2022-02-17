@@ -70,7 +70,7 @@ export default {
           const messageData ={
             user: this.nickname,
             chatMessage: this.chatMessage,
-            to: this.chatSelect
+            to: this.chatSelect,
           }
           this.sendMessageWhisper(messageData)
           this.chatMessage=""

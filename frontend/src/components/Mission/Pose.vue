@@ -51,7 +51,7 @@ export default {
     return {
       loading: true,
       loadingTime: 0,
-      maxLoadingTime: 100,
+      maxLoadingTime: 50,
 
       impormation: '',
       similiarity: '',

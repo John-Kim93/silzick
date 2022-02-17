@@ -688,6 +688,8 @@ public class GameService {
      */
     private void checkParticipants(Participant participant, JsonObject message, String sessionId, Set<Participant> participants, JsonObject params, JsonObject data, RpcNotificationService notice) {
         int cnt = 0;
+
+        System.out.println(participants.size());
         //참여자 정보 담기.
         for (Participant p : participants) {
             JsonObject player = new JsonObject();
@@ -699,7 +701,7 @@ public class GameService {
         data.addProperty("cnt", cnt);
         params.add("data", data);
 
-        //요청자에게 정보 전달달
+        //요청자에게 정보 전달
         for (Participant p : participants) {
             rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);

@@ -68,7 +68,7 @@
         <div class="row d-flex justify-content-center">
           <div class="col-9 d-flex-wrap row d-flex justify-content-center">
             <!-- 참가자 리스트 -->
-            <div id="base-border" class="col-3 m-1 align-self-start scroll-bar" style="height:44vh">
+            <div id="base-border" class="col-3 m-1 align-self-start scroll-bar" style="height:40vh">
               <div v-if="publisher">
                 <ready :streamManager="publisher"/>
                 <div
@@ -81,21 +81,21 @@
             </div>
 
             <!-- 직업 선택 리스트 -->
-            <div v-if="isHost" id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar" style="height:44vh">
+            <div v-if="isHost" id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar" style="height:40vh">
               <jobs :job="job" v-for="job in jobs" :key="job.jobName"/>          
             </div>
-            <div v-else id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar px-2 attend" style="height:44vh">
+            <div v-else id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar px-2 attend" style="height:40vh">
               <div>직업 선택은 HOST만 할 수 있습니다.</div>
             </div>
 
             <!-- 결과 리스트 -->
-            <div id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar px-2" style="height:44vh">
+            <div id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar px-2" style="height:40vh">
               <job-select :job="job" v-for="job in jobs" :key="job.jobName"/>
             </div>
 
             <!-- 룰 또는 영상 -->
-            <div id="base-border" class="col-11 mx-2" style="height:35vh">
-              <rule/>
+            <div id="base-border" class="col-11 mx-2 d-flex row" style="height:40vh">
+              <rule class="mt-1 d-flex row justify-content-center"/>
             </div>
           </div>
           <!-- 채팅 -->
