@@ -47,7 +47,7 @@ export default {
       switch (this.pageNo) {
         case 0: 
           this.img01='https://ifh.cc/g/FNSOxR.png'
-          this.img02='https://ifh.cc/g/cVTuLI.png'
+          this.img02='https://ifh.cc/g/RsSwrY.png'
           break
         case 1: 
           this.img01='https://ifh.cc/g/UP17nv.png'
@@ -55,7 +55,7 @@ export default {
           break
         case 2: 
           this.img01='https://ifh.cc/g/iypsOs.png'
-          this.img02='https://ifh.cc/g/LovBEg.png'
+          this.img02='https://ifh.cc/g/D0cFGz.png'
           break
         case 3: 
           this.img01='https://ifh.cc/g/OHUqpd.png'
@@ -75,10 +75,10 @@ export default {
           break
         case 7: 
           this.img01='https://ifh.cc/g/NvX5y3.png'
-          this.img02='https://ifh.cc/g/Eg4jVU.png'
+          this.img02='https://ifh.cc/g/PyHigW.png'
           break
         case 8: 
-          this.img01='https://ifh.cc/g/bl1mP1.png'
+          this.img01='https://ifh.cc/g/uOTMJg.png'
           this.img02='https://ifh.cc/g/trtxjZ.png'
           break
         case 9: 
@@ -86,8 +86,8 @@ export default {
           this.img02='https://ifh.cc/g/r0nhe8.png'
           break
         case 10: 
-          this.img01='https://ifh.cc/g/HaTzoB.png'
-          this.img02='https://ifh.cc/g/pYbLZw.png'
+          this.img01='https://ifh.cc/g/CiJidD.png'
+          this.img02='https://ifh.cc/g/Q5wW0I.png'
           break
         case 11: 
           this.img01='https://ifh.cc/g/1AOdi8.png'
