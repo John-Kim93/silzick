@@ -418,11 +418,14 @@ const gameStore = {
                 const {writeName} = event.data
                 if (writeName) {
                   state.messages.push('System : 누군가의 이름이 노트에 적혔습니다.')
-                  
+                  Toast.fire({
+                    icon: 'warning',
+                    title: '경고'
+                  })
                 } else {
                   state.messages.push('System : 이름과 직업이 일치하지 않습니다.')
                   Toast.fire({
-                    icon: 'error',
+                    icon: 'question',
                     title: '제거 실패'
                   })
                 }
@@ -453,6 +456,10 @@ const gameStore = {
                     }
                     dispatch('removeParticipant', connectionId)
                     state.messages.push('System : ' + clientData + '가 심장마비로 사망하였습니다.')
+                    Toast.fire({
+                      icon: 'warning',
+                      title: '부고 소식'
+                    })
                     
                   }
                 }
@@ -467,6 +474,10 @@ const gameStore = {
                 const {clientData} = JSON.parse(event.data.userId)
                 const message = "System : " + clientData + "는 " + TF + '인 명함을 냈습니다.'
                 state.messages.push(message)
+                Toast.fire({
+                  icon: 'info',
+                  title: '알림'
+                })
                 break
               }
               // 방송인의 방송 기능
@@ -505,7 +516,7 @@ const gameStore = {
                   state.messages.push('System : 경찰 ' + clientData + '가 경찰측 체포를 시도하여 해고당했습니다.')
                    Toast.fire({
                     icon: 'error',
-                    title: '체포실패'
+                    title: '직위 박탈'
                   })
                 }
                 // 찾아서 죽이기
@@ -535,7 +546,7 @@ const gameStore = {
                 } else if (isAlive == 1) {
                   state.messages.push('System : ' + clientData + '의 직업 정보가 일치하지 않습니다.')
                   Toast.fire({
-                    icon: 'error',
+                    icon: 'question',
                     title: '제거 실패'
                   })
                 } else {
@@ -659,6 +670,10 @@ const gameStore = {
           case 'meetKIRA':{
             const message = "System : 키라측 접선에 성공했습니다."
             state.messages.push(message)
+            Toast.fire({
+              icon: 'info',
+              title: '접선 성공'
+            })
             break;
           }
           case 'missionStart':{
