@@ -62,7 +62,6 @@ export default {
   data () {
     return{
       nickname: '',
-      url : this.$route.push('main/')
     }
   },
   computed: {
