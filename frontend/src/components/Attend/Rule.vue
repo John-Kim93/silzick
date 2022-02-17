@@ -82,11 +82,11 @@ export default {
           this.img02='https://ifh.cc/g/trtxjZ.png'
           break
         case 9: 
-          this.img01='https://ifh.cc/g/rkBClp.png'
+          this.img01='https://ifh.cc/g/xyXbQ2.png'
           this.img02='https://ifh.cc/g/r0nhe8.png'
           break
         case 10: 
-          this.img01='https://ifh.cc/g/CiJidD.png'
+          this.img01='https://ifh.cc/g/zCe85o.png'
           this.img02='https://ifh.cc/g/Q5wW0I.png'
           break
         case 11: 
