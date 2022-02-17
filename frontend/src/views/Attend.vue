@@ -117,6 +117,7 @@ import JobSelect from '@/components/Attend/JobSelect.vue';
 import Chatting from '@/components/Attend/Chatting.vue';
 import Rule from '@/components/Attend/Rule.vue'
 
+
 import { mapState, mapActions, mapMutations } from 'vuex'
 
 

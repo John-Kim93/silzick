@@ -29,7 +29,7 @@
       </select>
       <input
         id=""
-        class="col-12"
+        class="col-12 mt-2"
         type="text"
         placeholder="메세지를 입력하세요"
         v-model="chatMessage"

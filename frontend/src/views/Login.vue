@@ -40,6 +40,11 @@
 import { mapActions, mapState } from 'vuex'
 import cookies from 'vue-cookies'
 import { login } from '@/api/user.js'
+import Swal from 'sweetalert2'
+
+
+
+
 
 const userStore = 'userStore'
 
@@ -70,10 +75,18 @@ export default {
         () => {
           this.saveUser()
           this.$router.push({ name: "Main" });
-          alert("로그인에 성공했습니다.")
-        },
+          Swal.fire({
+            icon: 'success',
+            title: '로그인 성공',
+            text: '즐거운 시간 되세요~',
+          })
+          },
         () => {
-          alert("로그인에 실패했습니다.")
+          Swal.fire({
+            icon: 'error',
+            title: '로그인 실패',
+            text: '올바른 아이디와 비밀번호를 입력해주세요!',
+          })
         }
       )
     },

@@ -24,7 +24,7 @@
 <script>
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-undef */
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions,mapMutations } from 'vuex'
 import ExchangeTimer from './ExchangeTimer.vue';
 
 const gameStore = 'gameStore';
@@ -97,6 +97,7 @@ export default {
               this.timerCount = 16
               this.cnt = 0
               this.timer_state = false
+              this.IS_NORMAL_MISSION(true)
               setTimeout(() => {
                 this.missionReset()
               }, 2000);
@@ -119,6 +120,7 @@ export default {
               this.timerCount = 16
               this.cnt = 0
               this.timer_state = false
+              this.IS_NORMAL_MISSION(true)
               setTimeout(() => {
                 this.missionReset()
               }, 1000);
@@ -140,7 +142,7 @@ export default {
   },
   methods: {
     ...mapActions(gameStore, ['missionReset','missionSuccess','numberOfSkillUse']),
-
+    ...mapMutations(gameStore, ['IS_NORMAL_MISSION']),
     getmission () {
       this.s_mission = this.mission_list[Math.floor(Math.random()*this.mission_list.length)];
       // this.s_count = parseInt(25 / this.s_mission.length)

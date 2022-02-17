@@ -40,7 +40,7 @@
 // import * as tf from '@tensorflow/tfjs'
 // import * as tmPose from '@teachablemachine/pose'
 
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import ExchangeTimer from './ExchangeTimer.vue'
 
 const gameStore = 'gameStore'
@@ -88,7 +88,7 @@ export default {
   },
   methods: {
     ...mapActions(gameStore, ['missionReset','randomInt','missionSuccess','numberOfSkillUse',]),
-
+    ...mapMutations(gameStore, ['IS_NORMAL_MISSION']),
     async inits () {
       this.timerCount -=1
       window.requestAnimationFrame(this.loop)
@@ -128,6 +128,8 @@ export default {
           }else{
             this.numberOfSkillUse(+1)
           }
+          console.log("포즈 테스트")
+          this.IS_NORMAL_MISSION(true)
           setTimeout(()=>{
             this.missionReset()
           },2000)
@@ -140,6 +142,7 @@ export default {
         this.similiarity = ''
         this.loadingTime = 0
         this.timerCount = 17
+        this.IS_NORMAL_MISSION(true)
         setTimeout(()=>{
           this.missionReset()
         },2000)

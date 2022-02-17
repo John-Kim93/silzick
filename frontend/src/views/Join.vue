@@ -21,7 +21,7 @@
         </div>
         <div class="col-8 row d-flex align-content-center" style="height:13vh">
           <button id="btn-color-kira" class="btn mt-4 px-5" @click="nicknameUpdate(nickname)">입장</button>
-          <a href="/" class="mt-2">메인 페이지로 이동</a>
+          <a style="text-decoration-line : none; font-size:20px;" href="/" class="mt-2">메인 페이지로 이동</a>
         </div>
       </div>
     </div>
@@ -46,7 +46,7 @@
         </div>
         <div class="col-8 row d-flex align-content-center" style="height:13vh">
           <button id="btn-color-kira" class="btn mt-5 px-5" @click="nicknameUpdate(nickname)">입장</button>
-          <a href="/" class="mt-2">메인 페이지로 이동</a>
+          <a style="text-decoration-line : none; font-size:20px;" href="/" class="mt-2">메인 페이지로 이동</a>
         </div>
       </div>
     </div>

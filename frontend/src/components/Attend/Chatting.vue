@@ -14,8 +14,8 @@
     <!--채팅 입력 : chat_input-->
     <div>
       <input
-        id=""
-        class="col-12"
+        id="asd"
+        class="col-12 mt-2"
         type="text"
         placeholder="메세지를 입력하세요"
         v-model="chatMessage"

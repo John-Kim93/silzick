@@ -8,6 +8,9 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@sweetalert2/theme-borderless": "^5.0.10",
+    "@sweetalert2/theme-material-ui": "^5.0.10",
+    "@sweetalert2/themes": "^5.0.10",
     "@teachablemachine/pose": "^0.8.6",
     "@tensorflow/tfjs": "^3.13.0",
     "axios": "^0.25.0",

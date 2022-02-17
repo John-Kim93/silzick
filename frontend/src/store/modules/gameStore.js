@@ -7,7 +7,6 @@ import { createRoom, nickNameCheck, joinRoom } from '@/api/user.js'
 import * as tmPose from '@teachablemachine/pose'
 import Swal from 'sweetalert2'
 
-
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
 const Toast = Swal.mixin({
@@ -317,7 +316,7 @@ const gameStore = {
           dispatch('joinSession')
         },
         ()=>{
-          alert("이미 사용중인 닉네임 입니다!!")
+          
         })
     },
     // ★★★★★★★★★★★★★★겁나 중요함★★★★★★★★★★★★★★★★★
@@ -1144,9 +1143,17 @@ const gameStore = {
       },
       (err)=>{
         if(err == "Error: Request failed with status code 403"){
-          alert("로그인 에러! 로그아웃 후 다시 로그인해주세요.")
+          Swal.fire({
+            icon: 'error',
+            title: '로그인 중복 에러',
+            text: '로그아웃 후 다시 로그인해주세요.',
+          })
         }else{
-          alert("방이 아직 초기화 되지 않았습니다! 잠시후 다시 시도해주세요.")
+          Swal.fire({
+            icon: 'error',
+            title: '방 초기화 실패',
+            text: '방이 아직 초기화 되지 않았습니다! 잠시후 다시 시도해주세요.',
+          })
         }
       })
     },
@@ -1161,7 +1168,11 @@ const gameStore = {
           router.push({ name : 'Join' })
         },
         ()=>{
-          alert("호스트가 아직 방을 생성하지 않았습니다!")
+          Swal.fire({
+            icon: 'error',
+            title: '방생성이 에러',
+            text: '호스트가 아직 방을 생성하지 않았거나 초기화 되지 않았습니다.!',
+          })
         })
     },
     getMemo({commit},res){

@@ -19,7 +19,7 @@
       </div>
       <div class="col-8 row d-flex align-content-center" style="height:13vh">
         <button id="btn-color" class="btn mt-5 px-5" @click="guestJoinRoom(hostId)">입장</button>
-        <a href="/" class="mt-2">메인 페이지로 이동</a>
+        <a style="text-decoration-line : none; font-size:20px;" href="/" class="mt-2">메인 페이지로 이동</a>
       </div>
     </div>
   </div>
