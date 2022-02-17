@@ -1042,19 +1042,26 @@ const gameStore = {
     }
   },
   changeJobNameEToK(context, res){
-    if (res == 'KIRA') {
-      return '노트주인'
-    } else if (res == 'L') {
-      return '경찰총장'
-    } else if (res == 'CRIMINAL') {
-      return '추종자'
-    } else if (res == 'GUARD') {
-      return '보디가드'
-    } else if (res == 'BROADCASTER') {
-      return '방송인'
-    } else if (res == 'POLICE') {
-      return '경찰'
-    } 
+    switch(res){
+      case 'KIRA' :{
+        return '노트주인'
+      }
+      case 'POLICE' :{
+        return '경찰'
+      }
+      case 'L' :{
+        return '경찰총장'
+      }
+      case 'CRIMINAL' :{
+        return '추종자'
+      }
+      case 'GUARD' :{
+        return '보디가드'
+      }
+      case 'BROADCASTER' :{
+        return '방송인'
+      }
+    }
   }
 }
 

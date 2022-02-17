@@ -1,7 +1,7 @@
 <template>
 	<div class="row m-1">
 		<div id="base-border" class="col-8">
-			{{job.jobName}}
+			{{name}}
 		</div>
     <div class="col-2">
       <button @click="plus" id="btn-color" class="btn btn-size">+</button>
@@ -22,6 +22,31 @@ export default {
 
 	props: {
 		job:Object
+	},
+	computed:{
+		name : function(){
+			switch(this.job.jobName){
+				case 'KIRA' :{
+					return '노트주인'
+				}
+				case 'POLICE' :{
+					return '경찰'
+				}
+				case 'L' :{
+					return '경찰총장'
+				}
+				case 'CRIMINAL' :{
+					return '추종자'
+				}
+				case 'GUARD' :{
+					return '보디가드'
+				}
+				case 'BROADCASTER' :{
+					return '방송인'
+				}
+			}
+			return 'Error'
+		}
 	},
 	methods: {
 		...mapActions(gameStore, ['changeJobCount']),
