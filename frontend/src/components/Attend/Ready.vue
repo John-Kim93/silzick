@@ -6,9 +6,8 @@
     <div
       v-if="ready"
       class="col-2 d-inline-flex ready_check"
-      style="color:#30475E;"
     >
-      <b-icon icon="check2-circle" font-scale="2"></b-icon>
+      <b-icon icon="check2-circle" variant="success" font-scale="2"></b-icon>
     </div>
     <div
       v-else
