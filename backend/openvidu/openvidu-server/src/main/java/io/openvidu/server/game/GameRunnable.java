@@ -32,9 +32,6 @@ public class GameRunnable implements Runnable {
             String type = "signal:autoSystem";
             params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_TYPE_PARAM, type);
 
-//            //모든 참가자 목록 가져오기(랜덤 2명)
-//            ArrayList<Participant> pList = participantsList;
-
 
             while (true) {
                 //처음 30초 sleep
@@ -124,7 +121,7 @@ public class GameRunnable implements Runnable {
                             break;
                         }
                     }
-                } else if(missionSize==1) {
+                } else if (missionSize == 1) {
 
                     rpcNotificationService.sendNotification(missionCandidates.get(0).getParticipant().getParticipantPrivateId(),
                             ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
@@ -174,7 +171,7 @@ public class GameRunnable implements Runnable {
         //참가자 목록 섞기
         Collections.shuffle(roles);
 
-        if(roles.get(0).getJobName().equals("KIRA") && roles.get(1).getJobName().equals("CRIMINAL")){
+        if (roles.get(0).getJobName().equals("KIRA") && roles.get(1).getJobName().equals("CRIMINAL")) {
             data.addProperty("action", "meetKIRA");
             params.add("data", data);
 
@@ -182,7 +179,7 @@ public class GameRunnable implements Runnable {
                 rpcNotificationService.sendNotification(roles.get(i).getParticipant().getParticipantPrivateId(),
                         ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
             }
-        }else if(roles.get(1).getJobName().equals("KIRA") && roles.get(0).getJobName().equals("CRIMINAL")){
+        } else if (roles.get(1).getJobName().equals("KIRA") && roles.get(0).getJobName().equals("CRIMINAL")) {
             data.addProperty("action", "meetKIRA");
             params.add("data", data);
 
@@ -200,6 +197,15 @@ public class GameRunnable implements Runnable {
         //2명만 명교 시작.
         for (int i = 0; i < 2; i++) {
             rpcNotificationService.sendNotification(roles.get(i).getParticipant().getParticipantPrivateId(),
+                    ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+            System.out.println(roles.get(i).getParticipant().getParticipantPublicId());
+        }
+
+        data.addProperty("action", "nameTurn");
+        params.add("data", data);
+
+        for (Characters c : roles) {
+            rpcNotificationService.sendNotification(c.getParticipant().getParticipantPrivateId(),
                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
         }
 

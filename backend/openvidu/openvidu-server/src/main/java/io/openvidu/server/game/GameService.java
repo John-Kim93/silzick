@@ -25,6 +25,7 @@ import io.openvidu.server.rpc.RpcNotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,7 +38,7 @@ public class GameService {
     static final int GAMESTART = 4;
     static final int USESKILL = 5;
     static final int CHECKPARTICIPANTS = 7;
-    static final int GAMEOVER = 8;
+    static final int SECRETMESSAGE = 10;
 
 
     private static final Logger log = LoggerFactory.getLogger(GameService.class);
@@ -53,6 +54,8 @@ public class GameService {
     public static ConcurrentHashMap<String, ArrayList<Roles>> gameRoles = new ConcurrentHashMap<>();
     // 역할 - player 매칭 정보 관리
     public static ConcurrentHashMap<String, ArrayList<Characters>> roleMatching = new ConcurrentHashMap<>();
+    // 종료시에 보낼 정보
+    public static ConcurrentHashMap<String, ArrayList<Characters>> roleInfo = new ConcurrentHashMap<>();
     // 참가자 목록 관리
     public static ConcurrentHashMap<String, ArrayList<Participant>> participantsList = new ConcurrentHashMap<>();
     // 살아있는 경찰 수 관리
@@ -101,6 +104,9 @@ public class GameService {
                 return;
             case CHECKPARTICIPANTS:
                 checkParticipants(participant, message, sessionId, participants, params, data, notice);
+                return;
+            case SECRETMESSAGE:
+                sendSecretMessgae(participant, message, sessionId, participants, params, data, notice);
                 return;
         }
     }
@@ -262,7 +268,7 @@ public class GameService {
             }
         }
 
-        if (participants.size() >= 2 && participants.size() == cnt) {
+        if (participants.size() >= 4 && participants.size() == cnt) {
             data.addProperty("readyStatus", true);
         }
 
@@ -313,6 +319,9 @@ public class GameService {
         //역할 분배된 것 넣기.
         roleMatching.putIfAbsent(sessionId, userRoles);
 
+        ArrayList<Characters> userInfo = new ArrayList<>(userRoles);
+        roleInfo.putIfAbsent(sessionId, userInfo);
+
         //0,1번이 KIRA,L임
         ArrayList<Participant> KIRAandL = new ArrayList<>(players.subList(0, 2));
 
@@ -362,7 +371,6 @@ public class GameService {
         String skillType = data.get("skillType").getAsString();
         //역할 리스트 가져오기.
         ArrayList<Characters> cList = roleMatching.get(sessionId);
-        System.out.println(cList.size());
 
         String jobName = null;
 
@@ -380,16 +388,12 @@ public class GameService {
 
                 //skill대상의 직업이 jobName과 일치하는지 체크
                 if (target.getJobName().equals(jobName)) {
+
                     //보호되는 상태가 아니면
                     if (!target.isProtected()) {
 
                         //사망처리.
-                        for (Characters player : cList) {
-                            if (player.getParticipant().getParticipantPublicId().equals(target.getParticipant().getParticipantPublicId())) {
-                                player.setAlive(false);
-                                break;
-                            }
-                        }
+                        target.setAlive(false);
 
                         //경찰일시 경찰 수 -1;
                         if (target.getJobName().equals("POLICE")) {
@@ -406,10 +410,17 @@ public class GameService {
                             rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                         }
+
+                        if (alivePolices.getOrDefault(sessionId, 0) < 1) {
+                            finishGame(participant, sessionId, participants, params, data, "KIRA");
+                        }
+
+
                         //보호 중이면.
                     } else {
                         //보호 풀기
                         target.setProtected(false);
+
                         //방어됨 소식 알리기.
                         data.addProperty("isAlive", 0);
                         data.addProperty("userId", target.getParticipant().getClientMetadata());
@@ -421,7 +432,7 @@ public class GameService {
                                 ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                     }
                 } else {
-                    //방어됨 소식 알리기.
+                    //적은 사람이 일치하지 않는 소식 알리기.
                     data.addProperty("isAlive", 1);
                     data.addProperty("userId", target.getParticipant().getClientMetadata());
                     data.addProperty("connectionId", target.getParticipant().getParticipantPublicId());
@@ -454,9 +465,9 @@ public class GameService {
                     params.add("data", data);
 
                     //CRIMINAL 사망처리(수정값 적용은 case문 빠져 나간 뒤에)
-                    for (Characters player : cList) {
-                        if (player.getParticipant().getParticipantPublicId().equals(target.getParticipant().getParticipantPublicId())) {
-                            player.setAlive(false);
+                    for (Characters criminal : cList) {
+                        if (criminal.getParticipant().getParticipantPublicId().equals(target.getParticipant().getParticipantPublicId())) {
+                            criminal.setAlive(false);
                             break;
                         }
                     }
@@ -476,13 +487,16 @@ public class GameService {
                         }
                     }
                     alivePolices.compute(sessionId, (k, v) -> v - 1);
+
+                    if (alivePolices.getOrDefault(sessionId, 0) < 1) {
+                        finishGame(participant, sessionId, participants, params, data, "KIRA");
+                    }
                 }
 
                 for (Participant p : participants) {
                     rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                             ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
                 }
-
                 break;
             case "protect":
                 target = getTarget(data, cList);
@@ -599,7 +613,7 @@ public class GameService {
                         //보호 중이면.
                     } else {
                         //보호막 풀고
-                        c.setProtected(true);
+                        c.setProtected(false);
                         //방어됨 소식 알리기.
                         list.addProperty("isAlive", true);
                         list.addProperty("userId", c.getParticipant().getClientMetadata());
@@ -610,7 +624,6 @@ public class GameService {
                 }
 
                 roleMatching.compute(sessionId, (k, v) -> v = cList);
-
 
                 //죽은 사람 정보는 모든 유저에게 보낸다.
                 data.addProperty("cnt", aliveCnt);
@@ -628,6 +641,12 @@ public class GameService {
 
                 //사용후 데스노트 목록 비우기.
                 deathNoteList.compute(sessionId, (k, v) -> v = new ArrayList<Characters>());
+
+                //데스노트 사용후 경찰 수 체크
+                if (alivePolices.getOrDefault(sessionId, 0) < 1) {
+                    finishGame(participant, sessionId, participants, params, data, "KIRA");
+                }
+
                 break;
 
             case "announceToL":
@@ -642,13 +661,6 @@ public class GameService {
                 break;
         }
 
-        //키라 사망 or 경찰 수 0명시 게임 종료
-        for (Characters c : cList) {
-            if (alivePolices.getOrDefault(sessionId, 0) < 1) {
-                finishGame(participant, sessionId, participants, params, data, "KIRA");
-                break;
-            }
-        }
     }
 
     private Characters getTarget(JsonObject data, ArrayList<Characters> cList) {
@@ -664,9 +676,6 @@ public class GameService {
                 break;
             }
         }
-        System.out.println(skillTarget);
-        System.out.println("타겟 직업이름");
-        System.out.println(target.getJobName());
         return target;
     }
 
@@ -713,6 +722,12 @@ public class GameService {
 
         Thread deathNoteThread = gameThread.get(sessionId);
 
+        ArrayList<Characters> userInfo = roleInfo.get(sessionId);
+
+        for (Characters c : userInfo) {
+            data.addProperty(c.getParticipant().getParticipantPublicId(), c.getJobName());
+        }
+
         //자원 반납
         //쓰래드 자원 반납
         gameThread.remove(sessionId);
@@ -728,6 +743,7 @@ public class GameService {
         kiraAndL.remove(sessionId);
         //노트 자원 반납.
         deathNoteList.remove(sessionId);
+        readySetting.remove(sessionId);
 
 
         if (deathNoteThread != null) {
@@ -743,5 +759,23 @@ public class GameService {
             rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
                     ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
         }
+    }
+
+    //귓속말 보내기
+    private void sendSecretMessgae(Participant participant, JsonObject message, String sessionId, Set<Participant> participants, JsonObject params, JsonObject data, RpcNotificationService notice) {
+        String publicId = data.get("to").getAsString();
+        params.add("data", data);
+
+
+        rpcNotificationService.sendNotification(participant.getParticipantPrivateId(),
+                ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+        for (Participant p : participants) {
+            if (p.getParticipantPublicId().equals(publicId)) {
+                rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+                        ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+                break;
+            }
+        }
+
     }
 }

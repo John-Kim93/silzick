@@ -24,6 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.google.gson.JsonParser;
 import io.openvidu.server.game.GameService;
 import org.kurento.commons.exception.KurentoException;
 import org.kurento.jsonrpc.Session;
@@ -36,6 +37,12 @@ import com.google.gson.JsonObject;
 
 import io.openvidu.client.OpenViduException;
 import io.openvidu.server.core.IdentifierPrefixes;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class RpcNotificationService {
 
@@ -133,7 +140,6 @@ public class RpcNotificationService {
     }
 
     public RpcConnection immediatelyCloseRpcSession(String participantPrivateId) {
-        String sessionId = rpcConnections.get(participantPrivateId).getSessionId();
 
         RpcConnection rpcSession = rpcConnections.remove(participantPrivateId);
         if (rpcSession == null || rpcSession.getSession() == null) {
@@ -147,20 +153,6 @@ public class RpcNotificationService {
 
         try {
             s.close();
-            //게임 자원 반납.
-            Thread deathNoteThread = GameService.gameThread.get(sessionId);
-            GameService.gameThread.remove(sessionId);
-            GameService.gameRoles.remove(sessionId);
-            GameService.roleMatching.remove(sessionId);
-            GameService.participantsList.remove(sessionId);
-            GameService.alivePolices.remove(sessionId);
-            GameService.kiraAndL.remove(sessionId);
-            GameService.deathNoteList.remove(sessionId);
-
-            if (deathNoteThread != null) {
-                deathNoteThread.interrupt();
-            }
-            //API서버로 PUT요청으로 방 비활성화 시키기.
 
             log.info("Closed rpc session for participant with private id {}", participantPrivateId);
             this.showRpcConnections();

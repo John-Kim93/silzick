@@ -465,8 +465,8 @@ public abstract class SessionManager {
      * when the SessionManager instance is container-managed. <br/>
      * <strong>Dev advice:</strong> Send notifications to all participants to inform
      * that their session has been forcibly closed.
-     * <p>
-     * see SessionManmager#closeSession(String)
+     *
+     * @see SessionManmager#closeSession(String)
      */
     @PreDestroy
     public void close() {
