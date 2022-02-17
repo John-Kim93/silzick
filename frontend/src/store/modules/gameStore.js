@@ -110,6 +110,8 @@ const gameStore = {
     //각 참여자의 nickName, id 담는 리스트.
     SET_PARTICIPANTS(state, res){
       state.participants = res
+    },
+    SET_PARTICIPANTS_LOG(state, res){
       state.participantsLog = res
     },
     //참여자 전원이 레디를 했는지 판단.
@@ -277,15 +279,15 @@ const gameStore = {
 
   actions: {
     //해당 세션에 사용하고자 하는 닉네임이 사용중인지 체크. 사용중이 아니라면 joinSession, subJoinSession하고 닉네임 업데이트.
-    nicknameUpdate ({ state, commit, dispatch }, nickName) {
+    nicknameUpdate ({ state, commit, dispatch }, nickname) {
       const validateName = {
-        nickName: nickName,
+        nickName: nickname,
         roomCode: state.sessionId
       }
       nickNameCheck(
         validateName,
         ()=>{
-          commit('NICKNAME_UPDATE', nickName)
+          commit('NICKNAME_UPDATE', nickname)
           dispatch('subJoinSession')
           dispatch('joinSession')
         },
@@ -506,6 +508,7 @@ const gameStore = {
                 state.participantsLog.push({nickname: clientData, connectionId: connectionId})
               }
             }
+            state.participantsLog.push({nickname: state.nickname, connectionId: state.publisher.stream.connection.connectionId})
             break;
           }
           case 8 :{
@@ -538,12 +541,12 @@ const gameStore = {
             break;
           }
           case 10 :{
-            const { user, chatMessage, to } = event.data
+            const { user, chatMessage, to, fromName } = event.data
             if(state.publisherId == to){
-              const data = user + "님의 귓속말 : " + chatMessage
+              const data = user + "의 귓속말 : " + chatMessage
               commit('SET_MESSAGES', data)
             }else{
-              const data = user + "님에게 귓속말 : " + chatMessage
+              const data = fromName + "에게 귓속말 : " + chatMessage
               commit('SET_MESSAGES', data)
             }
             break;
@@ -602,11 +605,12 @@ const gameStore = {
       })
 
       //방장이면 sessionCreate부터 해야하므로 getToken으로, 이미 세션 만들어져 있으면 createToken으로 토큰만 만듬.
-      if(state.sessionId){
+      if(!state.session && state.isHost){
         await dispatch("getToken", state.sessionId).then((token) => {
           session
           .connect(token, { clientData: state.nickname })
           .then(() => {
+            console.log("GetToken!!!!")
             // --- Get your own camera stream with the desired properties ---
             let publisher = OV.initPublisher(undefined, {
               audioSource: undefined, // The source of audio. If undefined default microphone
@@ -627,7 +631,6 @@ const gameStore = {
             // --- Publish your stream ---
             session.publish(state.publisher)
             commit('SET_MY_PUBLISHER_ID', state.publisher.stream.connection.connectionId)
-            state.participantsLog.push({nickname: state.nickname, connectionId: state.publisher.stream.connection.connectionId})
             router.push({
               name: 'Attend',
             })
@@ -645,6 +648,7 @@ const gameStore = {
           session
           .connect(token, { clientData: state.nickname })
           .then(() => {
+            console.log("createToken!!!!!")
             // --- Get your own camera stream with the desired properties ---
             let publisher = OV.initPublisher(undefined, {
               audioSource: undefined, // The source of audio. If undefined default microphone
@@ -745,9 +749,11 @@ const gameStore = {
       // --- Leave the session by calling 'disconnect' method over the Session object ---
       if (state.session) {
         state.session.disconnect();
+        state.subSession.disconnect();
 
         commit('SET_READY_STATUS', false)
         commit('SET_PARTICIPANTS', [])
+        commit('SET_PARTICIPANTS_LOG',[])
         commit('SET_MY_PUBLISHER_ID', undefined)
         commit('SET_WINNER', undefined)
         commit('SET_MISSION', -1)
@@ -769,13 +775,22 @@ const gameStore = {
         commit('SET_MY_JOB', undefined)
         commit('RESET_MESSAGES')
         commit('GET_JOB_PROPS',jobs)
+
         commit('SET_SESSION', undefined)
         commit('SET_PUBLISHER', undefined)
         commit('SET_OV', undefined)
         commit('SET_OVTOKEN', undefined)
+
+        commit('SET_SUB_OV', undefined)
+        commit('SET_SUB_SESSION', undefined)
+        commit('SET_SUB_OVTOKEN', undefined)
+        commit('SET_SUB_SUBSCRIBERS', undefined)
+
         commit('SET_SUBSCRIBERS', [])
         commit('NICKNAME_UPDATE', undefined)
         commit('RESET_MISSION_SUCCESS',0)
+
+
       }
       // window.removeEventListener("beforeunload", this.leaveSession);
     },
@@ -858,13 +873,20 @@ const gameStore = {
       })
     },
     sendMessageWhisper ({ state }, messageData) {
+      const from = state.participants.find((participant)=>{
+        if(participant.connectionId == messageData.to){
+          return participant
+        }
+      })
+      console.log(from)
       state.session.signal({
         type: 'game',
         data: {
           gameStatus: 10,
           user: messageData.user,
           chatMessage: messageData.chatMessage,
-          to: messageData.to
+          to: messageData.to,
+          fromName : from.nickname
         },
         to: [],
       })
