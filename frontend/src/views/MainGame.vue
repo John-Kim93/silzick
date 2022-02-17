@@ -9,7 +9,7 @@
         <!--6명 이하 6분할-->
         <div id ='my'
           class="col-6"
-          v-if="subscribers.length < 6"
+          v-if="subscribers.length < 6 && isAlive"
         > 
           <!-- 내 비디오 -->
           <div  class="p-1 h-100">
@@ -17,7 +17,7 @@
               id="base-border"
               class="pt-1 px-1"
               :stream-manager="publisher"
-              v-if="isAlive"
+              
             />
           </div>
         </div>

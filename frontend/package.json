@@ -20,6 +20,7 @@
     "seedrandom": "^3.0.5",
     "vue": "^2.6.14",
     "vue-awesome-countdown": "^1.1.4",
+    "vue-carousel": "^0.18.0",
     "vue-chat-scroll": "^1.4.0",
     "vue-circular-count-down-timer": "^2.0.0",
     "vue-cookies": "^1.7.4",
