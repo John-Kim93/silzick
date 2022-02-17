@@ -14,16 +14,16 @@
         <h2 class="col-12" style="text-align:left;">Winners</h2>
         <div
           class="col-6"
-          v-for="L, idx in LTeam"
-          :key="idx"
+          v-for="L in LTeam"
+          :key="L.job"
         >
           <span style="font-size:1rem;">{{L.nickname}} : {{L.job}}</span>
         </div>
         <h2 class="col-12 mt-2" style="text-align:left;">Losers</h2>
         <div
           class="col-6"
-          v-for="Kira, idx in KiraTeam"
-          :key="idx"
+          v-for="Kira in KiraTeam"
+          :key="Kira.job"
         >
           <span style="font-size:1rem;">{{Kira.nickname}} : {{Kira.job}}</span>
         </div>

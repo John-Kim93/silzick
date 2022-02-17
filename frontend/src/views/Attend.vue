@@ -21,7 +21,7 @@
           >
           READY
           </button>
-          <button
+          <button 
             id="btn-color"
             class="btn col-5 m-1"
             @click="setReady"
@@ -73,7 +73,7 @@
                 <ready :streamManager="publisher"/>
                 <div
                   v-for="sub in subscribers"
-                  :key="sub.stream.session.connection.connectionId"
+                  :key="sub.stream.session.streamId"
                 >
                   <ready :stream-manager="sub" />
                 </div>

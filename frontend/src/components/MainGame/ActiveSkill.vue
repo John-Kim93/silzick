@@ -133,7 +133,6 @@
             <option
               v-for="participant, idx in participants"
               :key="idx"
-              :disabled="key"
               :value="participant.connectionId"
             >
               {{participant.nickname}}

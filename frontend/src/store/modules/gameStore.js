@@ -67,9 +67,9 @@ const gameStore = {
     mission: -1,
     random_int: 0,
     //거짓 명함 낼 수 있는 횟수(미션 달성 횟수)
-    missionSuccessCount: 0,
+    missionSuccessCount: 1,
     //히든 미션 달성 횟수
-    numberOfSkillUsed: 5,
+    numberOfSkillUsed: 1,
     //그냥 미션인지 히든인지 구분.
     isNormalMission: true,
     options: [
@@ -325,7 +325,7 @@ const gameStore = {
     async joinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
       const OV = new OpenVidu();
-      // OV.enableProdMode();
+      OV.enableProdMode();
       // --- Init a session ---
       const session = OV.initSession();
 
@@ -883,8 +883,9 @@ const gameStore = {
       // window.removeEventListener("beforeunload", this.leaveSession);
     },
     // 명교방 관련 기능
-    exchange ({dispatch}) {
-      dispatch('subJoinSession')
+    exchange ({state}) {
+      state.subSession.publish(state.subPublisher)
+      // dispatch('subJoinSession')
       router.push({
         name: "CardExchange"
       })
@@ -896,7 +897,7 @@ const gameStore = {
     subJoinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
       const subOV = new OpenVidu();
-      // subOV.enableProdMode();
+      subOV.enableProdMode();
       // --- Init a session ---
       const subSession = subOV.initSession();
       const subSubscribers = [];
@@ -929,27 +930,48 @@ const gameStore = {
         }
       })
       
-
       //방장이면 sessionCreate부터 해야하므로 getToken으로, 이미 세션 만들어져 있으면 createToken으로 토큰만 만듬.
-      dispatch("getToken", 'sub' + state.sessionId).then((subToken) => {
-        subSession
-        .connect(subToken, { clientData: state.nickname })
-        .then(() => {
-          // --- Get your own camera stream with the desired properties ---
-          commit('SET_SUB_OV', subOV)
-          commit('SET_SUB_SESSION', subSession)
-          commit('SET_SUB_OVTOKEN', subToken)
-          commit('SET_SUB_SUBSCRIBERS', subSubscribers)
-          })
-          .catch((error) => {
-            console.log(
-              "There was an error connecting to the session:",
-              error.code,
-              error.message
-            );
-          });
-      });
-      window.addEventListener("beforeunload", this.leaveSession);
+      if(!state.session && state.isHost){
+        dispatch("getToken", 'sub' + state.sessionId).then((subToken) => {
+          subSession
+          .connect(subToken, { clientData: state.nickname })
+          .then(() => {
+            // --- Get your own camera stream with the desired properties ---
+            commit('SET_SUB_OV', subOV)
+            commit('SET_SUB_SESSION', subSession)
+            commit('SET_SUB_OVTOKEN', subToken)
+            commit('SET_SUB_SUBSCRIBERS', subSubscribers)
+            })
+            .catch((error) => {
+              console.log(
+                "There was an error connecting to the session:",
+                error.code,
+                error.message
+              );
+            });
+        });
+        window.addEventListener("beforeunload", this.leaveSession);
+      }else{
+        dispatch("createToken", 'sub' + state.sessionId).then((subToken) => {
+          subSession
+          .connect(subToken, { clientData: state.nickname })
+          .then(() => {
+            // --- Get your own camera stream with the desired properties ---
+            commit('SET_SUB_OV', subOV)
+            commit('SET_SUB_SESSION', subSession)
+            commit('SET_SUB_OVTOKEN', subToken)
+            commit('SET_SUB_SUBSCRIBERS', subSubscribers)
+            })
+            .catch((error) => {
+              console.log(
+                "There was an error connecting to the session:",
+                error.code,
+                error.message
+              );
+            });
+        });
+        window.addEventListener("beforeunload", this.leaveSession);
+      }
     },
 
     // 채팅 관련 통신

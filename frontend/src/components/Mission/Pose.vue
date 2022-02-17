@@ -133,7 +133,6 @@ export default {
           },2000)
         }
       }else{
-        console.log("check")
         this.loading = false
         this.success = false
         this.loop_state =false
