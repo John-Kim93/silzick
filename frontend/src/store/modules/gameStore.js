@@ -90,6 +90,9 @@ const gameStore = {
     },
     getIsHost : function(state){
       return state.isHost;
+    },
+    getSession : function(state){
+      return state.session;
     }
 
   },
@@ -227,8 +230,6 @@ const gameStore = {
     SET_OPTIONS(state, options){
       state.options = options
     },
-
-
     
     // 채팅 관련 기능
     SET_MESSAGES(state, res) {

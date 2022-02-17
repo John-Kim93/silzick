@@ -84,8 +84,8 @@
             <div v-if="isHost" id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar" style="height:40vh">
               <jobs :job="job" v-for="job in jobs" :key="job.jobName"/>          
             </div>
-            <div v-else id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar px-2" style="height:40vh">
-              직업 선택은 HOST만 할 수 있습니다.
+            <div v-else id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar px-2 attend" style="height:44vh">
+              <div>직업 선택은 HOST만 할 수 있습니다.</div>
             </div>
 
             <!-- 결과 리스트 -->
@@ -196,8 +196,11 @@ export default {
   height: 400px;
   
 }
-
-
+.attend{
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
 /* .chat{
   border: 5px  solid black;
   margin: 2px;

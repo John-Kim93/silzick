@@ -14,6 +14,16 @@ const SessionIdCheck = (to, from, next) => {
   }
 };
 
+const CatchWrongAccess = (to, from, next) => {
+  const sessionId = store.getters["gameStore/getSessionId"];
+  const session = store.getters["gameStore/getSession"];
+  if(session && sessionId){
+    next()
+  }else{
+    router.push({ name: "Invite" });
+  }
+}
+
 const routes = [
   {
     path: '/KiraWin',
@@ -33,6 +43,24 @@ const routes = [
     beforeEnter : SessionIdCheck,
   },
   {
+    path: '/MainGame',
+    name: 'MainGame',
+    component: () => import("../views/MainGame.vue"),
+    beforeEnter : CatchWrongAccess
+  },
+  {
+    path: '/CardExchange',
+    name : 'CardExchange',
+    component: () => import('../views/CardExchange.vue'),
+    beforeEnter : CatchWrongAccess
+  },
+  {
+    path: '/GameEnd',
+    name: 'GameEnd',
+    component: () => import('../views/GameEnd.vue'),
+    beforeEnter : CatchWrongAccess
+  },
+  {
     path: '/Invite',
     name: 'Invite',
     component: () => import("../views/Invite.vue"),
@@ -43,29 +71,14 @@ const routes = [
     component: () => import("../views/Attend.vue"),
   },
   {
-    path: '/MainGame',
-    name: 'MainGame',
-    component: () => import("../views/MainGame.vue"),
-  },
-  {
     path: '/Rule',
     name: 'Rule',
     component: () => import('../views/Rule.vue'),
   },
   {
-    path: '/CardExchange',
-    name : 'CardExchange',
-    component: () => import('../views/CardExchange.vue'),
-  },
-  {
     path: '/',
     name: 'Main',
     component: () => import('../views/Main.vue'),
-  },
-  {
-    path: '/GameEnd',
-    name: 'GameEnd',
-    component: () => import('../views/GameEnd.vue'),
   },
   {
     path: '/Login',
