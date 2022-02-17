@@ -12,7 +12,6 @@ import CircularCountDownTimer from "vue-circular-count-down-timer"
 import VueWebSpeech from 'vue-web-speech'
 import VueSpeech from '../src/install.js'
 import VueJwtDecode from 'vue-jwt-decode'
-import VueCarousel from 'vue-carousel';
 
 //유저 정보 가져오기 관련
 import userStore from "./store/modules/userStore";
@@ -25,7 +24,6 @@ Vue.use(BootstrapVueIcons)
 Vue.use(CircularCountDownTimer)
 Vue.use(VueWebSpeech)
 Vue.use(VueSpeech)
-Vue.use(VueCarousel)
 Vue.config.productionTip = false
 Vue.$cookies.config("1d")
 // axios.defaults.withCredentials = true

@@ -300,7 +300,7 @@ const gameStore = {
     async joinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
       const OV = new OpenVidu();
-      // OV.enableProdMode();
+      OV.enableProdMode();
       // --- Init a session ---
       const session = OV.initSession();
 
@@ -610,7 +610,6 @@ const gameStore = {
           session
           .connect(token, { clientData: state.nickname })
           .then(() => {
-            console.log("GetToken!!!!")
             // --- Get your own camera stream with the desired properties ---
             let publisher = OV.initPublisher(undefined, {
               audioSource: undefined, // The source of audio. If undefined default microphone
@@ -648,7 +647,6 @@ const gameStore = {
           session
           .connect(token, { clientData: state.nickname })
           .then(() => {
-            console.log("createToken!!!!!")
             // --- Get your own camera stream with the desired properties ---
             let publisher = OV.initPublisher(undefined, {
               audioSource: undefined, // The source of audio. If undefined default microphone
@@ -808,7 +806,7 @@ const gameStore = {
     subJoinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
       const subOV = new OpenVidu();
-      // subOV.enableProdMode();
+      subOV.enableProdMode();
       // --- Init a session ---
       const subSession = subOV.initSession();
       const subSubscribers = [];
