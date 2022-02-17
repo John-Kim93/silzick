@@ -90,7 +90,7 @@
 
             <!-- 결과 리스트 -->
             <div id="base-border" class="col-4 m-1 align-self-start align-items-center flex-column scroll-bar px-2" style="height:44vh">
-              <job-select  :job="job" v-for="job in jobs" :key="job.jobName"/>
+              <job-select :job="job" v-for="job in jobs" :key="job.jobName"/>
             </div>
 
             <!-- 룰 또는 영상 -->
