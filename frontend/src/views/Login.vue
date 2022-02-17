@@ -31,7 +31,8 @@
         </div>
         <button id="btn-color" class="w-100 btn btn-lg mb-2" @click="login({data:requestInfo})">Log In</button>
         <router-link to="/FindID">아이디 찾기 / </router-link>
-        <router-link to="/FindPW">비밀번호 찾기</router-link>
+        <router-link to="/FindPW">비밀번호 찾기</router-link><br>
+        <router-link to="/Signup">회원가입</router-link>
       </div>
     </div>  
   </main>

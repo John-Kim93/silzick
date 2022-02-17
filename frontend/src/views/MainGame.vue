@@ -68,7 +68,6 @@
                 title="MEMO"
                 size='sm'
                 body-bg-variant="secondary"
-                @before-open="modalPosition"
                 scrollable  
                 hide-header
                 hide-backdrop
@@ -509,8 +508,5 @@ input[id*="popup"]:checked + label + div {
 }
 .explain_victory {
   height: 30%;
-}
-#modal-1___BV_modal_content_{
-  margin-left: 300px;
 }
 </style>

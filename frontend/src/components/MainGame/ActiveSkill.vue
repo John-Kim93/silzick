@@ -1,23 +1,17 @@
 <template>
   <div class="d-flex" style="color:white">
     <!--disabled 사용해서 skill이 1이상일때만 사용가능하도록-->
-    <button id="btn-color" class="btn btn-lg" style="height:10vh; width:15vw" @click="show=true"> Skill</button>
+    <button id="btn-color" class="btn btn-lg"  v-b-modal.modal-1 style="height:10vh; width:15vw" @click="show=!show"> Skill</button>
     <!-- 1.노트주인 -->
     <b-modal
-      v-model='show'
       v-if='myJob == "KIRA"' 
-      id='skill' 
-      header-class="bg-color"
-      size="md"
+      id="modal-1"
+      size="lg"
+      variant='outline-primary' 
+      body-text-variant="light"
+      footer-text-variant="light"
       centered
       >
-      <!-- variant='outline-primary' 
-      header-bg-variant="black"
-      header-text-variant="danger"
-      body-bg-variant="black"
-      body-text-variant="light"
-      footer-bg-variant="black"
-      footer-text-variant="light" -->
       <template #modal-header  >
       <div></div>
         <h1>
@@ -30,7 +24,7 @@
               scale="0.35"
               ></b-icon>
           </b-iconstack>
-          노트
+         &nbsp;&nbsp; 노트
         </h1>
         <div></div>
       </template> 
@@ -73,15 +67,15 @@
         <div class="w-100 d-block text-center" >
           <b-button
             size="sm"
-            class="skill_button_note  my-3"
+            id='btn-color-kira'
             @click="noteWrite"
             :disabled="numberOfSkillUsed < 1"
           >
             노트에 적는다(사용가능 : {{numberOfSkillUsed}})
-          </b-button>
+          </b-button> &nbsp;&nbsp;
           <b-button
             size="sm"
-            class="skill_button_note my-3"
+            id='btn-color-kira'
             @click="noteUse"
           >
             모두 죽이기
@@ -91,15 +85,11 @@
     </b-modal>
 
     <!-- 2. 추종자 -->
-    <b-modal v-model="show" v-if='myJob == "CRIMINAL"'
-      id='skill' 
+    <b-modal  v-if='myJob == "CRIMINAL"'
+      id='modal-1' 
       size="lg"
       variant='outline-primary' 
-      header-bg-variant="black"
-      header-text-variant="danger"
-      body-bg-variant="black"
       body-text-variant="light"
-      footer-bg-variant="black"
       footer-text-variant="light"
       centered
       >
@@ -115,7 +105,7 @@
               scale="0.35"
               ></b-icon>
           </b-iconstack>
-          노트 조각
+          &nbsp;&nbsp; 노트조각
         </h1>
         <div></div>
       </template> 
@@ -159,7 +149,7 @@
         <div class="w-100 d-block text-center" >
           <b-button
             size="sm"
-            class="skill_button_note my-3"
+            id='btn-color-kira'
             :disabled='numberOfSkillUsed < 1'
             @click="kill"
           >
@@ -169,15 +159,12 @@
       </template>
     </b-modal>
     <!-- 4.보디가드 -->
-    <b-modal v-model="show" v-if='myJob == "GUARD"' 
-      id='skill' 
+    <b-modal  v-if='myJob == "GUARD"' 
+      id='modal-1' 
       size="lg"
       variant='outline-primary' 
-      header-bg-variant="black"
       header-text-variant="primary"
-      body-bg-variant="black"
       body-text-variant="light"
-      footer-bg-variant="black"
       footer-text-variant="light"
       centered
       >
@@ -189,7 +176,7 @@
             <b-icon stacked icon="people" animation=""></b-icon>
           </b-iconstack>  
           <font size="6">
-             보호
+           &nbsp;&nbsp; 보호
           </font>
         </h1>
         <div></div>
@@ -221,9 +208,8 @@
       <template #modal-footer>
         <div class="w-100 d-block text-center" >
           <b-button
-            variant="primary"
             size="sm"
-            class="skill_button_police my-3"
+            id='btn-color'
             :disabled='numberOfSkillUsed < 1'
             @click="protect"
           >
@@ -233,15 +219,12 @@
       </template>
     </b-modal>
     <!-- 5.방송인 -->
-    <b-modal v-model="show" v-if='myJob == "BROADCASTER"'
-      id='skill' 
+    <b-modal v-if='myJob == "BROADCASTER"'
+      id='modal-1' 
       size="lg"
       variant='outline-primary' 
-      header-bg-variant="black"
       header-text-variant="primary"
-      body-bg-variant="black"
-      body-text-variant="light"
-      footer-bg-variant="black"
+      body-text-variant="link-warning"
       footer-text-variant="light"
       centered
       >
@@ -250,7 +233,7 @@
         <h1>
           <font size="7">
             <b-icon icon="mic" animation="fade"></b-icon>
-             방송 
+             &nbsp;&nbsp; 방송 
           </font>
         </h1>
         <div></div>
@@ -277,9 +260,8 @@
       <template #modal-footer>
         <div class="w-100 d-block text-center" >
           <b-button
-            variant="primary"
             size="sm"
-            class="skill_button_police my-3"
+            id='btn-color'
             :disabled='numberOfSkillUsed < 1'
             @click="broadcast"
           >
@@ -290,23 +272,24 @@
     </b-modal>
  
     <!-- 6.경찰 -->
-    <b-modal v-model="show" v-if='myJob == "POLICE"'
-      id='skill' 
+    <b-modal v-if='myJob == "POLICE"'
+      id='modal-1' 
       size="lg"
       variant='outline-primary' 
-      header-bg-variant="black"
-      header-text-variant="primary"
-      body-bg-variant="black"
-      body-text-variant="light"
-      footer-bg-variant="black"
+      header-text-variant="light"
+      body-text-variant="link-warning"
       footer-text-variant="light"
       centered
       >
       <template #modal-header  >
         <div></div>
-        <!-- 아래 이미지 없음 -->
-        <!-- <img src="../../assets/img/scull.jpg" alt="scull"> -->
-        <h1 ><font size="7">검거 </font></h1>
+        <font size="7">
+          <b-iconstack>
+            <b-icon stacked icon="fullscreen" animation="throb"></b-icon>
+            <b-icon stacked icon="person" animation="" variant="danger"></b-icon>
+          </b-iconstack>
+          &nbsp;&nbsp; 검거하기
+        </font>
         <div></div>
       </template> 
       <div variant="black" class="d-block text-center">
@@ -336,9 +319,8 @@
       <template #modal-footer>
         <div class="w-100 d-block text-center" >
           <b-button
-            variant="primary"
             size="sm"
-            class="skill_button_police my-3"
+            id='btn-color'
             :disabled="numberOfSkillUsed < 2"
             @click="arrest"
           >
@@ -365,11 +347,25 @@ export default {
       broadcastMessage: '',
     }
   },
+  watch:{
+    show(value){
+      console.log(value)
+      setTimeout(()=>{
+        this.modalPosition()
+        this.show = false
+      },10)
+    }
+  },
   computed: {
     ...mapState(gameStore, ['myJob', 'jobs', 'session', 'participants','missionSuccess','numberOfSkillUsed','isAlive'])
   },
   methods: {
     ...mapActions(gameStore, ['numberOfSkillUse']),
+    modalPosition(){
+      const target = document.querySelector('.modal-content')
+      console.log(target)
+      target.style = 'background-color:#222831;font-family: CBNUJIKJI; color: #DDDDDD;'
+    },
 
     noteWrite () {
       if(this.numberOfSkillUsed>0 && this.isAlive == true){
@@ -475,7 +471,7 @@ export default {
 <style scoped>
 .skill_button_police {
 	background-color:#1186cf;
-	border-radius:28px;
+	border-radius:8px;
 	border:1px solid #4e6096;
 	display:inline-block;
 	cursor:pointer;
@@ -487,8 +483,7 @@ export default {
 	text-shadow:0px 1px 0px #283966;
 }
 .skill_button_police:active {
-	position:rela
-  tive;
+	position:relative;
 	top:1px;
 }
 .skill_button_note {
@@ -535,5 +530,50 @@ input[type=text]:focus {
 	font-weight:bold;
 	padding:16px 31px;
 	text-decoration:none;
+}
+.skill_button_police {
+	background-color:#1186cf;
+	border-radius:28px;
+	border:1px solid #4e6096;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:17px;
+	padding:16px 31px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #283966;
+}
+.skill_button_police:active {
+	position:relative;
+	top:1px;
+}
+.skill_button_note {
+	background-color:#F05454;
+	border-radius:28px;
+	border:1px solid #F05454;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:17px;
+	padding:16px 31px;
+	text-decoration:none;
+}
+.skill_button_note:active {
+	position:relative;
+	top:1px;
+}
+input[type=text] {
+  border: solid white;
+  border-radius: 5px;
+  color: transparent;
+}
+input[type=text]:focus {
+  border: solid white;
+  color: white
+}
+.modal_color{
+  background-color: #222831;
 }
 </style>
