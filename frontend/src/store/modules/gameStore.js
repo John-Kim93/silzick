@@ -54,9 +54,9 @@ const gameStore = {
     mission: -1,
     random_int: 0,
     //거짓 명함 낼 수 있는 횟수(미션 달성 횟수)
-    missionSuccessCount: 0,
+    missionSuccessCount: 1,
     //히든 미션 달성 횟수
-    numberOfSkillUsed: 0,
+    numberOfSkillUsed: 1,
     //그냥 미션인지 히든인지 구분.
     isNormalMission: true,
     options: [
@@ -302,7 +302,7 @@ const gameStore = {
     async joinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
       const OV = new OpenVidu();
-      // OV.enableProdMode();
+      OV.enableProdMode();
       // --- Init a session ---
       const session = OV.initSession();
 
@@ -813,7 +813,7 @@ const gameStore = {
     subJoinSession({ commit, dispatch, state }) {
       // --- Get an OpenVidu object ---
       const subOV = new OpenVidu();
-      // subOV.enableProdMode();
+      subOV.enableProdMode();
       // --- Init a session ---
       const subSession = subOV.initSession();
       const subSubscribers = [];

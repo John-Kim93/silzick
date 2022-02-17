@@ -31,7 +31,7 @@ public class GameRunnable implements Runnable {
             //타입 지정
             String type = "signal:autoSystem";
             params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_TYPE_PARAM, type);
-
+            Thread.sleep(30000);
 
             while (true) {
                 //처음 30초 sleep
@@ -85,7 +85,7 @@ public class GameRunnable implements Runnable {
                 //미션 시작할 사람 목록
                 ArrayList<Characters> missionCandidates = new ArrayList<>(list);
 
-                if (list.size() >= 2) {
+                if (list.size() >= 4) {
                     //0,1번은 명교하러 갔으니 제외
                     missionCandidates.remove(1);
                     missionCandidates.remove(0);
