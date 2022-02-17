@@ -51,6 +51,7 @@
           >
         </div>
         <button id="btn-color" class="w-100 btn btn-lg" @click="signup">Sign Up</button>
+        <button id="btn-color" class="w-100 btn btn-lg mt-3" @click="mainpage">Main Page</button>
       </div>
     </div>  
   </main>
@@ -109,6 +110,9 @@ export default {
         this.ableToUsePwd = false;
       }
     },
+    mainpage() {
+      this.$router.push({ name: "Main" });
+    }
   }
 }
 </script>
