@@ -5,7 +5,7 @@ import { jobs } from './gameUtil.js'
 import router from '@/router/index.js'
 import { createRoom, nickNameCheck, joinRoom } from '@/api/user.js'
 import * as tmPose from '@teachablemachine/pose'
-// import Swal from 'sweetalert2'
+import Swal from 'sweetalert2'
 
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
@@ -84,6 +84,9 @@ const gameStore = {
     model: undefined,
     webcam: undefined,
     size: 200,
+
+    //memo
+    memo:''
   },
   //host입력 없이 join으로 바로 못들어가게 막는데 사용
   getters: {
@@ -277,6 +280,9 @@ const gameStore = {
     SET_POSE_WEBCAM(state,res){
       state.webcam = res
     },
+    GET_MEMO(state,res){
+      state.memo = res
+    }
   },
 
   actions: {
@@ -521,6 +527,24 @@ const gameStore = {
             }else{
               state.messages.push('System : 노트측이 모두 체포되었습니다.'+ winner+'측의 승리입니다.')
             }
+            let timerInterval
+            Swal.fire({
+              title: '게임 종료',
+              html:
+                'I will close in <strong></strong> seconds.<br/><br/>' ,
+              timer: 5000,
+              didOpen: () => {
+                Swal.showLoading()
+                timerInterval = setInterval(() => {
+                  Swal.getHtmlContainer().querySelector('strong')
+                    .textContent = (Swal.getTimerLeft() / 1000)
+                      .toFixed(0)
+                }, 100)
+              },
+              willClose: () => {
+                clearInterval(timerInterval)
+              }
+            })
             state.messages.push('5 초후 결과 창으로 이동합니다')
             setTimeout(() => {
               state.messages.push('4 초후 결과 창으로 이동합니다')
@@ -1059,7 +1083,9 @@ const gameStore = {
           alert("호스트가 아직 방을 생성하지 않았습니다!")
         })
     },
-
+    getMemo({commit},res){
+      commit('GET_MEMO',res)
+    },
 
     //게임 종료 후 되돌아가기 
     gameReset({dispatch}){
@@ -1090,7 +1116,8 @@ const gameStore = {
         return '방송인'
       }
     }
-  }
+  },
+  
 }
 
 export default gameStore;
