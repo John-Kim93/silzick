@@ -10,6 +10,18 @@ import Swal from 'sweetalert2'
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-right',
+  iconColor: 'white',
+  customClass: {
+    popup: 'colored-toast'
+  },
+  showConfirmButton: false,
+  timer: 1500,
+  timerProgressBar: false
+})
+
 const gameStore = {
   namespaced: true,
 
@@ -28,6 +40,7 @@ const gameStore = {
     // finalInfo는 {connectionId:직업} 리스트로 받는 변수
     participantsLog: [],
     finalInfo: [],
+    resultContent:"",
 
     publisherId: undefined,
     winner: undefined,
@@ -56,7 +69,7 @@ const gameStore = {
     //거짓 명함 낼 수 있는 횟수(미션 달성 횟수)
     missionSuccessCount: 0,
     //히든 미션 달성 횟수
-    numberOfSkillUsed: 0,
+    numberOfSkillUsed: 5,
     //그냥 미션인지 히든인지 구분.
     isNormalMission: true,
     options: [
@@ -282,6 +295,10 @@ const gameStore = {
     },
     GET_MEMO(state,res){
       state.memo = res
+    },
+    //경기결과
+    GET_RESULT_CONTENT(state,res){
+      state.resultContent = res
     }
   },
 
@@ -401,8 +418,13 @@ const gameStore = {
                 const {writeName} = event.data
                 if (writeName) {
                   state.messages.push('System : 누군가의 이름이 노트에 적혔습니다.')
+                  
                 } else {
                   state.messages.push('System : 이름과 직업이 일치하지 않습니다.')
+                  Toast.fire({
+                    icon: 'error',
+                    title: '제거 실패'
+                  })
                 }
                 break
               }
@@ -415,6 +437,10 @@ const gameStore = {
                   const { clientData } = JSON.parse(userId)
                   if (isAlive) {
                     state.messages.push('System : ' + clientData + '가 보디가드에 의해 보호되었습니다.')
+                     Toast.fire({
+                      icon: 'info',
+                      title: '경호 성공'
+                    })
                   } else {
                     if (state.publisher && state.publisherId == connectionId){
                       state.session.unpublish(state.publisher)
@@ -427,6 +453,7 @@ const gameStore = {
                     }
                     dispatch('removeParticipant', connectionId)
                     state.messages.push('System : ' + clientData + '가 심장마비로 사망하였습니다.')
+                    
                   }
                 }
                 break
@@ -446,6 +473,10 @@ const gameStore = {
               case 'announce':{
                 const message = '경찰측 방송 : ' + event.data.announce
                 state.messages.push(message)
+                Toast.fire({
+                  icon: 'success',
+                  title: '방송 송출'
+                })
                 break
               }
               // 보디가드의 보호 기능은 백에서 구현, 확인 메세지만 출력
@@ -453,16 +484,29 @@ const gameStore = {
                 const {clientData} = JSON.parse(event.data.userId)
                 const message = "System : " + clientData + '을/를 1회 보호합니다.'
                 state.messages.push(message)
+                Toast.fire({
+                  icon: 'success',
+                  title: '경호 시작'
+                })
                 break
               }
               // 경찰의 검거 능력, 키라측이면 죽임
               case 'arrest': {
                 const { isCriminal, userId, connectionId} = event.data
                 const { clientData } = JSON.parse(userId)
+                
                 if (isCriminal == true) {
                   state.messages.push('System : 추종자 ' + clientData + '가 검거되었습니다.')
+                   Toast.fire({
+                    icon: 'success',
+                    title: '체포성공'
+                  })
                 } else {
                   state.messages.push('System : 경찰 ' + clientData + '가 경찰측 체포를 시도하여 해고당했습니다.')
+                   Toast.fire({
+                    icon: 'error',
+                    title: '체포실패'
+                  })
                 }
                 // 찾아서 죽이기
                 dispatch('removeParticipant', connectionId)
@@ -484,8 +528,16 @@ const gameStore = {
                 const { clientData } = JSON.parse(userId)
                 if (isAlive == 0) {
                   state.messages.push('System : ' + clientData + '가 보디가드에 의해 보호되었습니다.')
+                   Toast.fire({
+                    icon: 'info',
+                    title: '경호 성공'
+                  })
                 } else if (isAlive == 1) {
                   state.messages.push('System : ' + clientData + '의 직업 정보가 일치하지 않습니다.')
+                  Toast.fire({
+                    icon: 'error',
+                    title: '제거 실패'
+                  })
                 } else {
                   dispatch('removeParticipant', connectionId)
                   if (state.publisher && state.publisherId == connectionId){
@@ -498,6 +550,10 @@ const gameStore = {
                     commit('IS_ALIVE', false)
                   } 
                   state.messages.push('System : ' + clientData + '가 심장마비로 사망하였습니다.')
+                  Toast.fire({
+                    icon: 'error',
+                    title: '사망 소식'
+                  })
                 }
                 break
               }
@@ -523,15 +579,16 @@ const gameStore = {
             const winner = event.data.winner
             commit('SET_WINNER', winner)
             if (winner ==='KIRA'){
-              state.messages.push('System : 모든 경찰이 사망했습니다.'+ winner+'측의 승리입니다.')
+              commit('GET_RESULT_CONTENT','System : 모든 경찰이 사망했습니다.'+ winner+'측의 승리입니다.')
             }else{
-              state.messages.push('System : 노트측이 모두 체포되었습니다.'+ winner+'측의 승리입니다.')
+              commit('GET_RESULT_CONTENT','System : 노트측이 모두 체포되었습니다.'+ winner+'측의 승리입니다.')
             }
             let timerInterval
             Swal.fire({
-              title: '게임 종료',
+              title: `${state.winner}`,
               html:
-                'I will close in <strong></strong> seconds.<br/><br/>' ,
+                `${state.resultContent}`+
+                '게임이 <strong></strong>초 뒤에 종료됩니다.<br/><br/>' ,
               timer: 5000,
               didOpen: () => {
                 Swal.showLoading()
@@ -545,19 +602,6 @@ const gameStore = {
                 clearInterval(timerInterval)
               }
             })
-            state.messages.push('5 초후 결과 창으로 이동합니다')
-            setTimeout(() => {
-              state.messages.push('4 초후 결과 창으로 이동합니다')
-            }, 1000);
-            setTimeout(() => {
-              state.messages.push('3 초후 결과 창으로 이동합니다')
-            }, 2000);
-            setTimeout(() => {
-              state.messages.push('2 초후 결과 창으로 이동합니다')
-            }, 3000);
-            setTimeout(() => {
-              state.messages.push('1 초후 결과 창으로 이동합니다')
-            }, 4000);
             setTimeout(() => {
               router.push({ name: 'GameEnd' })
             }, 5000);
