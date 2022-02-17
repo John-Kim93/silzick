@@ -10,7 +10,7 @@
         <!-- 본인이 제시한 명함 -->
         <div class="col-5 align-self-center">
           나의 명함
-          <h3>{{ selected }}</h3>
+          <h3>{{ selectedEtoK }}</h3>
         </div>
         <!-- 중앙의 화살표 아이콘 -->
         <b-icon
@@ -21,7 +21,7 @@
         <!-- 상대방이 제시한 명함 -->
         <div class="col-5 align-self-center">
           상대방의 명함
-          <h3>{{ receivedCard }}</h3>
+          <h3>{{ recievedCardEtoK }}</h3>
         </div>
       </div>
       <!-- 상대방의 화면 -->
@@ -92,6 +92,52 @@ export default {
   computed: {
     ...mapState(gameStore, ['subPublisher', 'subSubscribers', 'myJob', 'subSession', 'nickname',
                             'receivedCard', 'session', 'messages', 'isAlive','options','isKIRAorL']),
+    selectedEtoK:function(){
+      switch(this.selected){
+				case 'KIRA' :{
+					return '노트주인'
+				}
+				case 'POLICE' :{
+					return '경찰'
+				}
+				case 'L' :{
+					return '경찰총장'
+				}
+				case 'CRIMINAL' :{
+					return '추종자'
+				}
+				case 'GUARD' :{
+					return '보디가드'
+				}
+				case 'BROADCASTER' :{
+					return '방송인'
+				}
+			}
+			return '선택 중'
+    },
+    recievedCardEtoK:function(){
+      switch(this.receivedCard){
+				case 'KIRA' :{
+					return '노트주인'
+				}
+				case 'POLICE' :{
+					return '경찰'
+				}
+				case 'L' :{
+					return '경찰총장'
+				}
+				case 'CRIMINAL' :{
+					return '추종자'
+				}
+				case 'GUARD' :{
+					return '보디가드'
+				}
+				case 'BROADCASTER' :{
+					return '방송인'
+				}
+			}
+			return '선택 중'
+    }
   },
   watch: {
     timerCount: {
@@ -166,7 +212,7 @@ export default {
 
   },
   methods: {
-    ...mapActions(gameStore, ['exitCard','changeOption','missionSuccess','numberOfSkillUse']),
+    ...mapActions(gameStore, ['exitCard','changeOption','missionSuccess','numberOfSkillUse','changeJobNameEToK']),
     ...mapMutations(gameStore, ['RECEIVE_CARD', 'SET_SUB_PUBLISHER',]),
     setSelfNameIntoSelect(){
       this.selected = this.myJob
