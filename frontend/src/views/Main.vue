@@ -9,7 +9,11 @@
           style="width:20vw; height:15vh; margin-top:10vh;"
         >
       </div> -->
+      <img 
+      id ='sublogo'
+      src="@/assets/img/이모지/asd.png" alt="">
       <img
+        id="Logo"
         src="https://ifh.cc/g/HQNaf8.png"
         alt="mainLogo"
         class="col-12 mt-4"
@@ -85,6 +89,39 @@ export default {
 </script>
 
 <style scoped>
+#sublogo{
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  top:0%; left:32.3%;
+  animation-name: drop;
+  animation-duration: 2.9s;
+  animation-timing-function: ease;
+  animation-delay: 0s;
+  animation-iteration-count: 1;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+}
+@keyframes drop {
+  from {
+    display: block;
+    top: 0%;
+    opacity: 1;
+  }
+
+  50%{
+    display: block;
+    top:11.5%;
+  }
+
+  to {
+    display: block;
+    top:11.5%;
+    opacity: 0;
+  }
+}
+
 @keyframes blink-effect {
   50% {
     opacity: 0;
@@ -97,5 +134,27 @@ export default {
 }
 .font-size {
   font-size:1.5rem;
+}
+#Logo{
+  animation-name: slide;
+  animation-duration: 4s;
+  animation-timing-function: ease;
+  animation-delay: 0s;
+  animation-iteration-count: 1;
+  animation-direction: normal;
+  animation-fill-mode: none;
+  animation-play-state: running;
+}
+@keyframes slide {
+  from {
+    opacity: 0;
+  }
+  10%{
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 </style>
