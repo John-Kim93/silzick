@@ -57,12 +57,12 @@
 
   ## Sample UI
 
-  |           **홈 화면**            |            **대기 화면**            |
-  | :------------------------------: | :---------------------------------: |
-  |   ![홈화면](Images\홈화면.png)   |  ![대기화면](Images\대기화면.png)   |
-  |          **스킬 사용**           |           **시스템 채팅**           |
-  | ![스킬사용](Images/스킬사용.png) | ![스킬사용](Images/시스템 채팅.png) |
-  |          **명함 교환**           |            **히든 미션**            |
-  | ![스킬사용](Images/명함교환.png) |  ![스킬사용](Images/히든미션.png)   |
+  |               **홈 화면**               |               **대기 화면**                |
+  | :-------------------------------------: | :----------------------------------------: |
+  |   ![홈화면](README.assets\홈화면.png)   |  ![대기화면](README.assets\대기화면.png)   |
+  |              **스킬 사용**              |              **시스템 채팅**               |
+  | ![스킬사용](README.assets/스킬사용.png) | ![스킬사용](README.assets/시스템 채팅.png) |
+  |              **명함 교환**              |               **히든 미션**                |
+  | ![스킬사용](README.assets/명함교환.png) |  ![스킬사용](README.assets/히든미션.png)   |
 
   ![Footer](https://capsule-render.vercel.app/api?type=waving&color=auto&height=200&section=footer)
