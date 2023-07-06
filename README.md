@@ -63,7 +63,7 @@ WebRTC 기술을 활용한 비대면 마피아 게임
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
 | <img src="./README.assets/home.png" width="100%" height="100%"/> | <img src="./README.assets/waiting.png" width="100%" height="100%"/> |
 |                        **스킬 사용**                         |                       **시스템 채팅**                        |
-| <img src="./README.assets/useskill.png" width="100%" height="100%"/> | <img src="./README.assets/system.png" width="100%" height="100%"/> |
+| <img src="./README.assets/useSkill.png" width="100%" height="100%"/> | <img src="./README.assets/system.png" width="100%" height="100%"/> |
 |                        **명함 교환**                         |                        **히든 미션**                         |
 | <img src="./README.assets/exchange.png" width="100%" height="100%"/> | <img src="./README.assets/hidden.png" width="100%" height="100%"/> |
 
