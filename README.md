@@ -61,10 +61,10 @@ WebRTC 기술을 활용한 비대면 마피아 게임
 
 |                         **홈 화면**                          |                        **대기 화면**                         |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| <img src="https://ifh.cc/g/1N9DKK.png" width="100%" height="100%"/> | <img src="https://ifh.cc/g/qW2khF.jpg" width="100%" height="100%"/> |
+| <img src="./README.assets/home.png" width="100%" height="100%"/> | <img src="./README.assets/waiting.png" width="100%" height="100%"/> |
 |                        **스킬 사용**                         |                       **시스템 채팅**                        |
-| <img src="https://ifh.cc/g/c31oKT.jpg" width="100%" height="100%"/> | <img src="https://ifh.cc/g/SssD3q.jpg" width="100%" height="100%"/> |
+| <img src="./README.assets/useskill.png" width="100%" height="100%"/> | <img src="./README.assets/system.png" width="100%" height="100%"/> |
 |                        **명함 교환**                         |                        **히든 미션**                         |
-| <img src="https://ifh.cc/g/sc0bLk.jpg" width="100%" height="100%"/> | <img src="https://ifh.cc/g/zDtPxV.jpg" width="100%" height="100%"/> |
+| <img src="./README.assets/exchange.png" width="100%" height="100%"/> | <img src="./README.assets/hidden.png" width="100%" height="100%"/> |
 
 ![Footer](https://capsule-render.vercel.app/api?type=waving&color=auto&height=200&section=footer)
